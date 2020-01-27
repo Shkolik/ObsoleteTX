@@ -19,6 +19,7 @@
 #define TIMER_10MS_VECT           TIMER0_COMP_vect //10ms timer
 #define TIMER_10MS_COMPVAL        OCR0
 
+#define MEGACORELEDPIN			PIN4_bm
 void boardInit();
 
 inline void setupTimers();

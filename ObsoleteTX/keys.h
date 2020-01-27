@@ -140,9 +140,9 @@ extern uint8_t s_evt;
 void pauseEvents(uint8_t enuk);
 void killEvents(uint8_t enuk);
 void clearKeyEvents();
-uint8_t getEvent();
+extern uint8_t getEvent();
 
-uint8_t keyDown();
+extern uint8_t keyDown();
 
 
 

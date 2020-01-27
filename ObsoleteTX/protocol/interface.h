@@ -10,17 +10,19 @@
 #define INTERFACE_H_
 
 
-#include "misc.h"
+//#include "misc.h"
 
-#include "proto_ppm.cpp"
+#include "../test.h"
+
+#include "proto_ppm.h"
 
 #ifdef DSM2_SERIAL
 #include "dsm_serial.cpp"
 #endif
 
-//#ifdef PROTO_HAS_MULTI
-#include "multi.cpp"
-//#endif
+#ifdef MULTIMODULE
+#include "multi.h"
+#endif
 
 #if defined(SPIMODULES)
 

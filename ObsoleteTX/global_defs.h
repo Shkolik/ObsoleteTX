@@ -173,7 +173,6 @@ enum ProtoCmds {
 	PROTOCMD_RESET,
 	PROTOCMD_GETOPTIONS,
 };
-
 enum PerOutMode {
 	e_perout_mode_normal = 0,
 	e_perout_mode_inactive_flight_mode = 1,
@@ -231,6 +230,86 @@ enum TelemetryUnit {
 	UNIT_HDG,
 };
 
+#if defined(MULTIMODULE)
+
+#define MULTI_RF_PROTO_LAST 100  // Use a large value
+
+enum MultiModuleRFProtocols {
+	MM_RF_PROTO_CUSTOM = -1,
+	MM_RF_PROTO_FIRST = MM_RF_PROTO_CUSTOM,
+	MM_RF_PROTO_FLYSKY=0,
+	MM_RF_PROTO_HUBSAN,
+	MM_RF_PROTO_FRSKY,
+	MM_RF_PROTO_HISKY,
+	MM_RF_PROTO_V2X2,
+	MM_RF_PROTO_DSM2,
+	MM_RF_PROTO_DEVO,
+	MM_RF_PROTO_YD717,
+	MM_RF_PROTO_KN,
+	MM_RF_PROTO_SYMAX,
+	MM_RF_PROTO_SLT,
+	MM_RF_PROTO_CX10,
+	MM_RF_PROTO_CG023,
+	MM_RF_PROTO_BAYANG,
+	MM_RF_PROTO_ESky,
+	MM_RF_PROTO_MT99XX,
+	MM_RF_PROTO_MJXQ,
+	MM_RF_PROTO_SHENQI,
+	MM_RF_PROTO_FY326,
+	MM_RF_PROTO_SFHSS,
+	MM_RF_PROTO_J6PRO,
+	MM_RF_PROTO_FQ777,
+	MM_RF_PROTO_ASSAN,
+	MM_RF_PROTO_HONTAI,
+	MM_RF_PROTO_OLRS,
+	MM_RF_PROTO_FS_AFHDS2A,
+	MM_RF_PROTO_Q2X2,
+	MM_RF_PROTO_WK_2X01,
+	MM_RF_PROTO_Q303,
+	MM_RF_PROTO_GW008,
+	MM_RF_PROTO_DM002,
+	MM_RF_PROTO_LAST= MM_RF_PROTO_DM002
+};
+
+enum MMDSM2Subtypes {
+	MM_RF_DSM2_SUBTYPE_DSM2_22,
+	MM_RF_DSM2_SUBTYPE_DSM2_11,
+	MM_RF_DSM2_SUBTYPE_DSMX_22,
+	MM_RF_DSM2_SUBTYPE_DSMX_11,
+	MM_RF_DSM2_SUBTYPE_AUTO
+};
+
+enum MMRFrskySubtypes {
+	MM_RF_FRSKY_SUBTYPE_D16,
+	MM_RF_FRSKY_SUBTYPE_D8,
+	MM_RF_FRSKY_SUBTYPE_D16_8CH,
+	MM_RF_FRSKY_SUBTYPE_V8,
+	MM_RF_FRSKY_SUBTYPE_D16_LBT,
+	MM_RF_FRSKY_SUBTYPE_D16_LBT_8CH
+};
+
+#endif
+
+//Add more protocols if needed
+enum Protocols {
+	PROTOCOL_PPM,
+	#ifdef DSM2_SERIAL
+	PROTOCOL_DSM_SERIAL,
+	#endif
+	#ifdef MULTIMODULE
+	PROTOCOL_MULTI,
+	#endif
+	PROTOCOL_COUNT
+};
+
+typedef const void* (*CMDS)(enum ProtoCmds);
+
+typedef struct {
+	enum Protocols Protocol;
+	const pm_char* ProtoName;
+	CMDS Cmds; // Cmds
+} Proto_struct;
+
 typedef struct {
 	int32_t act:24;
 	uint16_t delay:10;     // 10bits used 0 to DELAY_MAX*(100/DELAY_STEP)
@@ -239,10 +318,10 @@ typedef struct {
 	int16_t hold:12;       // 12bits used -RESX to RESX
 } MixVal;
 
-typedef struct {
+struct t_inactivity{
 	uint16_t counter;
 	uint8_t  sum;
-} t_inactivity;
+};
 
 typedef struct {
 	uint8_t activeFunctions;		// current max = 8 functions
@@ -265,18 +344,18 @@ typedef struct {
 #define BOOL3USED PIN2_bm
 
 struct RfOptionSettingsvarstruct {
-	uint8_t         rfProtoNeed:4;     // See usage in "PROTO_NEED_XX" Def
-	uint8_t         rfSubTypeMax:4;       //16 max
+	uint8_t         rfProtoNeed;//:4;     // See usage in "PROTO_NEED_XX" Def
+	uint8_t         rfSubTypeMax;//:4;       //16 max
 	int8_t          rfOptionValue1Min;
 	int8_t          rfOptionValue1Max;
 	int8_t          rfOptionValue2Min;
 	int8_t          rfOptionValue2Max;
-	int8_t          rfOptionValue3Max/*:5*/;  //32 max -16 is min
-};
+	int8_t          rfOptionValue3Max;/*:5*/  //32 max -16 is min
+} ;
 
 struct RfOptionSettingsstruct {
-	uint8_t         rfProtoNeed:4;     // See usage in "PROTO_NEED_XX" Def
-	uint8_t         rfSubTypeMax:4;       //16 max
+	uint8_t         rfProtoNeed;//:4;     // See usage in "PROTO_NEED_XX" Def
+	uint8_t         rfSubTypeMax;//:4;       //16 max
 	const pm_char*  rfSubTypeNames;
 	int8_t          rfOptionValue1Min;
 	int8_t          rfOptionValue1Max;
@@ -284,15 +363,15 @@ struct RfOptionSettingsstruct {
 	int8_t          rfOptionValue2Min;
 	int8_t          rfOptionValue2Max;
 	const pm_char*  rfOptionValue2Name;
-	int8_t          rfOptionValue3Max:5;  //32 max -16 is min
+	int8_t          rfOptionValue3Max;//:5;  //32 max -16 is min
 	const pm_char*  rfOptionValue3Name;
-	uint8_t         rfOptionBool1Used:1;
+	uint8_t         rfOptionBool1Used;//:1;
 	const pm_char*  rfOptionBool1Name;
-	uint8_t         rfOptionBool2Used:1;
+	uint8_t         rfOptionBool2Used;//:1;
 	const pm_char*  rfOptionBool2Name;
-	uint8_t         rfOptionBool3Used:1;
+	uint8_t         rfOptionBool3Used;//:1;
 	const pm_char*  rfOptionBool3Name;
-};
+} ;
 
 typedef struct {
 	uint8_t protocol;

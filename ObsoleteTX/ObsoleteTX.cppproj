@@ -171,6 +171,12 @@
     <Compile Include="buzzer.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="curves.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="curves.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="eeprom_common.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -183,13 +189,40 @@
     <Compile Include="eeprom_rlc.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="functions.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="functions.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="global_defs.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="keys.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="keys.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="main_avr.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="main_avr.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="maths.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="maths.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="misclib.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mixer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mixer.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="myeeprom.h">
@@ -222,6 +255,9 @@
     <Compile Include="protocol\multi.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="protocol\multi.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="protocol\protocol.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -229,6 +265,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="protocol\proto_ppm.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="protocol\proto_ppm.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="pulses\pulses.h">
@@ -246,6 +285,9 @@
     <Compile Include="switches.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="switches.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="telemetry_driver.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -256,6 +298,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="timers.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="trainer_input.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="trainer_input.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="translations.cpp">

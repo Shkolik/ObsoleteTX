@@ -17,12 +17,12 @@ uint16_t dt;
 p2mhz_t pulses2MHz;
 void (*ocr1b_function_ptr)();
 
-FORCEINLINE uint8_t pulsesStarted()
+uint8_t pulsesStarted()
 {
 	return (s_current_protocol != 255);
 }
 
-FORCEINLINE void sendStopPulses()
+void sendStopPulses()
 {
 	PROTO_Cmds(PROTOCMD_RESET);
 	TRACE("  ->  RESET Proto - %s -",  Protos[s_current_protocol].ProtoName);

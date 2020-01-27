@@ -12,20 +12,20 @@
 
 #define WRITE_DELAY_10MS 200
 
-#define TIME_TO_WRITE() (s_eeDirtyMsk && (tmr10ms_t)(getTmr10ms() - s_eeDirtyTime10ms) >= (tmr10ms_t)WRITE_DELAY_10MS)
+#define TIME_TO_WRITE() (s_eeDirtyMsk && (uint16_t)(getTmr10ms() - s_eeDirtyTime10ms) >= (uint16_t)WRITE_DELAY_10MS)
 
 extern uint8_t   s_eeDirtyMsk;
 extern uint16_t s_eeDirtyTime10ms;
 
-void eeDirty(uint8_t msk);
-void eeCheck(bool immediately);
-void eeReadAll();
-bool eeModelExists(uint8_t id);
-void eeLoadModel(uint8_t id);
-uint8_t eeConvert();
-void eeErase(bool warn);
-uint8_t eeFindEmptyModel(uint8_t id, bool down);
-void selectModel(uint8_t sub);
+extern void eeDirty(uint8_t msk);
+extern void eeCheck(bool immediately);
+extern void eeReadAll();
+extern bool eeModelExists(uint8_t id);
+extern void eeLoadModel(uint8_t id);
+extern uint8_t eeConvert();
+extern void eeErase(bool warn);
+extern uint8_t eeFindEmptyModel(uint8_t id, bool down);
+extern void selectModel(uint8_t sub);
 
 
 #endif /* EEPROM_COMMON_H_ */

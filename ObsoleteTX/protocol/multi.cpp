@@ -8,16 +8,7 @@
 #include "../ObsoleteTX.h"
 #include "misc.h"
 
-#define MULTI_SEND_BIND                     (1 << 7)
-#define MULTI_SEND_RANGECHECK               (1 << 5)
-#define MULTI_SEND_AUTOBIND                 (1 << 6)
-#define MULTI_CHANS							16
-#define MULTI_CHAN_BITS						11
-
-#define NO_SUBTYPE							0
-#define MM_RF_CUSTOM_SELECTED				0xff
-
-const static RfOptionSettingsvarstruct RfOpt_Multi_Ser[] PROGMEM = {
+const RfOptionSettingsvarstruct RfOpt_Multi_Ser[] PROGMEM = {
 	/*rfProtoNeed*/BOOL1USED | BOOL2USED | BOOL3USED,
 	/*rfSubTypeMax*/15,
 	/*rfOptionValue1Min*/0,
@@ -122,9 +113,9 @@ static uint16_t MULTI_cb()
 	SCHEDULE_MIXER_END_IN_US(22000); // Schedule next Mixer calculations.
 
 	// Send data
-	if (Usart0TxBufferCount) return 1000 *2; // return, if buffer is not empty
-	Usart0TxBufferCount = 26;
-	uint8_t multiTxBufferCount = Usart0TxBufferCount;
+	if (UsartTxBufferCount) return 1000 *2; // return, if buffer is not empty
+	UsartTxBufferCount = 26;
+	uint8_t multiTxBufferCount = UsartTxBufferCount;
 
 	// Our enumeration starts at 0
 	int8_t type = g_model.MULTIRFPROTOCOL + 1; //MULTIRFPROTOCOL
@@ -197,9 +188,9 @@ static uint16_t MULTI_cb()
 
 	// header, byte 0,  0x55 for proto 0-31 0x54 for 32-63
 	if (type <= 31)
-	Usart0TxBuffer[--multiTxBufferCount] = 0x55;
+	UsartTxBuffer[--multiTxBufferCount] = 0x55;
 	else
-	Usart0TxBuffer[--multiTxBufferCount] = 0x54;
+	UsartTxBuffer[--multiTxBufferCount] = 0x54;
 
 	// protocol byte 1
 	protoByte |= (type & 0x1f);
@@ -207,16 +198,16 @@ static uint16_t MULTI_cb()
 		protoByte |= (g_model.AUTOBINDMODE << 6); //AUTOBINDMODE
 
 	//  sendByteMulti(protoByte);
-	Usart0TxBuffer[--multiTxBufferCount] = protoByte;
+	UsartTxBuffer[--multiTxBufferCount] = protoByte;
 
 	// byte 2, subtype, power mode, model id
-	Usart0TxBuffer[--multiTxBufferCount] = ((uint8_t) ((g_model.modelId & 0x0f)
+	UsartTxBuffer[--multiTxBufferCount] = ((uint8_t) ((g_model.modelId & 0x0f)
 	| ((subtype & 0x7) << 4)
 	| (g_model.LOWPOWERMODE << 7))
 	);
 
 	// byte 3
-	Usart0TxBuffer[--multiTxBufferCount] = (uint8_t) optionValue;
+	UsartTxBuffer[--multiTxBufferCount] = (uint8_t) optionValue;
 
 	uint32_t bits = 0;
 	uint8_t bitsavailable = 0;
@@ -233,7 +224,7 @@ static uint16_t MULTI_cb()
 		bitsavailable += MULTI_CHAN_BITS;
 
 		while (bitsavailable >= 8) {
-			Usart0TxBuffer[--multiTxBufferCount] = ((uint8_t) (bits & 0xff));
+			UsartTxBuffer[--multiTxBufferCount] = ((uint8_t) (bits & 0xff));
 			bits >>= 8;
 			bitsavailable -= 8;
 		}
@@ -248,16 +239,15 @@ static uint16_t MULTI_cb()
 	return 22000U *2; // 22 mSec loop
 }
 
-
 static void MULTI_initialize()
 {
 	#ifdef TELEMETRY
 	// 100K 8E2
-	Usart0Set100000BAUDS();
-	Usart0Set8E2();
-	Usart0EnableTx();
-	Usart0EnableRx();
-	Usart0TxBufferCount = 0;
+	UsartSet100000BAUDS();
+	UsartSet8E2();
+	UsartEnableTx();
+	UsartEnableRx();
+	UsartTxBufferCount = 0;
 	#endif
 
 	if (g_model.AUTOBINDMODE) PROTOCOL_SetBindState(500); // 5 Sec AUTOBINDMODE

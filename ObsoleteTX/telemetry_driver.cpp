@@ -9,9 +9,9 @@
 
 uint8_t TelemetryRxBuffer[NUM_TELEM_RX_BUFFER][TELEM_RX_PACKET_SIZE];
 
-uint8_t * Usart0TxBuffer = pulses2MHz.pbyte; // [USART_TX_PACKET_SIZE] bytes used
+uint8_t * UsartTxBuffer = pulses2MHz.pbyte; // [USART_TX_PACKET_SIZE] bytes used
 
-uint8_t Usart0TxBufferCount = 0;
+uint8_t UsartTxBufferCount = 0;
 
 void UsartEnableTx()
 {
@@ -173,8 +173,8 @@ ISR(USART_RX_vect_N(TLM_USART))
 // USART0 Transmit Data Register Empty ISR (UDR was loaded in Shift Register)
 ISR(USART_UDRE_vect_N(TLM_USART))
 {
-  if (Usart0TxBufferCount > 0) {
-    UDR_N(TLM_USART) = Usart0TxBuffer[--Usart0TxBufferCount];
+  if (UsartTxBufferCount > 0) {
+    UDR_N(TLM_USART) = UsartTxBuffer[--UsartTxBufferCount];
   }
   else {
     UCSRB_N(TLM_USART) &= ~(1 << UDRIE_N(TLM_USART)); // Disable UDRE interrupt.

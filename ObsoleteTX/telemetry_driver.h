@@ -31,9 +31,9 @@ void UsartSet100000BAUDS();  //Multiprotocol Serial
 
 extern uint8_t TelemetryRxBuffer[NUM_TELEM_RX_BUFFER][TELEM_RX_PACKET_SIZE];
 
-extern uint8_t * Usart0TxBuffer; // [USART_TX_PACKET_SIZE] used
+extern uint8_t * UsartTxBuffer; // [USART_TX_PACKET_SIZE] used
 
-extern uint8_t Usart0TxBufferCount;
+extern uint8_t UsartTxBufferCount;
 
 ///////////  Telemetry fields  ///////////////
 #if defined(FRSKY)

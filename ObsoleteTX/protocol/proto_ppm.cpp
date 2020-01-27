@@ -98,7 +98,8 @@ static void PROTO_PPM_initialize()
 const void *PROTO_PPM_Cmds(enum ProtoCmds cmd)
 {
 	switch(cmd) {
-		case PROTOCMD_INIT: PROTO_PPM_initialize();
+		case PROTOCMD_INIT: 
+			PROTO_PPM_initialize();
 			return 0;
 		case PROTOCMD_RESET:
 			PROTO_PPM_reset();

@@ -5,9 +5,6 @@
  *  Author: Andrew
  */ 
 
-#include <stdint.h>
-#include <inttypes.h>
-#include <string.h>
 #include "ObsoleteTX.h"
 #include "timers.h"
 
@@ -17,7 +14,7 @@ uint16_t s_eeDirtyTime10ms;
 void eeDirty(uint8_t msk)
 {
 	s_eeDirtyMsk |= msk;
-	s_eeDirtyTime10ms = getTmr10ms() ;
+	s_eeDirtyTime10ms = GET_10MS_TICK();
 }
 
 uint8_t eeFindEmptyModel(uint8_t id, bool down)

@@ -228,7 +228,7 @@ uint8_t getSwitch(swsrc_t swtch)
 	return swtch > 0 ? result : !result;
 }
 
-swarnstate_t switches_states = 0;
+uint8_t switches_states = 0;
 
 int8_t getMovedSwitch()
 {
@@ -239,7 +239,7 @@ int8_t getMovedSwitch()
 	// 4..8 for all other switches if changed to true
 	// -4..-8 for all other switches if changed to false
 	// 9 for Trainer switch if changed to true; Change to false is ignored
-	swarnstate_t mask = 0x80;
+	uint8_t mask = 0x80;
 	for (uint8_t i=NUM_PSWITCH; i>1; i--) {
 		bool prev = (switches_states & mask);
 		// don't use getSwitch here to always get the proper value, even getSwitch manipulates
@@ -263,8 +263,8 @@ int8_t getMovedSwitch()
 #if defined(GUI)
 void checkSwitches()
 {
-	swarnstate_t last_bad_switches = 0xff;
-	swarnstate_t states = g_model.switchWarningState;
+	uint8_t last_bad_switches = 0xff;
+	uint8_t states = g_model.switchWarningState;
 
 	while (1) {
 

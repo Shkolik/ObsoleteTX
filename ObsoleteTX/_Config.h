@@ -9,12 +9,13 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#define F_CPU 8000000UL
+
 #define TIMERS 2
 // Stick tolerance varies between transmitters, Higher is better
 #define STICK_TOLERANCE 64
 #define EXTRA_3POS 0
-
-#define F_CPU 8000000UL
+#define DEFAULT_MODE 1
 
 // board type
 #define DX6I

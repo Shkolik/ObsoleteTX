@@ -18,7 +18,7 @@ void boardInit()
 	//DDRB = 0b11110111;  PORTB = 0b10101111; // 7:MegaCore Led, 6:PPM_OUT, 5:PPMSIM_OUT, 4:BT_Key_Cmd, SDCARD[3:MISO 2:MOSI 1:SCK 0:CS]
 	//DDRC = 0b11111100;  PORTC = 0b00000011; // 7-3:LCD, 2:BackLight, 1:ID2_SW, 0:ID1_SW
 	DDRD = 0b11111101;  PORTD = 0b00000010; // 7:AilDR_SW, 6:N/A, 5:N/A, 4:PPM_IN, 3:BT_TX, 2:BT_RX, 1:BIND, 0:PPM_OUT
-	DDRE = 0b00000010;  PORTE = 0b11111110; // 7:Flaps, 6:Rot_Left, 5:Rot_Right, 4:Rot_Enter, 3:Trainer_ON, 2:Power_ON, 1:TELEM_TX, 0:TELEM_RX
+	DDRE = 0b00010010;  PORTE = 0b11111110; // 7:Flaps, 6:Rot_Left, 5:Rot_Right, 4:Rot_Enter, 3:Trainer_ON, 2:Power_ON, 1:TELEM_TX, 0:TELEM_RX
 	DDRF = 0b00000000;  PORTF = 0b11111111; // 7-0:Analog inputs
 	//DDRG = 0b00010000;  PORTG = 0b11101111; // 7:N/A, 6:N/A, 5:Rot_1_Push, 4:BT_On_Off, 3:N/A, 2:TCut_SW, 1:Gear_SW, 0: RudDr_SW
 	//DDRH = 0b01111110;  PORTH = 0b10010000; // 7:N/A, 6:Sim_Control/RF_Power, 5:Haptic, 4:Hold_Power, 3:Speaker, 2:SPI_Xmitter_SCK, 1:SPI_Xmitter_MOSI, 0:SPI_Xmitter_MISO
@@ -116,4 +116,97 @@ uint8_t switchState(EnumKeys enuk)
 	//}
 
 	return result;
+}
+
+// Trim switches
+#if defined(TOGGLETRIM) //Toggle trim usage -> Left trim for right stick and right trim for left stick
+static const pm_uchar crossTrim[] PROGMEM = {
+	TRIMS_GPIO_PIN_RHL,
+	TRIMS_GPIO_PIN_RHR,
+	TRIMS_GPIO_PIN_RVD,
+	TRIMS_GPIO_PIN_RVU,
+	TRIMS_GPIO_PIN_LVD,
+	TRIMS_GPIO_PIN_LVU,
+	TRIMS_GPIO_PIN_LHL,
+	TRIMS_GPIO_PIN_LHR
+};
+#else
+static const pm_uchar crossTrim[] PROGMEM = {
+	TRIMS_GPIO_PIN_LHL,
+	TRIMS_GPIO_PIN_LHR,
+	TRIMS_GPIO_PIN_LVD,
+	TRIMS_GPIO_PIN_LVU,
+	TRIMS_GPIO_PIN_RVD,
+	TRIMS_GPIO_PIN_RVU,
+	TRIMS_GPIO_PIN_RHL,
+	TRIMS_GPIO_PIN_RHR
+};
+#endif
+
+uint8_t trimDown(uint8_t idx)
+{
+	uint8_t in = 0;//~PINF;
+	return (in & pgm_read_byte_near(crossTrim+idx));
+}
+
+uint8_t keyDown()
+{
+	return 0;//((~PINL) & 0x3F) || ROTENC_DOWN();
+}
+
+void readKeysAndTrims()
+{
+
+	//#if defined(NAVIGATION_STICKS)
+	//if (~PINL & (KEYS_GPIO_PIN_MENU | KEYS_GPIO_PIN_EXIT)) {   //Check menu key
+		//StickScrollTimer = STICK_SCROLL_TIMEOUT;
+		//uint8_t sticks_evt = getSticksNavigationEvent();
+		//if (sticks_evt) {
+			//if (~PINL & KEYS_GPIO_PIN_MENU) {
+				//putEvent(EVT_KEY_LONG(sticks_evt)); // create a stick based event "long" to choose menu
+				//} else {
+				//putEvent(EVT_KEY_BREAK(sticks_evt)); // create a stick based event "first" to choose view (EXIT pressed)
+				//killEvents(KEY_EXIT); // Kill exit event
+			//}
+			//return;
+		//}
+	//}
+	//#endif
+//
+	//uint8_t enuk = KEY_MENU;
+//
+	//keys[BTN_REa].input(REA_DOWN());
+	//keys[BTN_REb].input(REB_DOWN());
+//
+	//uint8_t tin = ~PINL;
+	//uint8_t in;
+	//in = (tin & 0x0f) << 3;
+	//in |= (tin & 0x30) >> 3;
+//
+	//for (uint8_t i=1; i<7; i++) {
+		//keys[enuk].input(in & (1<<i));
+		//++enuk;
+	//}
+//
+	//// Trims
+	//in = ~PINF;
+	//for (uint8_t i=0; i<8; i++) {
+		//// INP_D_TRM_RH_UP   0 .. INP_D_TRM_LH_UP   7
+		//keys[enuk].input(in & pgm_read_byte_near(crossTrim+i));
+		//++enuk;
+	//}
+}
+
+// Rotary encoders increment/decrement
+
+void debounceRotEncA()
+{
+	//DISABLEROTENCAISR();
+	//rotEncADebounce = ROTENCDEBOUNCEVAL;
+}
+
+void debounceRotEncB()
+{
+	//DISABLEROTENCBISR();
+	//rotEncBDebounce = ROTENCDEBOUNCEVAL;
 }
