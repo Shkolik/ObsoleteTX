@@ -23,10 +23,33 @@
 #define WARN_MEM     (!(g_eeGeneral.warnOpts & WARN_MEM_BIT))
 #define BEEP_VAL     ( (g_eeGeneral.warnOpts & WARN_BVAL_BIT) >>3 )
 
-#define EEPROM_VER             32 // New eeprom format
+#define EEPROM_VER             1
 
-#ifndef PACK
-#define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#if defined(EXTERNALEEPROM)
+#define MAX_MODELS           55
+#define NUM_CHNOUT           16 // number of real output channels CH1-CH16
+#define MAX_FLIGHT_MODES     6
+#define MAX_MIXERS           40
+#define MAX_EXPOS            16
+#define NUM_LOGICAL_SWITCH   20 // number of custom switches
+#define GETSWITCH_RECURSIVE_TYPE uint32_t
+#define NUM_CFN              32 // number of functions assigned to switches
+#define MAX_GVARS            12
+#define NUM_TRAINER          8
+#define NUM_POTS             3
+
+#else
+#define MAX_MODELS           30
+#define NUM_CHNOUT           16 // number of real output channels CH1-CH16
+#define MAX_FLIGHT_MODES     6
+#define MAX_MIXERS           32
+#define MAX_EXPOS            16
+#define NUM_LOGICAL_SWITCH   15 // number of custom switches
+#define GETSWITCH_RECURSIVE_TYPE uint16_t
+#define NUM_CFN              24 // number of functions assigned to switches
+#define MAX_GVARS            6
+#define NUM_TRAINER          8
+#define NUM_POTS             3
 #endif
 
 #if defined(EXTERNALEEPROM)
@@ -43,24 +66,6 @@
 #define BS         16
 #endif
 
-/* BluetoothEepSt_t structure length SHALL be (1 + 4 + 8 + 6) = 19 bytes to keep compatibility */
-#define LEN_BT_NAME 10
-typedef struct{
-  uint8_t Mac[6];
-  char    Name[LEN_BT_NAME];
-} BT_PeerSt_t;
-
-typedef struct{
-  uint8_t
-                Power     ,//:1,  /* 0: OFF,   1: ON */
-                Type      ,//:1,  /* 0: HC-05  1: HM-10 */
-                Master    ,//:1,  /* 0: Slave, 1: Master */
-                AutoCnx   ,//:1,  /* 0: No Cnx 1: Auto Cnx */
-                Reserved  ;//:4;
-  BT_PeerSt_t   Peer;
-  char          Res[2]; // Pin doesn't need to be stored in eeprom since it is stored in the BT module itself -> peer name can be increased by using these bytes
-} BluetoothEepSt_t;
-
 #define MAX_TIMERS           2
 #define NUM_CYC              3
 #define NUM_CAL_PPM          4
@@ -73,27 +78,21 @@ typedef struct{
 
 typedef struct {
   int8_t * crv;
-  uint8_t points;//:7;
-  uint8_t custom;//:1;
-} CurveInfo;
+  uint8_t points:7;
+  uint8_t custom:1;
+} __attribute__((__packed__)) CurveInfo;
 
 extern CurveInfo curveInfo(uint8_t idx);
-
-typedef uint8_t source_t;
-
 
 #define LEN_GVAR_NAME 6
 #define GVAR_MAX      121 // used for phase decrypt
 #define GVAR_LIMIT    120
-#define MODEL_GVARS_NAME global_gvar_t gvars[MAX_GVARS];
-#define PHASE_GVARS_DATA gvar_t gvars[MAX_GVARS]
+#define PHASE_GVARS_DATA int8_t gvars[MAX_GVARS]
 #define GVAR_VALUE(x, p) g_model.flightModeData[p].gvars[x]
-
-typedef int8_t gvar_t;
 
 typedef struct {
   char    name[LEN_GVAR_NAME];
-} global_gvar_t;
+} __attribute__((__packed__)) global_gvar_t;
 
 #define RESERVE_RANGE_FOR_GVARS MAX_GVARS
 // even we do not spend space in EEPROM for GVARS, we reserve the space inside the range of values, like offset, weight, etc.
@@ -103,12 +102,12 @@ typedef struct {
   uint8_t srcChn;//:6; // 0-7 = ch1-8
   uint8_t mode;//:2;   // off,add-mode,subst-mode
   int8_t  studWeight;
-} TrainerMix;
+} __attribute__((__packed__)) TrainerMix;
 
 typedef struct {
   int16_t        calib[4];
   TrainerMix     mix[4];
-} TrainerData;
+} __attribute__((__packed__)) TrainerData;
 
 enum MainViews {
   VIEW_OUTPUTS_VALUES,
@@ -136,17 +135,13 @@ enum BacklightMode {
   e_backlight_mode_on
 };
 
-#if defined(FSPLASH)
-#define SPLASH_MODE uint8_t splashMode//:3
-#else
-#define SPLASH_MODE uint8_t splashMode/*:1*/; uint8_t splashSpare/*:2*/
-#endif
+typedef uint8_t source_t;
 
 typedef struct {
   int16_t mid;
   int16_t spanNeg;
   int16_t spanPos;
-} CalibData;
+} __attribute__((__packed__)) CalibData;
 
 
 enum Functions {
@@ -225,12 +220,12 @@ enum AdjustGvarFunctionParam {
 typedef struct {
   int8_t  swtch;
   uint8_t func;
-  uint8_t mode;//:2;
-  uint8_t param;//:4;
-  uint8_t active;//:1;
-  uint8_t spare;//:1;
+  uint8_t mode:2;
+  uint8_t param:4;
+  uint8_t active:1;
+  uint8_t spare:1;
   uint8_t value;
-} CustomFunctionData;
+} __attribute__((__packed__)) CustomFunctionData;
 
 #define CFN_SWITCH(p)       ((p)->swtch)
 #define CFN_FUNC(p)         ((p)->func)
@@ -265,72 +260,77 @@ typedef struct {
   int8_t    backlightMode;
   TrainerData trainer;
   uint8_t   view;            // index of view in main screen
-  int8_t    buzzerMode;//:2;    // -2=quiet, -1=only alarms, 0=no keys, 1=all
-  uint8_t   fai;//:1;
-  int8_t    beepMode;//:2;      // -2=quiet, -1=only alarms, 0=no keys, 1=all
-  uint8_t   alarmsFlash;//:1;
-  uint8_t   disableMemoryWarning;//:1;
-  uint8_t   disableAlarmWarning;//:1;
-  uint8_t   stickMode;//:2;
-  int8_t    timezone;//:5;
-  uint8_t   adjustRTC;//:1;
+  int8_t    buzzerMode:2;    // -2=quiet, -1=only alarms, 0=no keys, 1=all
+  uint8_t   fai:1;
+  int8_t    beepMode:2;      // -2=quiet, -1=only alarms, 0=no keys, 1=all
+  uint8_t   alarmsFlash:1;
+  uint8_t   disableMemoryWarning:1;
+  uint8_t   disableAlarmWarning:1;
+  uint8_t   stickMode:1;
+  #ifdef RTC
+  int8_t    timezone:5;
+  uint8_t   adjustRTC:1;
+  #endif
   uint8_t   inactivityTimer;
-  uint8_t   mavbaud;//:3;       // Not used
-  SPLASH_MODE; /* 3bits */
-  int8_t    hapticMode;//:2;    // -2=quiet, -1=only alarms, 0=no keys, 1=all
+  #if defined(FSPLASH)
+  uint8_t   splashMode:3;
+  #else
+  uint8_t   splashMode:1; 
+  uint8_t   splashSpare:2;
+  #endif
+  int8_t    hapticMode:2;    // -2=quiet, -1=only alarms, 0=no keys, 1=all
   uint8_t   lightAutoOff;
   uint8_t   templateSetup;   // RETA order for receiver channels
   int8_t    PPM_Multiplier;
   int8_t    hapticLength;
-  uint8_t   reNavigation;//:2;  // Num encoder max
-  uint8_t   protocol_mask;//:6; // Used by the simu to detect present protocols
+  uint8_t   reNavigation:2;  // Num encoder max
+  uint8_t   protocol_mask:6; // Used by the simu to detect present protocols
   uint8_t   stickReverse;
   uint8_t   speakerPitch;
   uint8_t   vBatMin;
   uint8_t   vBatMax;
-  int8_t    beepLength;//:3;
-  uint8_t   gpsFormat;//:1;
-  uint8_t   unexpectedShutdown;//:1;
-// Free fields ! Todo ?
-  int8_t    hapticStrength;//:3;
+  int8_t    beepLength:3;
+  uint8_t   gpsFormat:1;
+  uint8_t   unexpectedShutdown:1;
+  int8_t    hapticStrength:3;
   int8_t    speakerVolume;
-  uint8_t   blOffBright;//:4;   // used if defined PWM_BACKLIGHT
-  uint8_t   blOnBright;//:4;    // used if defined PWM_BACKLIGHT
-//  BLUETOOTH_FIELDS
-  BluetoothEepSt_t BT;
+  uint8_t   blOffBright:4;   // used if defined PWM_BACKLIGHT
+  uint8_t   blOnBright:4;    // used if defined PWM_BACKLIGHT
 // 32 bits or 4*8 bits fixed ID
   fixed_ID_Union fixed_ID;
-} EEGeneral;
+} __attribute__((__packed__)) EEGeneral;
 
 #define SWITCHES_DELAY()            uint8_t(15+g_eeGeneral.switchesDelay)
 #define SWITCHES_DELAY_NONE         (-15)
 //#define HAPTIC_STRENGTH()           (3+g_eeGeneral.hapticStrength)
 
-enum CurveRefType {
+enum CurveRefType 
+{
   CURVE_REF_DIFF,
   CURVE_REF_EXPO,
   CURVE_REF_FUNC,
   CURVE_REF_CUSTOM
 };
+
 typedef struct {
   uint8_t type;
   int8_t  value;
-} CurveRef;
+} __attribute__((__packed__)) CurveRef;
 
 #define MODE_DIFFERENTIAL  0
 #define MODE_EXPO          0
 #define MODE_CURVE         1
 
 typedef struct {
-  uint8_t mode;//:2;         // 0=end, 1=pos, 2=neg, 3=both
-  uint8_t chn;//:2;
-  uint8_t curveMode;//:1;
-  uint8_t spare;//:3;
+  uint8_t mode:2;         // 0=end, 1=pos, 2=neg, 3=both
+  uint8_t chn:2;
+  uint8_t curveMode:1;
+  uint8_t spare:3;
   uint8_t flightModes;
   int8_t  swtch;
   uint8_t weight;
   int8_t  curveParam;
-} ExpoData;
+} __attribute__((__packed__)) ExpoData;
 
 #define MIN_EXPO_WEIGHT         0
 #define EXPO_VALID(ed)          ((ed)->mode)
@@ -351,10 +351,10 @@ typedef struct {
   int8_t min;
   int8_t max;
   int8_t  ppmCenter;
-  int16_t offset;//:14;
-  uint16_t symetrical;//:1;
-  uint16_t revert;//:1;
-} LimitData;
+  int16_t offset:14;
+  uint16_t symetrical:1;
+  uint16_t revert:1;
+} __attribute__((__packed__)) LimitData;
 
 #define TRIM_OFF    (1)
 #define TRIM_ON     (0)
@@ -373,26 +373,26 @@ typedef struct {
 #define SLOW_MAX    15 /* 7.5 seconds */
 
 typedef struct {
-  uint8_t destCh;//:4;          // 0, 1..NUM_CHNOUT
-  uint8_t curveMode;//:1;       // O=curve, 1=differential
-  uint8_t noExpo;//:1;
-  uint8_t weightMode;//:1;
-  uint8_t offsetMode;//:1;
+  uint8_t destCh:4;          // 0, 1..NUM_CHNOUT
+  uint8_t curveMode:1;       // O=curve, 1=differential
+  uint8_t noExpo:1;
+  uint8_t weightMode:1;
+  uint8_t offsetMode:1;
   uint8_t srcRaw;
   int8_t  weight;
   int8_t  swtch;
   uint8_t flightModes;
-  uint8_t mltpx;//:2;           // multiplex method: 0 means +=, 1 means *=, 2 means :=
-  int8_t  carryTrim;//:3;
-  uint8_t mixWarn;//:2;         // mixer warning
-  uint8_t spare;//:1;
-  uint8_t delayUp;//:4;
-  uint8_t delayDown;//:4;
-  uint8_t speedUp;//:4;
-  uint8_t speedDown;//:4;
+  uint8_t mltpx:2;           // multiplex method: 0 means +=, 1 means *=, 2 means :=
+  int8_t  carryTrim:3;
+  uint8_t mixWarn:2;         // mixer warning
+  uint8_t spare:1;
+  uint8_t delayUp:4;
+  uint8_t delayDown:4;
+  uint8_t speedUp:4;
+  uint8_t speedDown:4;
   int8_t  curveParam;
   int8_t  offset;
-} MixData;
+} __attribute__((__packed__)) MixData;
 
 union u_gvarint_t {
   struct {
@@ -412,7 +412,7 @@ private:
   // prevent unwanted constructors, also saves program
   u_gvarint_t() {}
   u_gvarint_t(const u_gvarint_t&) {}
-};
+} __attribute__((__packed__));
 
 #define MD_WEIGHT(md) (u_gvarint_t(md->weight,md->weightMode).gvword)
 
@@ -422,7 +422,7 @@ union u_int8int16_t {
     uint8_t hi;
   } bytes_t;
   int16_t gvword;
-};
+} __attribute__((__packed__));
 
 #define MD_WEIGHT_TO_UNION(md, var) var.bytes_t.lo=md->weight; var.bytes_t.hi=md->weightMode?255:0
 #define MD_UNION_TO_WEIGHT(var, md) md->weight=var.bytes_t.lo; if (var.gvword<0) md->weightMode=1; else md->weightMode=0
@@ -460,18 +460,18 @@ typedef uint8_t ls_telemetry_value_t;
 
 typedef struct { // Logical Switches data
   int8_t  v1; //input
-  int16_t  v2;//:11; //offset
-  uint16_t func;//:5;
+  int16_t  v2:11; //offset
+  uint16_t func:5;
   int8_t andsw; // TODO : Better repartition tdtele
-} LogicalSwitchData;
+} __attribute__((__packed__)) LogicalSwitchData;
 
 
 typedef struct {
   uint8_t   ratio;              // 0.0 means not used, 0.1V steps EG. 6.6 Volts = 66. 25.1V = 251, etc.
-  int16_t   offset;//:10;
-  uint16_t  type;//:4;             // channel unit (0=volts, ...)
-  uint8_t   multiplier;//:2;       // 0=no multiplier, 1=*2 multiplier //tdtele offset at 10 bits ?????
-} TelemetryChannelData;
+  int16_t   offset:10;
+  uint16_t  type:4;             // channel unit (0=volts, ...)
+  uint8_t   multiplier:2;       // 0=no multiplier, 1=*2 multiplier //tdtele offset at 10 bits ?????
+} __attribute__((__packed__)) TelemetryChannelData;
 
 
 enum TelemetrySource {
@@ -558,13 +558,13 @@ typedef struct {
   source_t source;
   ls_telemetry_value_t barMin;           // minimum for bar display
   ls_telemetry_value_t barMax;           // ditto for max display (would usually = ratio)
-} FrSkyBarData;
+} __attribute__((__packed__)) FrSkyBarData;
 
 #define NUM_LINE_ITEMS 2
 
 typedef struct {
   source_t sources[NUM_LINE_ITEMS];
-} FrSkyLineData;
+} __attribute__((__packed__)) FrSkyLineData;
 
 
 typedef union {
@@ -601,20 +601,21 @@ enum FrskyVoltsSource {
 #define IS_BARS_SCREEN(screenIndex) (g_model.telemetry.screensType & (1<<(screenIndex)))
 typedef struct {
   TelemetryChannelData channels[MAX_FRSKY_A_CHANNELS];
-  uint8_t usrProto;//:4; // Protocol in FrSky user data, 0=None, 1=HUB, 2=WS HowHigh, 3=S.port
-  uint8_t blades;//:2;   // How many blades for RPMs, 0=2 blades
-  uint8_t screensType;//:2;
-  uint8_t voltsSource;//:2;
-  int8_t  rssiAlarm;//:6;
-  int8_t  varioMin;//:4;
-  int8_t  varioMax;//:4;
+  uint8_t usrProto:4;   // Protocol in FrSky user data, 0=None, 1=HUB, 2=WS HowHigh, 3=S.port
+  uint8_t blades:2;     // How many blades for RPMs, 0=2 blades
+  uint8_t screensType:2;
+  uint8_t voltsSource:2;
+  int8_t  rssiAlarm:6;
+  int8_t  varioMin:4;
+  int8_t  varioMax:4;
   telemetryScreenData screens[MAX_TELEMETRY_SCREENS];
-  uint8_t varioSource;//:3;
-  int8_t  varioCenterMin;//:5;
-  uint8_t currentSource;//:3;
-  int8_t  varioCenterMax;//:5;
+  uint8_t varioSource:3;
+  int8_t  varioCenterMin:5;
+  uint8_t currentSource:3;
+  int8_t  varioCenterMax:5;
   int8_t  fasOffset;
-} FrSkyData;
+} __attribute__((__packed__)) FrSkyData;
+
 #define MIN_BLADES 0 // 2 blades
 #define MAX_BLADES 3 // 5 blades
 
@@ -628,13 +629,13 @@ enum SwashType {
 };
 
 typedef struct {
-  uint8_t   invertELE;//:1;
-  uint8_t   invertAIL;//:1;
-  uint8_t   invertCOL;//:1;
-  uint8_t   type;//:5;
+  uint8_t   invertELE:1;
+  uint8_t   invertAIL:1;
+  uint8_t   invertCOL:1;
+  uint8_t   type:5;
   uint8_t   collectiveSource;
   uint8_t   value;
-} SwashRingData;
+} __attribute__((__packed__)) SwashRingData;
 
 #define TRIM_EXTENDED_MAX 500
 #define TRIM_EXTENDED_MIN (-TRIM_EXTENDED_MAX)
@@ -645,18 +646,19 @@ typedef struct {
 
 #define NUM_ROTARY_ENCODERS 2
 #define ROTARY_ENCODER_ARRAY int16_t rotaryEncoders[2];
-#define TRIMS_ARRAY       int16_t trim[4]
+#define trim_t          int16_t
+#define TRIMS_ARRAY       trim_t trim[4]
 #define TRIMS_ARRAY_SIZE  8
 
 typedef struct {
-  int16_t trim[4];//TRIMS_ARRAY;
-  int8_t swtch;       // swtch of phase[0] is not used
+  int16_t trim[4];            //TRIMS_ARRAY;
+  int8_t swtch;               // swtch of phase[0] is not used
   char name[LEN_FLIGHT_MODE_NAME];
-  uint8_t fadeIn;//:4;
-  uint8_t fadeOut;//:4;
-  int16_t rotaryEncoders[2];//ROTARY_ENCODER_ARRAY;
-  int8_t gvars[MAX_GVARS];//PHASE_GVARS_DATA;
-} FlightModeData;
+  uint8_t fadeIn:4;
+  uint8_t fadeOut:4;
+  int16_t rotaryEncoders[2];  //ROTARY_ENCODER_ARRAY;
+  int8_t gvars[MAX_GVARS];    //PHASE_GVARS_DATA;
+} __attribute__((__packed__)) FlightModeData;
 
 enum SwitchSources {
   SWSRC_NONE = 0,
@@ -828,14 +830,14 @@ enum TimerModes {
 };
 
 typedef struct {
-  int8_t   mode;            // timer trigger source -> off, abs, stk, stk%, sw/!sw, !m_sw/!m_sw
+  int8_t   mode;              // timer trigger source -> off, abs, stk, stk%, sw/!sw, !m_sw/!m_sw
   uint16_t start;
-  uint8_t  countdownBeep;//:2;
-  uint8_t  minuteBeep;//:1;
-  uint8_t  persistent;//:2;
-  uint8_t  spare;//:3;
+  uint8_t  countdownBeep:2;
+  uint8_t  minuteBeep:1;
+  uint8_t  persistent:2;
+  uint8_t  spare:3;
   uint16_t value;
-} TimerData;
+} __attribute__((__packed__)) TimerData;
 
 #define IS_MANUAL_RESET_TIMER(idx) (g_model.timers[idx].persistent == 2)
 
@@ -916,25 +918,23 @@ typedef struct {
 	uint8_t   extendedLimits:1;
 	uint8_t   extendedTrims:1;
 	uint8_t   unused:1;             // was throttleReversed
-	uint16_t beepANACenter;
+	uint16_t  beepANACenter;
 	MixData   mixData[MAX_MIXERS];
 	LimitData limitData[NUM_CHNOUT];
 	ExpoData  expoData[MAX_EXPOS];
-	int8_t  curves[MAX_CURVES];
+	int8_t    curves[MAX_CURVES];
 	int8_t    points[NUM_POINTS];
-	LogicalSwitchData logicalSw[NUM_LOGICAL_SWITCH];
-	CustomFunctionData customFn[NUM_CFN];
-	FlightModeData flightModeData[MAX_FLIGHT_MODES];
-	MODEL_GVARS_NAME // gvars name
-	uint8_t thrTraceSrc:5;
-	uint8_t thrSwitch:3;
-	int8_t  switchWarningState;
-	int8_t switchWarningEnable;
-	SwashRingData swashR;          // Heli data
-	uint8_t UnusedModel; // Use later .. todo
-	FrSkyData telemetry;
-	//XanyEepSt_t Xany[NUM_MAX_X_ANY]; // NUM_X_ANY x sizeof(XanyEepSt_t) bytes
-
+	LogicalSwitchData   logicalSw[NUM_LOGICAL_SWITCH];
+	CustomFunctionData  customFn[NUM_CFN];
+	FlightModeData      flightModeData[MAX_FLIGHT_MODES];
+	global_gvar_t gvars[MAX_GVARS]; // gvars name
+	uint8_t       thrTraceSrc:5;
+	uint8_t       thrSwitch:3;
+	int8_t        switchWarningState;
+	int8_t        switchWarningEnable;
+	SwashRingData swashR;           // Heli data
+	uint8_t       UnusedModel;            // Use later .. todo
+	FrSkyData     telemetry;
 } __attribute__((__packed__)) ModelData;
 
 extern EEGeneral g_eeGeneral;
