@@ -1012,7 +1012,7 @@ uint16_t s_cnt_samples_thr_10s;
 uint16_t s_sum_samples_thr_10s;
 #endif
 
-/*FORCEINLINE*/ void evalTrims()
+void evalTrims()
 {
 	uint8_t phase = mixerCurrentFlightMode;
 	for (uint8_t i=0; i<NUM_STICKS; i++) 
@@ -1544,10 +1544,10 @@ uint16_t getTmr128uS()
 	}
 }
 
-uint16_t getTmr64uS()
-{
-	return getTmr128uS() * 2;
-}
+//uint16_t getTmr64uS()
+//{
+	//return getTmr128uS() * 2;
+//}
 
 ISR(TIMER0_OVF_vect, ISR_NOBLOCK)	//continuous timer 32.64ms (6MHz/1024)
 {

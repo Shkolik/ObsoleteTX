@@ -18,7 +18,7 @@ volatile GETSWITCH_RECURSIVE_TYPE s_last_switch_value = 0;
 typedef struct {
 	uint8_t state;
 	uint8_t last;
-} ls_sticky_struct;
+} __attribute__((__packed__)) ls_sticky_struct;
 
 uint8_t getLogicalSwitch(uint8_t idx)
 {

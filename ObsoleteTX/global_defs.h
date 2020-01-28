@@ -316,7 +316,7 @@ typedef struct {
 	uint8_t activeMix:1;
 	uint8_t activeExpo:1;
 	int16_t hold:12;       // 12bits used -RESX to RESX
-} MixVal;
+} __attribute__((__packed__)) MixVal;
 
 struct t_inactivity{
 	uint16_t counter;
@@ -344,8 +344,8 @@ typedef struct {
 #define BOOL3USED PIN2_bm
 
 struct RfOptionSettingsvarstruct {
-	uint8_t         rfProtoNeed;//:4;     // See usage in "PROTO_NEED_XX" Def
-	uint8_t         rfSubTypeMax;//:4;       //16 max
+	uint8_t         rfProtoNeed:4;     // See usage in "PROTO_NEED_XX" Def
+	uint8_t         rfSubTypeMax:4;       //16 max
 	int8_t          rfOptionValue1Min;
 	int8_t          rfOptionValue1Max;
 	int8_t          rfOptionValue2Min;
@@ -354,8 +354,8 @@ struct RfOptionSettingsvarstruct {
 } ;
 
 struct RfOptionSettingsstruct {
-	uint8_t         rfProtoNeed;//:4;     // See usage in "PROTO_NEED_XX" Def
-	uint8_t         rfSubTypeMax;//:4;       //16 max
+	uint8_t         rfProtoNeed:4;     // See usage in "PROTO_NEED_XX" Def
+	uint8_t         rfSubTypeMax:4;       //16 max
 	const pm_char*  rfSubTypeNames;
 	int8_t          rfOptionValue1Min;
 	int8_t          rfOptionValue1Max;
@@ -363,13 +363,13 @@ struct RfOptionSettingsstruct {
 	int8_t          rfOptionValue2Min;
 	int8_t          rfOptionValue2Max;
 	const pm_char*  rfOptionValue2Name;
-	int8_t          rfOptionValue3Max;//:5;  //32 max -16 is min
+	int8_t          rfOptionValue3Max:5;  //32 max -16 is min
 	const pm_char*  rfOptionValue3Name;
-	uint8_t         rfOptionBool1Used;//:1;
+	uint8_t         rfOptionBool1Used:1;
 	const pm_char*  rfOptionBool1Name;
-	uint8_t         rfOptionBool2Used;//:1;
+	uint8_t         rfOptionBool2Used:1;
 	const pm_char*  rfOptionBool2Name;
-	uint8_t         rfOptionBool3Used;//:1;
+	uint8_t         rfOptionBool3Used:1;
 	const pm_char*  rfOptionBool3Name;
 } ;
 
@@ -378,7 +378,7 @@ typedef struct {
 	const pm_char *subTypeString;
 	uint8_t maxSubtype;
 	const char *optionsstr;
-} mm_protocol_definition;
+} __attribute__((__packed__)) mm_protocol_definition;
 
 // Reusable byte array to save having multiple buffers
 #define SD_SCREEN_FILE_LENGTH (26)

@@ -17,7 +17,7 @@ struct DirEnt { // File header
 	blkid_t  startBlk;
 	uint16_t size:12;
 	uint16_t typ:4;
-};
+} __attribute__((__packed__));
 
 #define EEFS_EXTRA_FIELDS
 
@@ -28,7 +28,7 @@ struct EeFs {
 	uint8_t  bs;
 	EEFS_EXTRA_FIELDS
 	DirEnt files[MAXFILES];
-};
+} __attribute__((__packed__));
 
 
 

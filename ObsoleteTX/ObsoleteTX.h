@@ -279,9 +279,15 @@ extern uint8_t rotEncBDebounce;
 #endif
 
 #include "misclib.h"
+
+extern volatile uint8_t g_tmr128uS;
+extern volatile uint16_t g_tmr10ms;
+extern uint16_t Bind_tmr10ms;
+
 extern uint16_t getTmr10ms();
-extern uint16_t getTmr64uS();
+//uint16_t getTmr64uS();
 extern uint16_t getTmr128uS();
+#define getTmr64uS() getTmr128uS()*2
 
 //Return the current 10 ms tick counter
 #define GET_10MS_TICK()					getTmr10ms() 
@@ -308,9 +314,6 @@ void rtcInit();
 void rtcSetTime(struct tm * t);
 uint8_t rtcReadTemp(int16_t * temp);
 
-extern volatile uint8_t g_tmr128uS;
-extern volatile uint16_t g_tmr10ms;
-extern uint16_t Bind_tmr10ms;
 
 
 

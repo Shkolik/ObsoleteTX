@@ -131,7 +131,7 @@ struct TelemetrySerialData {
 	/* end */
 
 	int16_t  dTE;
-};
+} __attribute__((__packed__));
 
 enum TelemAnas {
 	TELEM_ANA_A1,

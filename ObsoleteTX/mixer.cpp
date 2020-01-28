@@ -654,13 +654,13 @@ void evalFlightModeMixes(uint8_t mode, uint8_t tick10ms)
               *ptr >>= 6;  // this is quite tricky, reduces the value a lot but should be still over 100% and reduces flash need
             } */
 
-      PACK( union u_int16int32_t {
+      union u_int16int32_t {
         struct {
           int16_t lo;
           int16_t hi;
         } words_t;
         int32_t dword;
-      });
+      } __attribute__((__packed__));
 
       u_int16int32_t tmp;
       tmp.dword=*ptr;
