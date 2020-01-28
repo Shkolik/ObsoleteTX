@@ -44,57 +44,57 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
       <AvrGccCpp>
-  <avrgcc.common.Device>-mmcu=atmega128a -B "%24(PackRepoDir)\Atmel\ATmega_DFP\1.4.346\gcc\dev\atmega128a"</avrgcc.common.Device>
-  <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
-  <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
-  <avrgcc.common.outputfiles.lss>False</avrgcc.common.outputfiles.lss>
-  <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
-  <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
-  <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
-  <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
-  <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
-  <avrgcc.compiler.symbols.DefSymbols>
-    <ListValues>
-      <Value>NDEBUG</Value>
-    </ListValues>
-  </avrgcc.compiler.symbols.DefSymbols>
-  <avrgcc.compiler.directories.IncludePaths>
-    <ListValues>
-      <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\1.4.346\include</Value>
-    </ListValues>
-  </avrgcc.compiler.directories.IncludePaths>
-  <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
-  <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
-  <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
-  <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
-  <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
-  <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
-  <avrgcccpp.compiler.symbols.DefSymbols>
-    <ListValues>
-      <Value>NDEBUG</Value>
-    </ListValues>
-  </avrgcccpp.compiler.symbols.DefSymbols>
-  <avrgcccpp.compiler.directories.IncludePaths>
-    <ListValues>
-      <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\1.4.346\include</Value>
-    </ListValues>
-  </avrgcccpp.compiler.directories.IncludePaths>
-  <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
-  <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
-  <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
-  <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
-  <avrgcccpp.linker.general.NoSharedLibraries>True</avrgcccpp.linker.general.NoSharedLibraries>
-  <avrgcccpp.linker.libraries.Libraries>
-    <ListValues>
-      <Value>libm</Value>
-    </ListValues>
-  </avrgcccpp.linker.libraries.Libraries>
-  <avrgcccpp.assembler.general.IncludePaths>
-    <ListValues>
-      <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\1.4.346\include</Value>
-    </ListValues>
-  </avrgcccpp.assembler.general.IncludePaths>
-</AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atmega128a -B "%24(PackRepoDir)\Atmel\ATmega_DFP\1.4.346\gcc\dev\atmega128a"</avrgcc.common.Device>
+        <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>False</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>False</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\1.4.346\include</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\1.4.346\include</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.linker.general.NoSharedLibraries>True</avrgcccpp.linker.general.NoSharedLibraries>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.assembler.general.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\1.4.346\include</Value>
+          </ListValues>
+        </avrgcccpp.assembler.general.IncludePaths>
+      </AvrGccCpp>
     </ToolchainSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -168,6 +168,30 @@
     <Compile Include="boards\dx6i\dx6i.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="boards\lcd\lcd_default_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="boards\lcd\lcd_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="boards\lcd\lcd_ks108_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="boards\lcd\lcd_NT7538_SPI_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="boards\lcd\lcd_sh1106_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="boards\lcd\lcd_ssd1306_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="boards\lcd\lcd_st7920_driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="boards\lcd\lcd_st7920_mcp23017driver.cpp">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="buzzer.h">
       <SubType>compile</SubType>
     </Compile>
@@ -189,6 +213,9 @@
     <Compile Include="eeprom_rlc.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="fonts.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="functions.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -196,6 +223,120 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="global_defs.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\fonts.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\gui.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\lcd.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\lcd.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menus.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menus.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_general.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_general.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_general_calib.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_general_diaganas.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_general_diagkeys.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_general_setup.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_general_trainer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_general_version.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_curves.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_custom_functions.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_flightmodes.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_heli.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_inputs_mixes.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_limits.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_logical_switches.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_select.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_setup.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_telemetry.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\menu_model_templates.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\navigation.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\navigation.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\popups.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\popups.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\splash.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\view_main.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\view_statistics.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\view_telemetry.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\view_text.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\widgets.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="gui\widgets.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="keys.cpp">
@@ -237,12 +378,6 @@
     <Compile Include="pgmtypes.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Print.cpp">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Print.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="protocol\interface.h">
       <SubType>compile</SubType>
     </Compile>
@@ -279,9 +414,6 @@
     <Compile Include="pulses\pulses_avr.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Stream.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="switches.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -292,6 +424,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="telemetry_driver.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="templates.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="templates.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="timers.cpp">
@@ -319,8 +457,184 @@
   <ItemGroup>
     <Folder Include="boards" />
     <Folder Include="boards\dx6i" />
+    <Folder Include="boards\lcd" />
+    <Folder Include="fonts\sqt5" />
+    <Folder Include="fonts\std" />
+    <Folder Include="gui" />
+    <Folder Include="fonts" />
+    <Folder Include="bitmaps" />
     <Folder Include="protocol" />
     <Folder Include="pulses" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bitmaps\asterisk.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="bitmaps\asterisk.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="bitmaps\openevo.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="bitmaps\openevo.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="bitmaps\splash.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="bitmaps\splash.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="bitmaps\sticks.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="bitmaps\sticks.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_05x07_avr.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_05x07_avr.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_05x07_B_compressed.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_05x07_B_compressed.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_10x14_compressed.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_10x14_compressed.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_cz_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_cz_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_de_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_de_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_es_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_es_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_fi_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_fi_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_fr_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_fr_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_it_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_it_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_pl_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_pl_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_pt_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_pt_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_se_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\sqt5\font_se_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_05x07_avr.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_05x07_avr.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_05x07_B_compressed.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_05x07_B_compressed.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_10x14_compressed.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_10x14_compressed.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_cz_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_cz_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_de_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_de_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_es_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_es_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_fi_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_fi_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_fr_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_fr_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_it_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_it_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_pl_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_pl_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_pt_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_pt_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_se_05x07.lbm">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="fonts\std\font_se_05x07.lbmi">
+      <SubType>compile</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>
