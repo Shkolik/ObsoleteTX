@@ -119,12 +119,6 @@
 #define CASE_SPLASH(x)
 #endif
 
-#if defined(FRSKY)
-#define CASE_FRSKY(x) x,
-#else
-#define CASE_FRSKY(x)
-#endif
-
 #if defined(SDCARD)
 #define CASE_SDCARD(x) x,
 #else
@@ -132,35 +126,10 @@
 #define logDelay 0
 #endif
 
-#if defined(BLUETOOTH)
-#define CASE_BLUETOOTH(x) x,
-#include "bluetooth.h"
-#else
-#define CASE_BLUETOOTH(x)
-#endif
-
 #if defined(HELI)
 #define CASE_HELI(x) x,
 #else
 #define CASE_HELI(x)
-#endif
-
-#if defined(TEMPLATES)
-#define CASE_TEMPLATES(x) x,
-#else
-#define CASE_TEMPLATES(x)
-#endif
-
-#if defined(FLIGHT_MODES)
-#define CASE_FLIGHT_MODES(x) x,
-#else
-#define CASE_FLIGHT_MODES(x)
-#endif
-
-#if defined(CURVES)
-#define CASE_CURVES(x) x,
-#else
-#define CASE_CURVES(x)
 #endif
 
 #if defined(GVARS)
@@ -356,7 +325,7 @@ extern uint8_t StickScrollTimer;
 #include "eeprom_rlc.h"
 
 //  Dimension of Arrays
-#define DIM(a) ((sizeof a) / (sizeof *a))
+#define DIM(array) ((sizeof(array)/sizeof(0[array])) / ((size_t)(!(sizeof(array) % sizeof(0[array])))))//((sizeof a) / (sizeof *a))
 
 #if defined(TEMPLATES)
 #include "templates.h"

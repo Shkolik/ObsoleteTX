@@ -9,6 +9,8 @@
 #ifndef TRANSLATIONS_H_
 #define TRANSLATIONS_H_
 
+#include "_Config.h"
+
 #define CENTER
 
 //////////ENGLISH TRANSLATION//////////////////////////
@@ -884,7 +886,7 @@ extern const pm_char STR_OPEN9X[];
 #define STR_VDISPLAYTRIMS       (STR_OPEN9X + OFS_VDISPLAYTRIMS)
 #define STR_RETA123             (STR_OPEN9X + OFS_RETA123)
 #if defined(MULTIMODULE)
-#define STR_MULTIPROTOCOLS    (STR_OPEN9X + OFS_MULTIPROTOCOLS)
+#define STR_MULTIPROTOCOLS		(STR_OPEN9X + OFS_MULTIPROTOCOLS)
 #endif
 #define STR_POSNEG              (STR_OPEN9X + OFS_POSNEG)
 #define STR_VBLMODE             (STR_OPEN9X + OFS_VBLMODE)
@@ -900,10 +902,9 @@ extern const pm_char STR_OPEN9X[];
 #define STR_FUNCSOUNDS          (STR_OPEN9X + OFS_FUNCSOUNDS)
 
 #define STR_VTELEMCHNS          (STR_OPEN9X + OFS_VTELEMCHNS)
-
+#define STR_VTELEMUNIT			(STR_OPEN9X + OFS_VTELEMUNIT)
 
 #if defined(FRSKY)
-#define STR_VTELEMUNIT      (STR_OPEN9X + OFS_VTELEMUNIT)
 #define STR_VALARM              (STR_OPEN9X + OFS_VALARM)
 #define STR_VALARMFN            (STR_OPEN9X + OFS_VALARMFN)
 #define STR_VTELPROTO           (STR_OPEN9X + OFS_VTELPROTO)
@@ -1177,8 +1178,10 @@ extern const pm_char STR_SAVEMODEL[];
 
 extern const pm_char STR_BATT_CALIB[];
 
-#if defined(FRSKY)
 extern const pm_char STR_VOLTAGE[];
+
+#if defined(FRSKY)
+
 extern const pm_char STR_CURRENT[];
 extern const pm_char STR_MODELISON[];
 #endif
@@ -1349,8 +1352,5 @@ extern const pm_char STR_FREESRAM[];
 #if defined(RTCLOCK)
 extern const pm_char STR_TXTEMP[];
 #endif
-
-
-
 
 #endif /* TRANSLATIONS_H_ */

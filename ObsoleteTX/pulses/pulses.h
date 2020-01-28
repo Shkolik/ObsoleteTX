@@ -12,9 +12,9 @@
 
 #define SCHEDULE_MIXER_END_IN_US(delay_us) nextMixerEndTime = getTmr64uS() + US_TO_64US_TICK(delay_us) - US_TO_64US_TICK(400) // 400 uS
 
-#define IS_WAIT_PUPIL_STATE()       ((g_model.rfProtocol == (PROTOCOL_PPM16)) || (g_model.rfProtocol == (PROTOCOL_PPMSIM)))
+#define IS_WAIT_PUPIL_STATE()				(0)
 
-#define IS_PPM_PROTOCOL(protocol)          (protocol<=PROTOCOL_PPMSIM)
+#define IS_PPM_PROTOCOL(protocol)          (protocol==PROTOCOL_PPM)
 
 #if defined(DSM2_SERIAL) // Todo check in needed in per10ms
 #define IS_DSM2_SERIAL_PROTOCOL(protocol)  (protocol==PROTOCOL_DSM_SERIAL)
@@ -35,7 +35,7 @@
 #if defined(DSM2_SERIAL)
 #define LASTPROTOMENU1 PROTOCOL_DSM_SERIAL+1
 #else
-#define LASTPROTOMENU1 PROTOCOL_PPMSIM+1
+#define LASTPROTOMENU1 PROTOCOL_PPM+1
 #endif
 #endif
 #define IS_SPIMODULES_PROTOCOL(protocol)  (protocol>=LASTPROTOMENU1)

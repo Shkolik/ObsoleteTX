@@ -8,6 +8,7 @@
 
 #include "ObsoleteTX.h"
 #include "timers.h"
+#include "buzzer.h"
 
 EEGeneral  g_eeGeneral;
 ModelData  g_model;

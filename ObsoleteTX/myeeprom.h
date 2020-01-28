@@ -71,7 +71,9 @@
 #define NUM_CAL_PPM          4
 
 
-#define LEN_MODEL_NAME       10
+#ifndef LEN_MODEL_NAME
+#define LEN_MODEL_NAME		10
+#endif
 #define LEN_FLIGHT_MODE_NAME 6
 #define MAX_CURVES           8
 #define NUM_POINTS           (112-MAX_CURVES)

@@ -8,8 +8,8 @@
 
 #include "../ObsoleteTX.h"
 #include "menu_model.h"
-
-
+#include "../translations.h"
+#if defined(HELI)
 enum menuModelHeliItems {
 	ITEM_HELI_SWASHTYPE,
 	ITEM_HELI_COLLECTIVE,
@@ -60,3 +60,4 @@ void menuModelHeli(uint8_t event)
 		}
 	}
 }
+#endif

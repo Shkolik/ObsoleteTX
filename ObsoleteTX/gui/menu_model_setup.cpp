@@ -8,7 +8,7 @@
 
 #include "../ObsoleteTX.h"
 #include "menu_model.h"
-
+#include "../protocol/misc.h"
 #define MEMPROTO      shared_u8
 #define PROTO_IS_SYNC (MEMPROTO == protocol)
 
@@ -192,7 +192,7 @@ void menuModelSetup(uint8_t event)
 
 			case ITEM_MODEL_SWITCHES_WARNING: {
 				lcdDrawTextLeft(y, STR_SWITCHWARNING);
-				swarnstate_t states = g_model.switchWarningState;
+				int8_t states = g_model.switchWarningState;
 				char c;
 				if (attr) {
 					s_editMode = 0;
@@ -251,13 +251,13 @@ void menuModelSetup(uint8_t event)
 			for (uint8_t i=0; i<NUM_STICKS+NUM_POTS+NUM_ROTARY_ENCODERS; i++) {
 				// TODO flash saving, \001 not needed in STR_RETA123
 				coord_t x = MODEL_SETUP_2ND_COLUMN+i*FW;
-				lcdDrawTextAtIndex(x, y, STR_RETA123, i, ((menuHorizontalPosition==i) && attr) ? BLINK|INVERS : (((g_model.beepANACenter & ((BeepANACenter)1<<i)) || (attr && CURSOR_ON_LINE())) ? INVERS : 0 ) );
+				lcdDrawTextAtIndex(x, y, STR_RETA123, i, ((menuHorizontalPosition==i) && attr) ? BLINK|INVERS : (((g_model.beepANACenter & ((uint16_t)1<<i)) || (attr && CURSOR_ON_LINE())) ? INVERS : 0 ) );
 			}
 			if (attr && CURSOR_ON_CELL) {
 				if (event==EVT_KEY_BREAK(KEY_ENTER) || p1valdiff) {
 					if (READ_ONLY_UNLOCKED()) {
 						s_editMode = 0;
-						g_model.beepANACenter ^= ((BeepANACenter)1<<menuHorizontalPosition);
+						g_model.beepANACenter ^= ((uint16_t)1<<menuHorizontalPosition);
 						eeDirty(EE_MODEL);
 					}
 				}
@@ -297,7 +297,7 @@ void menuModelSetup(uint8_t event)
 					}
 					break;
 					case 1:
-					CHECK_INCDEC_MODELVAR_ZERO_STARTPULSES_IF_CHANGE(event, g_model.PPMNCH, protocol!=PROTOCOL_PPM16 ? 6 : 2); //limit 8 channels for PPMSim and PPM16
+					CHECK_INCDEC_MODELVAR_ZERO_STARTPULSES_IF_CHANGE(event, g_model.PPMNCH, /*protocol!=PROTOCOL_PPM16 ? 6 : 2*/ 6); //limit 8 channels for PPMSim and PPM16
 					g_model.PPMFRAMELENGTH = (g_model.PPMNCH-2) * 8;
 					break;
 				}

@@ -9,6 +9,8 @@
 
 #include "../ObsoleteTX.h"
 
+#ifdef TELEMETRY
+
 #define STATUS_BAR_Y     (7*FH+1)
 #define TELEM_2ND_COLUMN (10*FW)
 
@@ -365,3 +367,5 @@ void displayGpsCoord(uint8_t y, char direction, uint16_t bp, uint16_t ap)
 			putEvent(event == EVT_KEY_FIRST(KEY_UP) ? event : EVT_KEY_FIRST(KEY_DOWN));
 		}
 	}
+
+#endif

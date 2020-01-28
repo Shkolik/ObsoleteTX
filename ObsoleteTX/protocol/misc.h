@@ -66,15 +66,15 @@
 #define bind_counter       pulses2MHz.pword[PULSES_WORD_OFFSET_VAR+1]
 
 
-void PROTO_Start_Callback( uint16_t (*cb)());
-void PROTO_Stop_Callback();
+extern void PROTO_Start_Callback( uint16_t (*cb)());
+extern void PROTO_Stop_Callback();
 uint32_t CLOCK_getms();
 void CLOCK_delayms(uint32_t delay_ms);
-void PROTOCOL_SetBindState(uint16_t t10ms);
+extern void PROTOCOL_SetBindState(uint16_t t10ms);
 #if defined(SPIMODULES)
 extern uint16_t RFPowerOut;
-void loadrfidaddr();
-void loadrfidaddr_rxnum(uint8_t addrnum);
+extern void loadrfidaddr();
+extern void loadrfidaddr_rxnum(uint8_t addrnum);
 #endif
 
 

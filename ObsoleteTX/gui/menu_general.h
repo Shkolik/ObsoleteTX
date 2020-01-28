@@ -16,20 +16,21 @@
 #include "menus.h"
 #include "gui.h"
 
-void menuGeneralSetup(uint8_t event);
-void menuGeneralSdManager(uint8_t event);
-void menuGeneralBluetooth(uint8_t event);
-void menuGeneralTrainer(uint8_t event);
-void menuGeneralVersion(uint8_t event);
-void menuGeneralDiagKeys(uint8_t event);
-void menuGeneralDiagAna(uint8_t event);
-void menuGeneralCalib(uint8_t event);
+extern void menuGeneralSetup(uint8_t event);
+extern void menuGeneralSdManager(uint8_t event);
+extern void menuGeneralBluetooth(uint8_t event);
+extern void menuGeneralTrainer(uint8_t event);
+extern void menuGeneralVersion(uint8_t event);
+extern void menuGeneralDiagKeys(uint8_t event);
+extern void menuGeneralDiagAna(uint8_t event);
+extern void menuGeneralCalib(uint8_t event);
 
 
 enum EnumTabDiag {
 	e_Setup,
-	CASE_SDCARD(e_Sd)
-	CASE_BLUETOOTH(e_Bluetooth)
+	#ifdef SDCARD
+	e_Sd,
+	#endif
 	e_Trainer,
 	e_Vers,
 	e_Keys,
@@ -37,10 +38,13 @@ enum EnumTabDiag {
 	e_Calib
 };
 
+extern const pm_uchar zz_sticks[];
+
 const MenuFuncP_PROGMEM menuTabGeneral[] PROGMEM = {
 	menuGeneralSetup,
-	CASE_SDCARD(menuGeneralSdManager)
-	CASE_BLUETOOTH(menuGeneralBluetooth)
+	#ifdef SDCARD
+	menuGeneralSdManager,
+	#endif
 	menuGeneralTrainer,
 	menuGeneralVersion,
 	menuGeneralDiagKeys,
@@ -49,13 +53,10 @@ const MenuFuncP_PROGMEM menuTabGeneral[] PROGMEM = {
 };
 
 const pm_uchar zz_sticks[] PROGMEM = {
-	#if defined (LCDROT180)
+	#ifdef LCDROT180
 	#include "../bitmaps/sticks.lbmi"
 	#else
 	#include "../bitmaps/sticks.lbm"
 	#endif
 };
-
-
-
 #endif /* MENU_GENERAL_H_ */

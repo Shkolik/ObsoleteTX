@@ -9,6 +9,7 @@
 #ifndef MENU_MODEL_H_
 #define MENU_MODEL_H_
 
+#include "menus.h"
 
 void menuModelSelect(uint8_t event);
 void menuModelSetup(uint8_t event);
@@ -57,34 +58,51 @@ extern int8_t s_copyTgtOfs;
 enum EnumTabModel {
 	e_ModelSelect,
 	e_ModelSetup,
-	CASE_HELI(e_Heli)
-	CASE_FLIGHT_MODES(e_FlightModesAll)
-	CASE_X_ANY(e_Xany)
+	#ifdef HELI
+	e_Heli,
+	#endif
+	#ifdef FLIGHT_MODES
+	e_FlightModesAll,
+	#endif
 	e_InputsAll,
 	e_MixAll,
 	e_Limits,
-	CASE_CURVES(e_CurvesAll)
+	#ifdef CURVES
+	e_CurvesAll,
+	#endif
 	e_LogicalSwitches,
 	e_CustomFunctions,
-	CASE_FRSKY(e_Telemetry)
-	CASE_TEMPLATES(e_Templates)
+	#ifdef FRSKY
+	e_Telemetry,
+	#endif
+	#ifdef TEMPLATES
+	e_Templates
+	#endif
 };
 
 const MenuFuncP_PROGMEM menuTabModel[] PROGMEM = {
 	menuModelSelect,
 	menuModelSetup,
-	CASE_HELI(menuModelHeli)
-	CASE_FLIGHT_MODES(menuModelFlightModesAll)
-	CASE_X_ANY(menuModelXany)
+	#ifdef HELI
+	menuModelHeli,
+	#endif
+	#ifdef FLIGHT_MODES
+	menuModelFlightModesAll,
+	#endif
 	menuModelExposAll,
 	menuModelMixAll,
 	menuModelLimits,
-	CASE_CURVES(menuModelCurvesAll)
+	#ifdef CURVES
+	menuModelCurvesAll,
+	#endif
 	menuModelLogicalSwitches,
 	menuModelCustomFunctions,
-	CASE_FRSKY(menuModelTelemetry)
-	CASE_TEMPLATES(menuModelTemplates)
+	#ifdef FRSKY
+	menuModelTelemetry,
+	#endif
+	#ifdef TEMPLATES
+	menuModelTemplates,
+	#endif
 };
-
 
 #endif /* MENU_MODEL_H_ */

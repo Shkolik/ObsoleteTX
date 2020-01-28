@@ -8,7 +8,9 @@
 
 #include "../ObsoleteTX.h"
 #include "../timers.h"
+#include "../protocol/misc.h"
 #include "widgets.h"
+
 
 #define LBOX_CENTERX  (LCD_W/4 + 10)
 #define RBOX_CENTERX  (3*LCD_W/4 - 10)

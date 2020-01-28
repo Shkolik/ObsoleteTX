@@ -231,14 +231,30 @@ bool swapExpoMix(uint8_t expo, uint8_t &idx, uint8_t up)
 enum ExposFields {
 	EXPO_FIELD_WEIGHT,
 	EXPO_FIELD_EXPO,
-	CASE_CURVES(EXPO_FIELD_CURVE)
-	CASE_FLIGHT_MODES(EXPO_FIELD_FLIGHT_MODES)
+	#ifdef CURVES
+	EXPO_FIELD_CURVE,
+	#endif
+	#ifdef FLIGHT_MODES
+	EXPO_FIELD_FLIGHT_MODES,
+	#endif
 	EXPO_FIELD_SWITCH,
 	EXPO_FIELD_SIDE,
 	EXPO_FIELD_MAX
 };
 
 #define CURVE_ROWS 0
+ 
+#ifdef CURVES 
+#define CASE_CURVES(x) x, 
+#else 
+#define CASE_CURVES(x)
+#endif
+
+#ifdef FLIGHT_MODES
+#define CASE_FLIGHT_MODES(x) x,
+#else
+#define CASE_FLIGHT_MODES(x)
+#endif
 
 void menuModelExpoOne(uint8_t event)
 {

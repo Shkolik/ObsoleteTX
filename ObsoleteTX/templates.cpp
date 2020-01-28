@@ -109,6 +109,7 @@ void applyTemplate(uint8_t idx)
   //CC(STK)   -> vSTK
   //ICC(vSTK) -> STK
 #define ICC(x) icc[(x)-1]
+
   uint8_t icc[4] = {0};
   for (uint8_t i=0; i<4; i++) { //generate inverse array
     for(uint8_t j=0; j<4; j++)

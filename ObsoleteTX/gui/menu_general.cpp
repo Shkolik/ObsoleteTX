@@ -5,13 +5,23 @@
  *  Author: Andrew
  */ 
 #include "menu_general.h"
-
-
-void menuGeneralSetup(uint8_t event);
-void menuGeneralSdManager(uint8_t event);
-void menuGeneralBluetooth(uint8_t event);
-void menuGeneralTrainer(uint8_t event);
-void menuGeneralVersion(uint8_t event);
-void menuGeneralDiagKeys(uint8_t event);
-void menuGeneralDiagAna(uint8_t event);
-void menuGeneralCalib(uint8_t event);
+//
+//const MenuFuncP_PROGMEM menuTabGeneral[] PROGMEM = {
+	//menuGeneralSetup,
+	//#ifdef SDCARD
+	//menuGeneralSdManager,
+	//#endif
+	//menuGeneralTrainer,
+	//menuGeneralVersion,
+	//menuGeneralDiagKeys,
+	//menuGeneralDiagAna,
+	//menuGeneralCalib
+//};
+//
+//const pm_uchar zz_sticks[] PROGMEM = {
+	//#ifdef LCDROT180
+	//#include "../bitmaps/sticks.lbmi"
+	//#else
+	//#include "../bitmaps/sticks.lbm"
+	//#endif
+//};

@@ -1,9 +1,14 @@
 /*
- * menus.cpp
+ * menus.h
  *
- * Created: 1/27/2020 8:00:23 PM
- *  Author: Andrew
+ * Created: 1/28/2020 2:37:03 PM
+ *  Author: andrew.shkolik
  */ 
+
+
+#ifndef MENUS_H_
+#define MENUS_H_
+
 
 
 #include "../myeeprom.h"
@@ -119,13 +124,13 @@ extern int8_t s_editMode;       // global edit mode
 #define INCDEC_REP10    0x40
 #define NO_DBLKEYS      0x80
 
-// mawrow special values
+// row special values
 #define TITLE_ROW      ((uint8_t)-1)
 #define HIDDEN_ROW     ((uint8_t)-2)
 
-int16_t checkIncDec(uint8_t event, int16_t i_pval, int16_t i_min, int16_t i_max, uint8_t i_flags=0);
+extern int16_t checkIncDec(uint8_t event, int16_t i_pval, int16_t i_min, int16_t i_max, uint8_t i_flags=0);
 
-int8_t checkIncDecMovedSwitch(int8_t val);
+extern int8_t checkIncDecMovedSwitch(int8_t val);
 
 #define checkIncDecModel(event, i_val, i_min, i_max) checkIncDec(event, i_val, i_min, i_max, EE_MODEL)
 #define checkIncDecModelZero(event, i_val, i_max) checkIncDec(event, i_val, 0, i_max, EE_MODEL)
@@ -137,39 +142,29 @@ int8_t checkIncDecMovedSwitch(int8_t val);
 
 #define CHECK_INCDEC_MODELVAR_ZERO(event, var, max) var = checkIncDecModelZero(event,var,max)
 
-#define CHECK_INCDEC_MODELVAR_ZERO_STARTPULSES_IF_CHANGE(event, var, max) \
-tmp = checkIncDecModelZero(event,var,max);                              \
-if (tmp != var) { startPulses(PROTOCMD_INIT); }; var = tmp
+#define CHECK_INCDEC_MODELVAR_ZERO_STARTPULSES_IF_CHANGE(event, var, max) tmp = checkIncDecModelZero(event,var,max); if (tmp != var) { startPulses(PROTOCMD_INIT); }; var = tmp
 
-#define CHECK_INCDEC_MODELVAR_CHECK(event, var, min, max, check) \
-var = checkIncDec(event, var, min, max, EE_MODEL)
+#define CHECK_INCDEC_MODELVAR_CHECK(event, var, min, max, check) var = checkIncDec(event, var, min, max, EE_MODEL)
 
-#define CHECK_INCDEC_MODELVAR_ZERO_CHECK(event, var, max, check) \
-CHECK_INCDEC_MODELVAR_ZERO(event, var, max)
+#define CHECK_INCDEC_MODELVAR_ZERO_CHECK(event, var, max, check) CHECK_INCDEC_MODELVAR_ZERO(event, var, max)
 
 #if   defined(AUTOSWITCH)
 #define AUTOSWITCH_ENTER_LONG() (attr && event==EVT_KEY_LONG(KEY_ENTER))
-#define CHECK_INCDEC_SWITCH(event, var, min, max, flags, available) \
-var = checkIncDec(event, var, min, max, (flags)|INCDEC_SWITCH)
-#define CHECK_INCDEC_MODELSWITCH(event, var, min, max, available) \
-CHECK_INCDEC_SWITCH(event, var, min, max, EE_MODEL, available)
+#define CHECK_INCDEC_SWITCH(event, var, min, max, flags, available) var = checkIncDec(event, var, min, max, (flags)|INCDEC_SWITCH)
+#define CHECK_INCDEC_MODELSWITCH(event, var, min, max, available) CHECK_INCDEC_SWITCH(event, var, min, max, EE_MODEL, available)
 #else
 #define AUTOSWITCH_ENTER_LONG() (0)
-#define CHECK_INCDEC_SWITCH(event, var, min, max, flags, available) \
-CHECK_INCDEC_MODELVAR(event, var, min, max)
-#define CHECK_INCDEC_MODELSWITCH(event, var, min, max, available) \
-CHECK_INCDEC_MODELVAR(event, var, min, max)
+#define CHECK_INCDEC_SWITCH(event, var, min, max, flags, available) CHECK_INCDEC_MODELVAR(event, var, min, max)
+#define CHECK_INCDEC_MODELSWITCH(event, var, min, max, available) CHECK_INCDEC_MODELVAR(event, var, min, max)
 #endif
 
 #if   defined(AUTOSOURCE)
-#define CHECK_INCDEC_MODELSOURCE(event, var, min, max) \
-var = checkIncDec(event,var,min,max,EE_MODEL|INCDEC_SOURCE|NO_INCDEC_MARKS)
+#define CHECK_INCDEC_MODELSOURCE(event, var, min, max) var = checkIncDec(event,var,min,max,EE_MODEL|INCDEC_SOURCE|NO_INCDEC_MARKS)
 #else
 #define CHECK_INCDEC_MODELSOURCE CHECK_INCDEC_MODELVAR
 #endif
 
-#define CHECK_INCDEC_GENVAR(event, var, min, max) \
-var = checkIncDecGen(event, var, min, max)
+#define CHECK_INCDEC_GENVAR(event, var, min, max) var = checkIncDecGen(event, var, min, max)
 
 #define NAVIGATION_LINE_BY_LINE  0
 #define CURSOR_ON_LINE()         (0)
@@ -183,45 +178,25 @@ void title(const pm_char * s);
 
 #define MENU_TAB(...) static const pm_uint8_t mstate_tab[] PROGMEM = __VA_ARGS__
 
-#define MENU_CHECK(tab, menu, lines_count) \
-check(event, menu, tab, DIM(tab), mstate_tab, DIM(mstate_tab)-1, (lines_count)-1)
+#define MENU_CHECK(tab, menu, lines_count)  check(event, menu, tab, DIM(tab), mstate_tab, DIM(mstate_tab)-1, (lines_count)-1)
 
-#define MENU_CHECK_FLAGS(tab, menu, flags, lines_count) \
-check(event, menu, tab, DIM(tab), mstate_tab, DIM(mstate_tab)-1, (lines_count)-1, flags)
+#define MENU_CHECK_FLAGS(tab, menu, flags, lines_count) check(event, menu, tab, DIM(tab), mstate_tab, DIM(mstate_tab)-1, (lines_count)-1, flags)
 
-#define MENU(title, tab, menu, lines_count, ...) \
-MENU_TAB(__VA_ARGS__); \
-MENU_CHECK(tab, menu, lines_count); \
-TITLE(title)
+#define MENU(title, tab, menu, lines_count, ...)  MENU_TAB(__VA_ARGS__);  MENU_CHECK(tab, menu, lines_count); TITLE(title)
 
-#define MENU_FLAGS(title, tab, menu, flags, lines_count, ...) \
-MENU_TAB(__VA_ARGS__); \
-MENU_CHECK_FLAGS(tab, menu, flags, lines_count); \
-TITLE(title)
+#define MENU_FLAGS(title, tab, menu, flags, lines_count, ...) MENU_TAB(__VA_ARGS__);  MENU_CHECK_FLAGS(tab, menu, flags, lines_count);  TITLE(title)
 
-#define SIMPLE_MENU_NOTITLE(tab, menu, lines_count) \
-check_simple(event, menu, tab, DIM(tab), (lines_count)-1);
+#define SIMPLE_MENU_NOTITLE(tab, menu, lines_count)  check_simple(event, menu, tab, DIM(tab), (lines_count)-1);
 
-#define SIMPLE_MENU(title, tab, menu, lines_count) \
-SIMPLE_MENU_NOTITLE(tab, menu, lines_count); \
-TITLE(title)
+#define SIMPLE_MENU(title, tab, menu, lines_count)  SIMPLE_MENU_NOTITLE(tab, menu, lines_count);  TITLE(title)
 
-#define SUBMENU_NOTITLE(lines_count, ...) { \
-	MENU_TAB(__VA_ARGS__); \
-	check(event, 0, NULL, 0, mstate_tab, DIM(mstate_tab)-1, (lines_count)-1); \
-}
+#define SUBMENU_NOTITLE(lines_count, ...) {  MENU_TAB(__VA_ARGS__);  check(event, 0, NULL, 0, mstate_tab, DIM(mstate_tab)-1, (lines_count)-1); }
 
-#define SUBMENU(title, lines_count, ...) \
-MENU_TAB(__VA_ARGS__); \
-check(event, 0, NULL, 0, mstate_tab, DIM(mstate_tab)-1, (lines_count)-1); \
-TITLE(title)
+#define SUBMENU(title, lines_count, ...) MENU_TAB(__VA_ARGS__); check(event, 0, NULL, 0, mstate_tab, DIM(mstate_tab)-1, (lines_count)-1); TITLE(title)
 
-#define SIMPLE_SUBMENU_NOTITLE(lines_count) \
-check_submenu_simple(event, (lines_count)-1);
+#define SIMPLE_SUBMENU_NOTITLE(lines_count) check_submenu_simple(event, (lines_count)-1);
 
-#define SIMPLE_SUBMENU(title, lines_count) \
-SIMPLE_SUBMENU_NOTITLE(lines_count); \
-TITLE(title)
+#define SIMPLE_SUBMENU(title, lines_count) SIMPLE_SUBMENU_NOTITLE(lines_count); TITLE(title)
 
 typedef int8_t select_menu_value_t;
 
@@ -347,3 +322,7 @@ void DrawFunction(FnFuncP fn, uint8_t offset=0);
 
 void editSingleName(coord_t x, coord_t y, const pm_char *label, char *name, uint8_t size, uint8_t event, uint8_t active, uint8_t msk, uint8_t range);
 void editName(coord_t x, coord_t y, char *name, uint8_t size, uint8_t event, uint8_t active, uint8_t msk, uint8_t range);
+
+
+
+#endif /* MENUS_H_ */

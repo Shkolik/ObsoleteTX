@@ -17,6 +17,32 @@
 #define NOINLINE __attribute__ ((noinline))
 #define memclear(p, s) memset(p, 0, s)
 
+#ifndef LEN_MODEL_NAME
+#define LEN_MODEL_NAME 10
+#endif
+
+#ifdef GUI
+#define LCD_W         128
+#define LCD_H         64
+#define BOX_WIDTH     23
+#define coord_t       uint8_t
+#define scoord_t      int8_t
+#define CENTER
+#define CENTER_OFS    0
+#define CONTRAST_MIN  10
+#define CONTRAST_MAX  45
+
+#define lcdint_t      int16_t
+#define lcduint_t     uint16_t
+
+#define FW              6
+#define FWNUM           5
+#define FH              8
+
+#define LCD_LINES       (LCD_H/FH)
+#define LCD_COLS        (LCD_W/FW)
+#endif 
+
 //if not defined in config
 #ifndef NUM_STICKS
 #define NUM_STICKS           4
@@ -398,20 +424,6 @@ union ReusableBuffer {
 	} modelsel;
 	#endif
 
-	#if defined(BLUETOOTH)
-	struct {
-		uint8_t firstMenuRun;
-		uint8_t eeWriteFlag;
-		char name_zchar[LEN_BT_NAME];      // FW format
-		char name_str[LEN_BT_NAME+1];      // ASCII format
-		char pin_zchar[4];                 // FW format
-		char pin_str[5];                   // ASCII format
-		//char peer_name_zchar[LEN_BT_NAME]; // FW format
-		char peer_name_str[LEN_BT_NAME+1]; // ASCII format
-		BtScannSt_t scann;
-	} bluetooth;
-	#endif
-
 	// 43 bytes
 	struct {
 		int16_t midVals[NUM_STICKS+NUM_POTS];
@@ -437,7 +449,7 @@ union ReusableBuffer {
 	#endif
 };
 
-#undef min // Avoid double declaration in wingw
+#undef min // Avoid double declaration
 #undef max
 template<class t> FORCEINLINE t min(t a, t b)
 {

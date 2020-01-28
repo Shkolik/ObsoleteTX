@@ -43,7 +43,7 @@ void menuCustomFunctions(uint8_t event, CustomFunctionData * functions, CustomFu
 			uint8_t active = (attr && (s_editMode>0 || p1valdiff));
 			switch (j) {
 				case 0:
-				lcdPutsSwitches(MODEL_CUSTOM_FUNC_1ST_COLUMN, y, CFN_SWITCH(cfn), attr | ((functionsContext->activeSwitches & ((MASK_CFN_TYPE)1 << k)) ? BOLD : 0));
+				lcdPutsSwitches(MODEL_CUSTOM_FUNC_1ST_COLUMN, y, CFN_SWITCH(cfn), attr | ((functionsContext->activeSwitches & ((uint32_t)1 << k)) ? BOLD : 0));
 				if (active || AUTOSWITCH_ENTER_LONG()) CHECK_INCDEC_SWITCH(event, CFN_SWITCH(cfn), SWSRC_FIRST, SWSRC_LAST, eeFlags, isSwitchAvailableInCustomFunctions);
 				break;
 

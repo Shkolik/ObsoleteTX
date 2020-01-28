@@ -5,34 +5,12 @@
  *  Author: Andrew
  */ 
 
-
-#ifndef LCD_H_
-#define LCD_H_
-
 #ifndef _LCD_H
 #define _LCD_H
 
 #include "../ObsoleteTX.h"
 
-#define LCD_W         128
-#define LCD_H         64
-#define BOX_WIDTH     23
-#define coord_t       uint8_t
-#define scoord_t      int8_t
-#define CENTER
-#define CENTER_OFS    0
-#define CONTRAST_MIN  10
-#define CONTRAST_MAX  45
 
-#define lcdint_t      int16_t
-#define lcduint_t     uint16_t
-
-#define FW              6
-#define FWNUM           5
-#define FH              8
-
-#define LCD_LINES       (LCD_H/FH)
-#define LCD_COLS        (LCD_W/FW)
 
 /* lcd common flags */
 #define BLINK           0x01
@@ -191,9 +169,6 @@ void lcdRefreshFast();
 //char *strSetCursor(char *dest, uint8_t position);
 char *strAppendDate(char * str);
 //char *strAppendFilename(char * dest, const char * filename, const uint8_t size);
-
-#endif
-
 
 
 #endif /* LCD_H_ */

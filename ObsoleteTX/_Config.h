@@ -20,8 +20,10 @@
 // board type
 #define DX6I
 #define MULTIMODULE
-
-
-
+#define GUI
+#define SPIMODULES
+#define FLIGHT_MODES
+#define CURVES
+#define TENPLATES
 
 #endif /* _CONFIG_H_ */

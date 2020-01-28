@@ -6,12 +6,6 @@
  */ 
 
 
-#ifndef TEMPLATES_H_
-#define TEMPLATES_H_
-
-
-
-
 /*
  * ============================================================
  * Templates file
@@ -62,9 +56,9 @@ enum Templates {
   TMPL_COUNT
 };
 
-void clearMixes();
-void clearCurvesAndPoints();
-void applyTemplate(uint8_t idx);
+extern void clearMixes();
+extern void clearCurvesAndPoints();
+extern void applyTemplate(uint8_t idx);
 
 
 

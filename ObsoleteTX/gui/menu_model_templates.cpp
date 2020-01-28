@@ -7,8 +7,9 @@
 
 
 #include "../ObsoleteTX.h"
+#include "../templates.h"
 #include "menu_model.h"
-
+#include "../gui/lcd.h"
 
 void menuModelTemplates(uint8_t event)
 {
