@@ -5,6 +5,7 @@
  *  Author: Andrew
  */ 
 #include "ObsoleteTX.h"
+#include "switches.h"
 
 #define CS_LAST_VALUE_INIT -32768
 
@@ -15,10 +16,7 @@ int16_t lsLastValue[NUM_LOGICAL_SWITCH];
 volatile GETSWITCH_RECURSIVE_TYPE s_last_switch_used = 0;
 volatile GETSWITCH_RECURSIVE_TYPE s_last_switch_value = 0;
 
-typedef struct {
-	uint8_t state;
-	uint8_t last;
-} __attribute__((__packed__)) ls_sticky_struct;
+
 
 uint8_t getLogicalSwitch(uint8_t idx)
 {
@@ -197,9 +195,9 @@ uint8_t getSwitch(swsrc_t swtch)
 		result = REB_DOWN();
 	}
 	#endif
-	else if (cs_idx == SWSRC_REN) {
-		result = !(REA_DOWN() || REB_DOWN());
-	}
+	//else if (cs_idx == SWSRC_REN) {
+		//result = 0;!(REA_DOWN() || REB_DOWN());
+	//}
 	else if (cs_idx == SWSRC_XD0) {
 		result = (calibratedStick[NUM_STICKS+EXTRA_3POS-1] > 0x200); // > 512
 	}

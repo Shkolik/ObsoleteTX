@@ -45,16 +45,17 @@ extern uint8_t noHighlightCounter;
 typedef void (*MenuHandlerFunc)(uint8_t event);
 typedef void (*MenuFuncP_PROGMEM)(uint8_t event);
 extern const MenuFuncP_PROGMEM menuTabModel[];
-extern const MenuFuncP_PROGMEM menuTabGeneral[];
+//extern const MenuFuncP_PROGMEM menuTabGeneral[];
 extern const MenuFuncP_PROGMEM menuTabFPV[];
 extern const MenuFuncP_PROGMEM menuTabTelemetry[];
+//extern const pm_uchar zz_sticks[];
+extern const pm_char STR_TR_ANAIN_POT_BAT[];
 
 extern MenuHandlerFunc menuHandlers[5];
 extern uint8_t menuVerticalPositions[4];
 extern uint8_t menuLevel;
 extern uint8_t menuEvent;
 extern uint8_t shared_u8;
-
 
 /// goto given Menu, but substitute current menu in menuStack
 extern void chainMenu(MenuHandlerFunc newMenu);
@@ -81,10 +82,16 @@ extern void menuGeneralDiagAna(uint8_t event);
 extern void menuTelemetryFrsky(uint8_t event);
 #endif
 extern void menuGeneralSetup(uint8_t event);
-extern void menuModelSetup(uint8_t event);
 extern void menuGeneralCalib(uint8_t event);
+extern void menuGeneralSdManager(uint8_t event);
+extern void menuGeneralBluetooth(uint8_t event);
+extern void menuGeneralTrainer(uint8_t event);
+extern void menuGeneralVersion(uint8_t event);
+extern void menuGeneralDiagKeys(uint8_t event);
+extern void menuGeneralDiagAna(uint8_t event);
 //void menuCustomFunctions(uint8_t event, CustomFunctionData * functions, CustomFunctionsContext * functionsContext);
 
+extern void menuModelSetup(uint8_t event);
 extern void menuModelSelect(uint8_t event);
 extern void menuModelCustomFunctions(uint8_t event);
 extern void menuStatisticsView(uint8_t event);

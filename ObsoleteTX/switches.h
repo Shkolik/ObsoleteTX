@@ -9,7 +9,10 @@
 #ifndef SWITCHES_H_
 #define SWITCHES_H_
 
-
+typedef struct {
+	uint8_t state;
+	uint8_t last;
+} __attribute__((__packed__)) ls_sticky_struct;
 
 
 

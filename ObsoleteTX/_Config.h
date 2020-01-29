@@ -16,6 +16,7 @@
 #define STICK_TOLERANCE 64
 #define EXTRA_3POS 0
 #define DEFAULT_MODE 1
+#define ROTARY_ENCODERS 1
 
 // board type
 #define DX6I
@@ -24,6 +25,7 @@
 #define SPIMODULES
 #define FLIGHT_MODES
 #define CURVES
-#define TENPLATES
+#define TEMPLATES
+#define BUZZER
 
 #endif /* _CONFIG_H_ */

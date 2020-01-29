@@ -9,8 +9,7 @@
 #include "menu_general.h"
 #include "gui.h"
 
-#define TR_ANAIN_POT_BAT "Pt1""Pt2""Pt3""Bat"
-const pm_char STR_TR_ANAIN_POT_BAT[] PROGMEM = TR_ANAIN_POT_BAT;
+
 
 
 void menuGeneralDiagAna(uint8_t event)

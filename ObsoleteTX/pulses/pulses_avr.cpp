@@ -34,11 +34,11 @@ void startPulses(enum ProtoCmds Command)
 {
 	PROTO_Stop_Callback();
 
-	#if defined(SPIMODULES)
-	RFPowerOut = 0;
-	rf_power_mem = 0; // Reset RF power mem
-	RF_SPI_INIT();
-	#endif
+	//#if defined(SPIMODULES)
+	//RFPowerOut = 0;
+	//rf_power_mem = 0; // Reset RF power mem
+	//RF_SPI_INIT();
+	//#endif
 	#if defined(FRSKY)
 	telemetryResetValue();
 	#endif

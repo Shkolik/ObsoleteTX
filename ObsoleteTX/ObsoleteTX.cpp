@@ -58,12 +58,6 @@ void checkMixer()
 uint8_t heartbeat;
 uint8_t stickMode;
 
-#if ROTARY_ENCODERS > 0
-uint8_t rotEncADebounce;
-#endif
-#if ROTARY_ENCODERS > 1
-uint8_t rotEncBDebounce;
-#endif
 
 
 #if defined(OVERRIDE_CHANNEL_FUNCTION)
@@ -1585,5 +1579,18 @@ ISR(TIMER_10MS_VECT) //10ms timer
 }
 
 
+ISR(INT5_vect)
+{
+	//if (!(PINE & ROT_ENC_1_MASK))
+	//{
+	//debounceRotEncA();
+	//incRotaryEncoder(0, -1);
+	//}
+}
+
+ISR(INT6_vect)
+{
+	//if (!(PINE & ROT_ENC_1_MASK)) {debounceRotEncA(); incRotaryEncoder(0, +1);}
+}
 
 

@@ -252,6 +252,9 @@
     <Compile Include="gui\menu_general_calib.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="gui\menu_general_calib.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="gui\menu_general_diaganas.cpp">
       <SubType>compile</SubType>
     </Compile>

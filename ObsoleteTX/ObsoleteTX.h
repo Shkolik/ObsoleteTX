@@ -226,16 +226,7 @@
 #define GET_LOWRES_POT_POSITION(i)  (getValue(MIXSRC_FIRST_POT+(i)) >> 4)
 #define SAVE_POT_POSITION(i)        g_model.potsWarnPosition[i] = GET_LOWRES_POT_POSITION(i)
 
-#if ROTARY_ENCODERS > 0
-#define IF_ROTARY_ENCODERS(x) x,
-#define ROTENCDEBOUNCEVAL _BV(2)
-extern uint8_t rotEncADebounce;
-#if ROTARY_ENCODERS > 1
-extern uint8_t rotEncBDebounce;
-#endif
-#else
-#define IF_ROTARY_ENCODERS(x)
-#endif
+
 
 #define PPM_CENTER 1500
 

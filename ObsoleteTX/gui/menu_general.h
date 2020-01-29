@@ -16,15 +16,18 @@
 #include "menus.h"
 #include "gui.h"
 
-extern void menuGeneralSetup(uint8_t event);
-extern void menuGeneralSdManager(uint8_t event);
-extern void menuGeneralBluetooth(uint8_t event);
-extern void menuGeneralTrainer(uint8_t event);
-extern void menuGeneralVersion(uint8_t event);
-extern void menuGeneralDiagKeys(uint8_t event);
-extern void menuGeneralDiagAna(uint8_t event);
-extern void menuGeneralCalib(uint8_t event);
+//extern void menuGeneralSetup(uint8_t event);
+//extern void menuGeneralSdManager(uint8_t event);
+//extern void menuGeneralBluetooth(uint8_t event);
+//extern void menuGeneralTrainer(uint8_t event);
+//extern void menuGeneralVersion(uint8_t event);
+//extern void menuGeneralDiagKeys(uint8_t event);
+//extern void menuGeneralDiagAna(uint8_t event);
+//extern void menuGeneralCalib(uint8_t event);
 
+#define XPOT_DELTA 10
+#define XPOT_DELAY 10 /* cycles */
+#define TR_ANAIN_POT_BAT "Pt1""Pt2""Pt3""Bat"
 
 enum EnumTabDiag {
 	e_Setup,
@@ -38,25 +41,5 @@ enum EnumTabDiag {
 	e_Calib
 };
 
-extern const pm_uchar zz_sticks[];
 
-const MenuFuncP_PROGMEM menuTabGeneral[] PROGMEM = {
-	menuGeneralSetup,
-	#ifdef SDCARD
-	menuGeneralSdManager,
-	#endif
-	menuGeneralTrainer,
-	menuGeneralVersion,
-	menuGeneralDiagKeys,
-	menuGeneralDiagAna,
-	menuGeneralCalib
-};
-
-const pm_uchar zz_sticks[] PROGMEM = {
-	#ifdef LCDROT180
-	#include "../bitmaps/sticks.lbmi"
-	#else
-	#include "../bitmaps/sticks.lbm"
-	#endif
-};
 #endif /* MENU_GENERAL_H_ */

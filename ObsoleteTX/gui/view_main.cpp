@@ -218,8 +218,8 @@ void onMainViewMenu(const char *result)
     timerReset(1);
   }
   else if (result == STR_SAVE_TIMERS) {
-    //saveTimers();
-    OpenAVRcClose();
+    saveTimers();
+    Close();
   }
 #if TIMERS > 2
   else if (result == STR_RESET_TIMER3) {

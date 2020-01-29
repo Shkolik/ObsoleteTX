@@ -11,6 +11,7 @@
 
 
 #include <inttypes.h>
+#include "_Config.h"
 #define WARN_THR_BIT  0x01
 #define WARN_BEP_BIT  0x80
 #define WARN_SW_BIT   0x02
@@ -647,7 +648,7 @@ typedef struct {
 #define ROTARY_ENCODER_MAX  1000 // =125 was 1024
 
 #define NUM_ROTARY_ENCODERS 2
-#define ROTARY_ENCODER_ARRAY int16_t rotaryEncoders[2];
+#define ROTARY_ENCODER_ARRAY int16_t rotaryEncoders[NUM_ROTARY_ENCODERS];
 #define trim_t          int16_t
 #define TRIMS_ARRAY       trim_t trim[4]
 #define TRIMS_ARRAY_SIZE  8

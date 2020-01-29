@@ -4,13 +4,8 @@
  * Created: 1/27/2020 7:56:20 PM
  *  Author: Andrew
  */ 
-
-#include "../ObsoleteTX.h"
-#include "menu_general.h"
-#include "gui.h"
-
-#define XPOT_DELTA 10
-#define XPOT_DELAY 10 /* cycles */
+#include "menus.h"
+#include "menu_general_calib.h"
 
 void menuCommonCalib(uint8_t event)
 {

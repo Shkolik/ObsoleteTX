@@ -4,15 +4,14 @@
  * Created: 1/24/2020 9:31:41 PM
  *  Author: Andrew
  */ 
-#include "../../ObsoleteTX.h"
+#include <avr/io.h>
+#include <avr/pgmspace.h>
+#include "../../pgmtypes.h"
+#include "dx6i.h"
+#include "../../keys.h"
 
 void boardInit()
 {
-	//PORTE = 0x00;
-	//_delay_ms(200);
-	//PORTE = 0xff;
-	//_delay_ms(200);
-	
 	// Set up I/O port data directions and initial states (unused pin setting : input, pull-up on)
 	DDRA = 0b11111111;  PORTA = 0b00000000; // LCD data
 	//DDRB = 0b11110111;  PORTB = 0b10101111; // 7:MegaCore Led, 6:PPM_OUT, 5:PPMSIM_OUT, 4:BT_Key_Cmd, SDCARD[3:MISO 2:MOSI 1:SCK 0:CS]
@@ -151,7 +150,7 @@ uint8_t trimDown(uint8_t idx)
 
 uint8_t keyDown()
 {
-	return 0;//((~PINL) & 0x3F) || ROTENC_DOWN();
+	return ROTENC_DOWN();
 }
 
 void readKeysAndTrims()
@@ -201,12 +200,22 @@ void readKeysAndTrims()
 
 void debounceRotEncA()
 {
-	//DISABLEROTENCAISR();
-	//rotEncADebounce = ROTENCDEBOUNCEVAL;
+	DISABLEROTENCAISR();
+	rotEncADebounce = ROTENCDEBOUNCEVAL;
 }
+
+
+#if ROTARY_ENCODERS > 0
+uint8_t rotEncADebounce;
+#endif
+#if ROTARY_ENCODERS > 1
+uint8_t rotEncBDebounce;
+#endif
 
 void debounceRotEncB()
 {
+DISABLEROTENCAISR();
+rotEncADebounce = ROTENCDEBOUNCEVAL;
 	//DISABLEROTENCBISR();
 	//rotEncBDebounce = ROTENCDEBOUNCEVAL;
 }

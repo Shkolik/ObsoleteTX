@@ -1,11 +1,13 @@
 /*
  * menu_general.cpp
  *
- * Created: 1/27/2020 7:55:46 PM
+ * Created: 1/28/2020 7:21:59 PM
  *  Author: Andrew
  */ 
+
 #include "menu_general.h"
-//
+#include "menus.h"
+
 //const MenuFuncP_PROGMEM menuTabGeneral[] PROGMEM = {
 	//menuGeneralSetup,
 	//#ifdef SDCARD
@@ -25,3 +27,5 @@
 	//#include "../bitmaps/sticks.lbm"
 	//#endif
 //};
+
+const pm_char STR_TR_ANAIN_POT_BAT[] PROGMEM = TR_ANAIN_POT_BAT;

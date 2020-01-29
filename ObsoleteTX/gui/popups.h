@@ -18,13 +18,7 @@ uint8_t         warningInfoLength;
 uint8_t         warningType;
 bool            warningResult = false;
 
-const pm_uchar zz_asterisk_lbm[] PROGMEM = {
-	#if defined (LCDROT180)
-	#include "../bitmaps/asterisk.lbmi"
-	#else
-	#include "../bitmaps/asterisk.lbm"
-	#endif
-};
+extern const pm_uchar zz_asterisk_lbm[];
 
 #if defined(NAVIGATION_MENUS)
 const char *popupMenuItems[POPUP_MENU_MAX_LINES];

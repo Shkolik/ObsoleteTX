@@ -14,6 +14,14 @@
 #include "../ObsoleteTX.h"
 #include "popups.h"
 
+const pm_uchar zz_asterisk_lbm[] PROGMEM = {
+	#if defined (LCDROT180)
+	#include "../bitmaps/asterisk.lbmi"
+	#else
+	#include "../bitmaps/asterisk.lbm"
+	#endif
+};
+
 void displayBox()
 {
 	lcdDrawFilledRect(10, 16, LCD_W-20, 40, SOLID, ERASE);
