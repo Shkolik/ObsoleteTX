@@ -148,7 +148,7 @@ int16_t gvarMenuItem(coord_t x, coord_t y, int16_t value, int16_t min, int16_t m
 
 #if defined(SDCARD)
 char statusLineMsg[STATUS_LINE_LENGTH];
-tmr10ms_t statusLineTime = 0;
+uint16_t statusLineTime = 0;
 uint8_t statusLineHeight = 0;
 
 void showStatusLine()
@@ -160,7 +160,7 @@ void showStatusLine()
 void drawStatusLine()
 {
 	if (statusLineTime) {
-		if ((tmr10ms_t)(getTmr10ms() - statusLineTime) <= (tmr10ms_t)STATUS_LINE_DELAY) {
+		if ((uint16_t)(getTmr10ms() - statusLineTime) <= (uint16_t)STATUS_LINE_DELAY) {
 			if (statusLineHeight < FH) statusLineHeight++;
 			} else if (statusLineHeight) {
 			statusLineHeight--;

@@ -78,7 +78,8 @@ void lcdInit()
   _delay_us(2);
   PORTC_LCD_CTRL |= _BV(OUT_C_LCD_RES);  //LCD normal operation
   _delay_us(1500);
-  for (uint8_t i=0; i<DIM(lcdInitSequence); i++) {
+  for (uint8_t i=0; i<countOf(lcdInitSequence); i++) {
+  //for (uint8_t i=0; i<DIM(lcdInitSequence); i++) {
     lcdSendCtl(pgm_read_byte_near(&lcdInitSequence[i])) ;
   }
 #if defined(LCD_ERC12864FSF)

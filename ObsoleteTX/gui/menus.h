@@ -44,11 +44,9 @@ extern uint8_t noHighlightCounter;
 
 typedef void (*MenuHandlerFunc)(uint8_t event);
 typedef void (*MenuFuncP_PROGMEM)(uint8_t event);
-extern const MenuFuncP_PROGMEM menuTabModel[];
-//extern const MenuFuncP_PROGMEM menuTabGeneral[];
-extern const MenuFuncP_PROGMEM menuTabFPV[];
-extern const MenuFuncP_PROGMEM menuTabTelemetry[];
-//extern const pm_uchar zz_sticks[];
+//const MenuFuncP_PROGMEM menuTabModel[] PROGMEM;
+//const MenuFuncP_PROGMEM menuTabGeneral[] PROGMEM;
+extern const pm_uchar zz_sticks[];
 extern const pm_char STR_TR_ANAIN_POT_BAT[];
 
 extern MenuHandlerFunc menuHandlers[5];
@@ -185,7 +183,7 @@ void title(const pm_char * s);
 
 #define MENU_TAB(...) static const pm_uint8_t mstate_tab[] PROGMEM = __VA_ARGS__
 
-#define MENU_CHECK(tab, menu, lines_count)  check(event, menu, tab, DIM(tab), mstate_tab, DIM(mstate_tab)-1, (lines_count)-1)
+#define MENU_CHECK(tab, menu, lines_count) check(event, menu, tab, DIM(tab), mstate_tab, DIM(mstate_tab)-1, (lines_count)-1)
 
 #define MENU_CHECK_FLAGS(tab, menu, flags, lines_count) check(event, menu, tab, DIM(tab), mstate_tab, DIM(mstate_tab)-1, (lines_count)-1, flags)
 

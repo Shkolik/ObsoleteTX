@@ -15,25 +15,6 @@ uint8_t menuVerticalPositions[4];
 uint8_t menuLevel = 0;
 uint8_t shared_u8 = 0; // Reusable shared value
 uint8_t editNameCursorPos = 0;
-const MenuFuncP_PROGMEM menuTabGeneral[] PROGMEM = {
-	menuGeneralSetup,
-	#ifdef SDCARD
-	menuGeneralSdManager,
-	#endif
-	menuGeneralTrainer,
-	menuGeneralVersion,
-	menuGeneralDiagKeys,
-	menuGeneralDiagAna,
-	menuGeneralCalib
-};
-
-const pm_uchar zz_sticks[] PROGMEM = {
-	#ifdef LCDROT180
-	#include "../bitmaps/sticks.lbmi"
-	#else
-	#include "../bitmaps/sticks.lbm"
-	#endif
-};
 
 void popMenu()
 {

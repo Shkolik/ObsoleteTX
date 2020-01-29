@@ -316,8 +316,12 @@ extern uint8_t StickScrollTimer;
 #include "eeprom_rlc.h"
 
 //  Dimension of Arrays
-#define DIM(array) ((sizeof(array)/sizeof(0[array])) / ((size_t)(!(sizeof(array) % sizeof(0[array])))))//((sizeof a) / (sizeof *a))
+#define DIM(array) ((sizeof array) / (sizeof *array))
 
+typedef ptrdiff_t Size;
+
+template<class Type, Size n > Size countOf( Type (&)[n] ) { return n; }
+	
 #if defined(TEMPLATES)
 #include "templates.h"
 #endif
