@@ -9,6 +9,8 @@
 #ifndef MULTI_H_
 #define MULTI_H_
 
+#include "../ObsoleteTX.h"
+
 #define MULTI_SEND_BIND                     (1 << 7)
 #define MULTI_SEND_RANGECHECK               (1 << 5)
 #define MULTI_SEND_AUTOBIND                 (1 << 6)
@@ -18,6 +20,6 @@
 #define NO_SUBTYPE							0
 #define MM_RF_CUSTOM_SELECTED				0xff
 
-extern const RfOptionSettingsvarstruct RfOpt_Multi_Ser[];
+//const RfOptionSettingsvarstruct RfOpt_Multi_Ser[];
 
 #endif /* MULTI_H_ */

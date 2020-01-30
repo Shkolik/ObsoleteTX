@@ -6,40 +6,40 @@
  */ 
 
 
-#include "../ObsoleteTX.h"
+#include "views.h"
 
-#ifdef VOICE
-#define VOICE_PROMPT_TEXT_LEN  25
-
-FORCEINLINE uint8_t loadVoiceTextLine(uint8_t Numline, char * PromptText)
-{
-	closeLogIfActived();
-	uint8_t ret = false;
-
-	if (sdChangeCurDir(VOICETXT_PATH))
-	{
-		if (sdFindFileStruct(VOICETXT_FILE))
-		{
-			SD_file = fat_open_file(SD_filesystem, &SD_dir_entry);
-			int32_t seekofs = Numline*(VOICE_PROMPT_TEXT_LEN+2);
-			if(fat_seek_file(SD_file, &seekofs, FAT_SEEK_SET))
-			{
-				if (fat_read_file(SD_file, (uint8_t*)PromptText, VOICE_PROMPT_TEXT_LEN) == VOICE_PROMPT_TEXT_LEN)
-				{
-					PromptText[VOICE_PROMPT_TEXT_LEN] = '\0';
-					ret = true;
-				}
-			}
-			fat_close_file(SD_file);
-		}
-	}
-	return ret;
-}
-
-
-// Keep unused code ;-)
-
-#endif // VOICE
+//#ifdef VOICE
+//#define VOICE_PROMPT_TEXT_LEN  25
+//
+//FORCEINLINE uint8_t loadVoiceTextLine(uint8_t Numline, char * PromptText)
+//{
+	//closeLogIfActived();
+	//uint8_t ret = false;
+//
+	//if (sdChangeCurDir(VOICETXT_PATH))
+	//{
+		//if (sdFindFileStruct(VOICETXT_FILE))
+		//{
+			//SD_file = fat_open_file(SD_filesystem, &SD_dir_entry);
+			//int32_t seekofs = Numline*(VOICE_PROMPT_TEXT_LEN+2);
+			//if(fat_seek_file(SD_file, &seekofs, FAT_SEEK_SET))
+			//{
+				//if (fat_read_file(SD_file, (uint8_t*)PromptText, VOICE_PROMPT_TEXT_LEN) == VOICE_PROMPT_TEXT_LEN)
+				//{
+					//PromptText[VOICE_PROMPT_TEXT_LEN] = '\0';
+					//ret = true;
+				//}
+			//}
+			//fat_close_file(SD_file);
+		//}
+	//}
+	//return ret;
+//}
+//
+//
+//// Keep unused code ;-)
+//
+//#endif // VOICE
 
 /*#define TEXT_FILE_MAXSIZE     2048
 

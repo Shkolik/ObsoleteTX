@@ -9,9 +9,8 @@
 #ifndef MENU_MODEL_H_
 #define MENU_MODEL_H_
 
+#include "../ObsoleteTX.h"
 #include "menus.h"
-#include "../protocol/misc.h"
-#include "widgets.h"
 
 void menuModelSelect(uint8_t event);
 void menuModelSetup(uint8_t event);

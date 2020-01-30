@@ -10,8 +10,6 @@
 
 #include "../ObsoleteTX.h"
 
-
-
 /* lcd common flags */
 #define BLINK           0x01
 
@@ -76,14 +74,14 @@ extern coord_t lcdNextPos;
 #endif
 
 
-void lcdDrawChar(coord_t x, coord_t y, const unsigned char c);
-void lcdDrawCharAtt(coord_t x, coord_t y, const unsigned char c, LcdFlags mode);
-void lcdDrawTextAtt(coord_t x, coord_t y, const pm_char * s, LcdFlags mode);
-void lcdDrawTextAtIndex(coord_t x, coord_t y, const pm_char * s,uint8_t idx, LcdFlags mode);
-void lcdDrawSizedTextAtt(coord_t x, coord_t y, const pm_char * s,unsigned char len, LcdFlags mode);
-void lcdDrawText(coord_t x, coord_t y, const pm_char * s);
-void lcdDrawSizedText(coord_t x, coord_t y, const pm_char * s, unsigned char len);
-void lcdDrawTextLeft(coord_t y, const pm_char * s);
+extern void lcdDrawChar(coord_t x, coord_t y, const unsigned char c);
+extern void lcdDrawCharAtt(coord_t x, coord_t y, const unsigned char c, LcdFlags mode);
+extern void lcdDrawTextAtt(coord_t x, coord_t y, const pm_char * s, LcdFlags mode);
+extern void lcdDrawTextAtIndex(coord_t x, coord_t y, const pm_char * s,uint8_t idx, LcdFlags mode);
+extern void lcdDrawSizedTextAtt(coord_t x, coord_t y, const pm_char * s,unsigned char len, LcdFlags mode);
+extern void lcdDrawText(coord_t x, coord_t y, const pm_char * s);
+extern void lcdDrawSizedText(coord_t x, coord_t y, const pm_char * s, unsigned char len);
+extern void lcdDrawTextLeft(coord_t y, const pm_char * s);
 
 #define lcdDrawTextCenter(y, s) lcdDrawText((LCD_W-sizeof(TR_##s)*FW+FW+1)/2, y, STR_##s)
 
@@ -130,8 +128,8 @@ void lcdDrawSolidVerticalLine(coord_t x, scoord_t y, scoord_t h);
 void lcdDrawSolidVerticalLineStip(coord_t x, scoord_t y, scoord_t h, uint8_t pat, LcdFlags att=0);
 
 
-void lcdDrawFilledRect(coord_t x, scoord_t y, coord_t w, coord_t h, uint8_t pat=SOLID, LcdFlags att=0);
-void lcdDrawRect(coord_t x, coord_t y, coord_t w, coord_t h, uint8_t pat=SOLID, LcdFlags att=0);
+extern void lcdDrawFilledRect(coord_t x, scoord_t y, coord_t w, coord_t h, uint8_t pat=SOLID, LcdFlags att=0);
+extern void lcdDrawRect(coord_t x, coord_t y, coord_t w, coord_t h, uint8_t pat=SOLID, LcdFlags att=0);
 
 void lcdInvertLine(int8_t line);
 #define lcd_status_line() lcdInvertLine(LCD_LINES-1)
@@ -142,25 +140,17 @@ inline void lcd_square(coord_t x, coord_t y, coord_t w, LcdFlags att=0)
 
 void lcdDrawTelemetryTopBar();
 
-#define V_BAR(xx, yy, ll)    \
-lcdDrawSolidVerticalLine(xx-1,yy-ll,ll);  \
-lcdDrawSolidVerticalLine(xx  ,yy-ll,ll);  \
-lcdDrawSolidVerticalLine(xx+1,yy-ll,ll)
+#define V_BAR(xx, yy, ll) lcdDrawSolidVerticalLine(xx-1,yy-ll,ll); lcdDrawSolidVerticalLine(xx  ,yy-ll,ll); lcdDrawSolidVerticalLine(xx+1,yy-ll,ll)
 
-void lcd_imgfar(coord_t x, coord_t y, uint_farptr_t img, uint8_t idx, LcdFlags att); // progmem "far"
+extern void lcd_imgfar(coord_t x, coord_t y, uint_farptr_t img, uint8_t idx, LcdFlags att); // progmem "far"
 
-void lcdSetRefVolt(uint8_t val);
-void lcdClear();
-void lcdSetContrast();
-void lcdInit();
+extern void lcdSetRefVolt(uint8_t val);
+extern void lcdClear();
+extern void lcdSetContrast();
+extern void lcdInit();
 #define lcdOff()
-#if defined (SIMU)
-void simuTrace(const char * format, ...);
-void SimuSleepMs(uint16_t x);
-void editModelName();
-#endif // defined
-void lcdRefresh();
-void lcdRefreshFast();
+extern void lcdRefresh();
+extern void lcdRefreshFast();
 
 #define BLINK_ON_PHASE (g_blinkTmr10ms & (1<<6))
 #define DOUBLE_BLINK_ON_PHASE (g_blinkTmr10ms & (1<<7))

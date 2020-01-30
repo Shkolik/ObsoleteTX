@@ -9,6 +9,8 @@
 #ifndef TELEMETRY_DRIVER_H_
 #define TELEMETRY_DRIVER_H_
 
+#include "ObsoleteTX.h"
+
 #ifndef TLM_USART
 #define TLM_USART 0
 #endif

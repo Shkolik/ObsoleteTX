@@ -9,16 +9,9 @@
 #ifndef POPUPS_H_
 #define POPUPS_H_
 
+#include "../ObsoleteTX.h"
 
-#include "menus.h"
 
-const pm_char * warningText = NULL;
-const pm_char * warningInfoText;
-uint8_t         warningInfoLength;
-uint8_t         warningType;
-bool            warningResult = false;
-
-extern const pm_uchar zz_asterisk_lbm[];
 
 #if defined(NAVIGATION_MENUS)
 const char *popupMenuItems[POPUP_MENU_MAX_LINES];

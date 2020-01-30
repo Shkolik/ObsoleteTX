@@ -9,10 +9,10 @@
 #ifndef MENUS_H_
 #define MENUS_H_
 
+#include "../ObsoleteTX.h"
 
 
-#include "../myeeprom.h"
-#include "lcd.h"
+extern uint8_t screenIndex;
 
 
 #define MENUS_SCROLLBAR_WIDTH  0
@@ -44,8 +44,8 @@ extern uint8_t noHighlightCounter;
 
 typedef void (*MenuHandlerFunc)(uint8_t event);
 typedef void (*MenuFuncP_PROGMEM)(uint8_t event);
-//const MenuFuncP_PROGMEM menuTabModel[] PROGMEM;
-//const MenuFuncP_PROGMEM menuTabGeneral[] PROGMEM;
+
+
 extern const pm_uchar zz_sticks[];
 extern const pm_char STR_TR_ANAIN_POT_BAT[];
 
@@ -205,20 +205,20 @@ void title(const pm_char * s);
 
 typedef int8_t select_menu_value_t;
 
-select_menu_value_t selectMenuItem(coord_t x, coord_t y, const pm_char *label, const pm_char *values, select_menu_value_t value, select_menu_value_t min, select_menu_value_t max, LcdFlags attr, uint8_t event);
-select_menu_value_t selectMenuSubImg(coord_t x, coord_t y, select_menu_value_t value, select_menu_value_t minSubImgIdx, select_menu_value_t maxSubImgIdx, uint_farptr_t img, uint8_t subImgIdx, LcdFlags attr, uint8_t event);
-uint8_t onoffMenuItem(uint8_t value, coord_t x, coord_t y, const pm_char *label, LcdFlags attr, uint8_t event);
-int8_t switchMenuItem(coord_t x, coord_t y, int8_t value, LcdFlags attr, uint8_t event);
+select_menu_value_t selectMenuItem(coord_t x, coord_t y, const pm_char *label, const pm_char *values, select_menu_value_t value, select_menu_value_t min, select_menu_value_t max, uint8_t attr, uint8_t event);
+select_menu_value_t selectMenuSubImg(coord_t x, coord_t y, select_menu_value_t value, select_menu_value_t minSubImgIdx, select_menu_value_t maxSubImgIdx, uint_farptr_t img, uint8_t subImgIdx, uint8_t attr, uint8_t event);
+uint8_t onoffMenuItem(uint8_t value, coord_t x, coord_t y, const pm_char *label, uint8_t attr, uint8_t event);
+int8_t switchMenuItem(coord_t x, coord_t y, int8_t value, uint8_t attr, uint8_t event);
 
 #define ON_OFF_MENU_ITEM(value, x, y, label, attr, event) value = onoffMenuItem(value, x, y, label, attr, event)
 
 #define GVAR_MENU_ITEM(x, y, v, min, max, lcdattr, editflags, event) gvarMenuItem(x, y, v, min, max, lcdattr, event)
 
 #if defined(GVARS)
-int16_t gvarMenuItem(coord_t x, coord_t y, int16_t value, int16_t min, int16_t max, LcdFlags attr, uint8_t event); // @@@ open.20.fsguruh
+int16_t gvarMenuItem(coord_t x, coord_t y, int16_t value, int16_t min, int16_t max, uint8_t attr, uint8_t event); // @@@ open.20.fsguruh
 #define displayGVar(x, y, v, min, max) GVAR_MENU_ITEM(x, y, v, min, max, 0, 0, 0)
 #else
-int16_t gvarMenuItem(coord_t x, coord_t y, int16_t value, int16_t min, int16_t max, LcdFlags attr, uint8_t event);
+int16_t gvarMenuItem(coord_t x, coord_t y, int16_t value, int16_t min, int16_t max, uint8_t attr, uint8_t event);
 #define displayGVar(x, y, v, min, max) lcdDrawNumberNAtt(x, y, v)
 #endif
 
@@ -229,8 +229,9 @@ int16_t gvarMenuItem(coord_t x, coord_t y, int16_t value, int16_t min, int16_t m
 extern const pm_char * warningText;
 extern const pm_char * warningInfoText;
 extern uint8_t         warningInfoLength;
-extern bool            warningResult;
-extern uint8_t         warningType;
+extern uint8_t warningType;
+extern bool warningResult;
+
 
 #define MENU_X   10
 #define MENU_Y   16

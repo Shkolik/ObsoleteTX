@@ -5,9 +5,11 @@
  *  Author: Andrew
  */ 
 
-
-#include "../ObsoleteTX.h"
 #include "menus.h"
+
+
+const pm_char * warningText = NULL;
+const pm_char * warningInfoText;
 
 MenuHandlerFunc menuHandlers[5];
 uint8_t menuEvent = 0;

@@ -5,8 +5,7 @@
  *  Author: Andrew
  */ 
 
-#include "../ObsoleteTX.h"
-#include "misc.h"
+#include "multi.h"
 
 const RfOptionSettingsvarstruct RfOpt_Multi_Ser[] PROGMEM = {
 	/*rfProtoNeed*/BOOL1USED | BOOL2USED | BOOL3USED,

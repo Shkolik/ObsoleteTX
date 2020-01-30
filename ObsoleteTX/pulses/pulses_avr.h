@@ -9,6 +9,9 @@
 #ifndef PULSES_AVR_H_
 #define PULSES_AVR_H_
 
+#include "../ObsoleteTX.h"
+#include "../protocol/misc.h"
+//#include "../spi.h"
 
 
 static volatile uint16_t timer_counts;
@@ -31,20 +34,7 @@ extern void (*ocr1b_function_ptr)(); // Function pointer to add flexibility and 
 extern uint16_t dt;
 
 
-//#ifdef SBUS_PROTOCOL
-//#define PULSES_WORD_SIZE  115	// 72=((2+2*6)*10)/2+2
-//#define PULSES_BYTE_SIZE  (PULSES_WORD_SIZE * 2)
-//#else
-#define PULSES_WORD_SIZE  72		// 72=((2+2*6)*10)/2+2
-// 72 (A 16 Channel PPM frame has 34 timing events + 1 int terminator).
-#define PULSES_BYTE_SIZE  (PULSES_WORD_SIZE * 2)
-//#endif
 
-extern union p2mhz_t
-{
-	uint16_t pword[PULSES_WORD_SIZE];
-	uint8_t  pbyte[PULSES_BYTE_SIZE]; // 144
-} pulses2MHz;
 
 enum ppmtype{
 	PPM,
@@ -53,8 +43,8 @@ enum ppmtype{
 	PPM16FIRST,
 };
 
-void setupPulses();
-void setupPulsesPPM(enum ppmtype proto);
+extern void setupPulses();
+extern void setupPulsesPPM(enum ppmtype proto);
 void DSM2_Init();
 void DSM2_Done();
 

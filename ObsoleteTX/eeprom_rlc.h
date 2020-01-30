@@ -10,8 +10,7 @@
 #define EEPROM_RLC_H_
 
 #include "ObsoleteTX.h"
-#include "timers.h"
-
+#include "myeeprom.h"
 
 struct DirEnt { // File header
 	blkid_t  startBlk;

@@ -9,9 +9,9 @@
 #ifndef MYEEPROM_H_
 #define MYEEPROM_H_
 
+#include  <inttypes.h>
+#include "global_defs.h"
 
-#include <inttypes.h>
-#include "_Config.h"
 #define WARN_THR_BIT  0x01
 #define WARN_BEP_BIT  0x80
 #define WARN_SW_BIT   0x02

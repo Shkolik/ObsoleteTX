@@ -7,9 +7,7 @@
 
 
 
-#include "../ObsoleteTX.h"
-#include "../protocol/misc.h"
-//#include "../spi.h"
+#include "pulses_avr.h"
 
 uint16_t nextMixerEndTime = 0;
 uint8_t s_current_protocol = 255;
@@ -58,8 +56,6 @@ void startPulses(enum ProtoCmds Command)
 	PROTO_Cmds(Command);
 }
 
-
-
 ISR(RF_TIMER_COMPA_VECT) // ISR for Protocol Callback, PPMSIM and PPM16 (Last 8 channels).
 {
 	timer_counts = timer_callback(); // Function pointer e.g. skyartec_cb().
@@ -74,9 +70,6 @@ ISR(RF_TIMER_COMPA_VECT) // ISR for Protocol Callback, PPMSIM and PPM16 (Last 8 
 	if (dt > g_tmr1Latency_max) g_tmr1Latency_max = dt;
 	if (dt < g_tmr1Latency_min) g_tmr1Latency_min = dt;
 }
-
-
-
 
 void setupPulsesPPM(enum ppmtype proto)
 {
@@ -104,10 +97,6 @@ void setupPulsesPPM(enum ppmtype proto)
 	else if(proto == PPM16FIRST) p = 8;
 	else p = 16; // PPM16 Channels 9-16.
 
-	#if defined(X_ANY)
-	Xany_scheduleTx_AllInstance();
-	#endif
-
 	for (uint8_t i=(proto == PPM16LAST) ? 8 : 0; i<p; i++) { // Just do channels 1-8 unless PPM16 (9-16).
 		int16_t v = limit((int16_t)-PPM_range, channelOutputs[i], (int16_t)PPM_range) + 2*PPM_CH_CENTER(i);
 		rest -= v;
@@ -122,7 +111,6 @@ void setupPulsesPPM(enum ppmtype proto)
 	*ptr++ = rest - (PULSES_SETUP_TIME_US *2);
 	*ptr = 0; // End array with (uint16_t) 0;
 }
-
 
 ISR(TIMER1_COMPB_vect) // Timer 1 compare "B" vector. Used for PPM commutation and maybe more ...
 {

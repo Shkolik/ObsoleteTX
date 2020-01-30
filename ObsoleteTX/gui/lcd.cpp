@@ -5,10 +5,8 @@
  *  Author: Andrew
  */ 
 
-#include "../ObsoleteTX.h"
-#include "../timers.h"
+
 #include "lcd.h"
-#include "../fonts.h"
 
 display_t displayBuf[DISPLAY_BUF_SIZE];
 
@@ -260,7 +258,6 @@ void lcdDrawSolidHorizontalLine(coord_t x, coord_t y, coord_t w, LcdFlags att)
 {
   lcdDrawSolidHorizontalLineStip(x, y, w, 0xff, att);
 }
-
 
 void lcdDrawSolidVerticalLine(coord_t x, scoord_t y, scoord_t h)
 {

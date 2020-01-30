@@ -9,7 +9,11 @@
 #ifndef DX6I_H_
 #define DX6I_H_
 
+#include <avr/io.h>
+#include <avr/pgmspace.h>
+#include "../../pgmtypes.h"
 #include "../board.h"
+#include "../../keys.h"
 
 #define NUM_STICKS	4
 #define CALCULATE_LAT_JIT()  dt = TCNT1 - OCR1A		// Calculate latency and jitter.
@@ -168,7 +172,7 @@ void readKeysAndTrims();
 #define OUT_C_LIGHT              5//figure out
 
 // Power driver
-void boardOff();
+extern void boardOff();
 #if defined(PWRMANAGE) && !defined(SIMU)
 #define UNEXPECTED_SHUTDOWN()   ((mcusr & _BV(WDRF)) || g_eeGeneral.unexpectedShutdown)
 #else
@@ -180,7 +184,7 @@ void boardOff();
 #define hapticOff()               PORTC &= ~_BV(OUT_H_HAPTIC)
 
 // Buzzer driver
-#define buzzerOn()                PORTC |=  _BV(OUT_H_SpeakerBuzzer)
+#define buzzerOn()				  PORTC |=  _BV(OUT_H_SpeakerBuzzer)
 #define buzzerOff()               PORTC &= ~_BV(OUT_H_SpeakerBuzzer)
 
 // Speaker driver
@@ -212,17 +216,11 @@ void boardInit();
 	//if (!(PINE & ROT_ENC_1_MASK)) {debounceRotEncA(); incRotaryEncoder(0, +1);}
 //}
 
-extern uint8_t rotEncADebounce;
-
 #define ROTENCDEBOUNCEVAL _BV(2)
 extern uint8_t rotEncADebounce;
 extern uint8_t rotEncBDebounce;
 
-#ifdef ROTARY_ENCODERS
-#define IF_ROTARY_ENCODERS(x) x,
-#else
-#define IF_ROTARY_ENCODERS(x)
-#endif
+
 
 // EEPROM driver
 #if !defined(SIMU)

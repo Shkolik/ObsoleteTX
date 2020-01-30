@@ -19,6 +19,26 @@
 #include "boards/dx6i/dx6i.h"
 #endif // DX6I
 
+
+#include "telemetry_driver.h"
+#include "pulses/pulses_avr.h"
+#include "pulses/pulses.h"
+#include "eeprom_common.h"
+#include "eeprom_rlc.h"
+
+#include "misclib.h"
+#include "keys.h"
+#include "trainer_input.h"
+
+#include "main_avr.h"
+#include "maths.h"
+#include "mixer.h"
+
+#include "buzzer.h"
+#include "timers.h"
+
+
+
 /////////////////////////
 // checkIncDec flags
 #define EE_NO           0x00
@@ -64,6 +84,12 @@
   
 
 #define CASE_PERSISTENT_TIMERS(x) x,
+
+#ifdef ROTARY_ENCODERS
+#define IF_ROTARY_ENCODERS(x) x,
+#else
+#define IF_ROTARY_ENCODERS(x)
+#endif
 
 #if defined(RTCLOCK)
 #define CASE_RTCLOCK(x) x,
@@ -138,11 +164,12 @@
 #define CASE_GVARS(x)
 #endif
 
-#if defined(X_ANY)
-#define CASE_X_ANY(x) x,
-#else
-#define CASE_X_ANY(x)
+#include "myeeprom.h"
+#ifdef GUI
+#include "gui/gui.h"
+
 #endif
+
 
 #if ROTARY_ENCODERS > 0
 #define ROTARY_ENCODER_NAVIGATION
@@ -167,7 +194,7 @@
 #else
 #define PROTOMASK0 0
 #endif
-#ifdef PROTO_HAS_MULTISUPIIIK
+#ifdef PROTO_HAS_MULTI
 #define PROTOMASK1 _BV(1)
 #else
 #define PROTOMASK1 0
@@ -202,10 +229,7 @@
 #define RESXul     1024ul
 #define RESXl      1024l
 
-#include "myeeprom.h"
-#ifdef GUI
-#include "gui/gui.h"
-#endif
+
 
 #define NUM_SWITCHES     7
 #define IS_3POS(sw)      ((sw) == 0)
@@ -238,7 +262,6 @@
 #define FULL_CHANNEL_OUTPUTS(ch) channelOutputs[ch]
 #endif
 
-#include "misclib.h"
 
 extern volatile uint8_t g_tmr128uS;
 extern volatile uint16_t g_tmr10ms;
@@ -309,12 +332,6 @@ extern uint8_t StickScrollTimer;
 #define STICK_SCROLL_DISABLE()
 #endif
 
-#include "telemetry_driver.h"
-#include "pulses/pulses_avr.h"
-#include "pulses/pulses.h"
-#include "eeprom_common.h"
-#include "eeprom_rlc.h"
-
 //  Dimension of Arrays
 #define DIM(array) ((sizeof array) / (sizeof *array))
 
@@ -381,12 +398,10 @@ extern t_inactivity inactivity;
 #define ZCHAR_MAX (LEN_STD_CHARS + LEN_SPECIAL_CHARS)
 #endif
 
+extern char idx2char(int8_t idx);
 char hex2zchar(uint8_t hex);
-char idx2char(int8_t idx);
 void str2zchar(char *dest, const char *src, uint8_t size); // ASCII to FW
 uint8_t zchar2str(char *dest, const char *src, uint8_t size); // FW to ASCII
-
-#include "keys.h"
 
 uint8_t switchState(EnumKeys enuk);
 uint8_t trimDown(uint8_t idx);
@@ -601,8 +616,6 @@ void modelDefault(uint8_t id);
 //extern int16_t calcRESXto1000(int16_t x);
 //extern int8_t  calcRESXto100(int16_t x);
 
-extern const char vers_stamp[];
-
 extern uint16_t           g_vbat10mV;
 #define GET_TXBATT_BARS() (limit<uint8_t>(2, 20 * ((uint8_t)(g_vbat10mV/10) - g_eeGeneral.vBatMin) / (g_eeGeneral.vBatMax - g_eeGeneral.vBatMin), 20))
 #define IS_TXBATT_WARNING() (g_vbat10mV < (g_eeGeneral.vBatWarn*10))
@@ -612,8 +625,7 @@ extern uint16_t           g_vbat10mV;
 extern uint8_t            g_beepCnt;
 extern uint8_t            g_beepVal[5];
 
-//uncomment later
-#include "trainer_input.h"
+
 
 extern int32_t            chans[NUM_CHNOUT];
 extern int16_t            ex_chans[NUM_CHNOUT]; // Outputs (before LIMITS) of the last perMain
@@ -733,7 +745,6 @@ extern void parseTelemFrskyByte(uint8_t data);
 #include "audio_avr.h"
 #endif
 
-#include "buzzer.h"
 
 #if defined(VOICE)
 #include "boards/dx6i/voice.h"
@@ -747,6 +758,7 @@ extern void parseTelemFrskyByte(uint8_t data);
 
 #if defined(GUI)
 #include "fonts.h"
+
 #endif
 
 #if defined(HAPTIC)
@@ -801,8 +813,8 @@ extern void startPulses(enum ProtoCmds Command);
 
 ///////////////// PROTOCOLS ///////////////////
 
-getvalue_t convert8bitsTelemValue(uint8_t channel, ls_telemetry_value_t value);
-getvalue_t convertLswTelemValue(LogicalSwitchData * cs);
+extern getvalue_t convert8bitsTelemValue(uint8_t channel, ls_telemetry_value_t value);
+extern getvalue_t convertLswTelemValue(LogicalSwitchData * cs);
 
 extern void checkBattery();
 extern void Close();
@@ -855,9 +867,6 @@ ls_telemetry_value_t maxTelemValue(source_t channel);
 #endif
 
 
-getvalue_t convert8bitsTelemValue(source_t channel, ls_telemetry_value_t value);
-getvalue_t convertLswTelemValue(LogicalSwitchData * cs);
-
 #define convertTelemValue(channel, value) convert8bitsTelemValue(channel, value)
 #define convertBarTelemValue(channel, value) convert8bitsTelemValue(channel, value)
 #define maxBarTelemValue(channel) maxTelemValue(channel)
@@ -870,7 +879,7 @@ lcdint_t applyChannelRatio(source_t channel, lcdint_t val);
 getvalue_t div10_and_round(getvalue_t value);
 getvalue_t div100_and_round(getvalue_t value);
 
-#if defined(FRSKY)
+#if defined(TELEMETRY)
 extern uint8_t checkIfModelIsOff();
 NOINLINE uint8_t getRssiAlarmValue();
 
@@ -918,10 +927,6 @@ extern void varioWakeup();
 #else
 #define IS_GPS_AVAILABLE()         (0)
 #endif
-#include "main_avr.h"
-#include "maths.h"
-#include "mixer.h"
-
 
 // static variables used in evalFlightModeMixes - moved here so they don't interfere with the stack
 // It's also easier to initialize them here.

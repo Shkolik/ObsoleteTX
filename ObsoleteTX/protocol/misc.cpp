@@ -75,3 +75,20 @@ void PROTOCOL_SetBindState(uint16_t t10ms)
   }
   else protoMode = NORMAL_MODE;
 }
+
+#if defined(SPIMODULES)
+uint16_t RFPowerOut = 0;
+uint8_t * packet = pulses2MHz.pbyte; //protocol global packet (Use 40 MAX)
+uint8_t * channel_used = &pulses2MHz.pbyte[CHANNEL_USED_OFFSET]; //protocol global channel (Use 50 MAX -> 54 bytes free to use in SPI protocols)
+uint8_t * temp_rfid_addr = &pulses2MHz.pbyte[RX_TX_ADDR_OFFSET];
+#if defined(PROTO_HAS_CYRF6936)
+//uint8_t * cyrfmfg_id = &pulses2MHz.pbyte[PULSES_BYTE_OFFSET_VAR-30]; // -30 to -25 cyrfmfg_id[6] used in DSM, DEVO
+#endif
+#if defined(PROTO_HAS_CC2500) || defined(PROTO_HAS_CYRF6936)
+uint8_t * telem_save_data = &pulses2MHz.pbyte[PULSES_BYTE_OFFSET_VAR-40]; // used in [9] FrskyX & [10] DSM telemetry
+#endif
+#if defined(PROTO_HAS_CC2500)
+uint8_t calData[48]; // used in FrskyX protocol
+uint32_t seed; // used in FrskyV telemetry
+#endif
+#endif

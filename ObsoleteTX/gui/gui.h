@@ -9,9 +9,11 @@
 #ifndef GUI_H_
 #define GUI_H_
 
-
+#include "../global_defs.h"
 #include "lcd.h"
 #include "menus.h"
+#include "popups.h"
+#include "views.h"
 
 #define NUM_BODY_LINES      (LCD_LINES-1)
 #define MENU_HEADER_HEIGHT  FH

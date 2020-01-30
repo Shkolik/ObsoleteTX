@@ -5,7 +5,6 @@
  *  Author: Andrew
  */ 
 
-#include "ObsoleteTX.h"
 #include "timers.h"
 
 #if TIMERS > MAX_TIMERS

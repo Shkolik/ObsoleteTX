@@ -402,7 +402,7 @@ void logicalSwitchesReset()
 	}
 }
 
-int16_t convertLswTelemValue(LogicalSwitchData * ls)
+getvalue_t convertLswTelemValue(LogicalSwitchData * ls)
 {
 	int16_t val;
 	if (lswFamily(ls->func)==LS_FAMILY_OFS)

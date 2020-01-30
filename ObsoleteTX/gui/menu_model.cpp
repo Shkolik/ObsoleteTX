@@ -4,7 +4,6 @@
  * Created: 1/27/2020 7:57:49 PM
  *  Author: Andrew
  */ 
-#include "../ObsoleteTX.h"
 #include "menu_model.h"
 
 const MenuFuncP_PROGMEM menuTabModel[] PROGMEM = {

@@ -6,7 +6,7 @@
  */ 
 
 #include "menu_general.h"
-#include "menus.h"
+#include "../verion.h"
 
 const MenuFuncP_PROGMEM menuTabGeneral[7] PROGMEM = {
 	menuGeneralSetup,

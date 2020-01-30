@@ -477,6 +477,6 @@ template<class t> void SWAP(t & a, t & b)
 
 extern uint16_t (*timer_callback)(void);
 
-extern const RfOptionSettingsvarstruct RfOpt_PPM_Ser[];
+//extern const RfOptionSettingsvarstruct RfOpt_PPM_Ser[];
 
 #endif /* GLOBALDEFINITIONS_H_ */

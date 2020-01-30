@@ -9,6 +9,8 @@
 #ifndef BUZZER_H_
 #define BUZZER_H_
 
+#include "ObsoleteTX.h"
+
 #if defined(BUZZER)
 extern uint8_t g_beepCnt;
 extern uint8_t beepAgain;
@@ -21,17 +23,12 @@ extern uint8_t hapticTick;
 #endif /* HAPTIC */
 #endif /* BUZZER */
 
-#if defined(BUZZER)
-
 inline void _beep(uint8_t b)
 {
 	g_beepCnt = b;
 }
 
-void beep(uint8_t val);
-#else /* BUZZER */
-#define beep(...)
-#endif /* BUZZER */
+extern void beep(uint8_t val);
 
 #if !defined(AUDIO)
 
@@ -142,13 +139,16 @@ inline void BUZZER_HEARTBEAT()
 		}
 	}
 
-	if (beepOn) {
+	if (beepOn) 
+	{
 		warbleC = warble && !warbleC;
 		if (warbleC)
-		buzzerOff();
+			buzzerOff();
 		else
-		buzzerOn();
-		} else {
+			buzzerOn();
+	} 
+	else 
+	{
 		buzzerOff();
 	}
 }

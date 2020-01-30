@@ -5,14 +5,11 @@
  *  Author: Andrew
  */ 
 
-
-#ifndef POPUPS_H_
-#define POPUPS_H_
-
-
-
-#include "../ObsoleteTX.h"
 #include "popups.h"
+
+uint8_t warningType;
+bool warningResult;
+uint8_t warningInfoLength;
 
 const pm_uchar zz_asterisk_lbm[] PROGMEM = {
 	#if defined (LCDROT180)
@@ -57,6 +54,7 @@ void message(const pm_char *title, const pm_char *t, const char *last MESSAGE_SO
 	if (t) lcdDrawTextLeft(5*FH, t);
 	if (last) {
 		lcdDrawTextLeft(7*FH, last);
+
 		AUDIO_ERROR_MESSAGE(sound);
 	}
 
@@ -94,7 +92,6 @@ void displayWarning(uint8_t event)
 		break;
 	}
 }
-
 
 #if defined(NAVIGATION_MENUS)
 void (*popupMenuHandler)(const char *result);
@@ -186,7 +183,3 @@ const char * displayPopupMenu(uint8_t event)
 	return result;
 }
 #endif
-
-
-
-#endif /* POPUPS_H_ */

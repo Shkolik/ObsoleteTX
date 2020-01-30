@@ -8,7 +8,7 @@
 
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
-
+#include "ObsoleteTX.h"
 
 extern CustomFunctionsContext modelFunctionsContext;
 

@@ -4,11 +4,11 @@
  * Created: 1/24/2020 9:31:41 PM
  *  Author: Andrew
  */ 
-#include <avr/io.h>
-#include <avr/pgmspace.h>
-#include "../../pgmtypes.h"
+//
+//
+//
 #include "dx6i.h"
-#include "../../keys.h"
+//
 
 void boardInit()
 {
@@ -153,6 +153,11 @@ uint8_t keyDown()
 	return ROTENC_DOWN();
 }
 
+void boardOff()
+{
+
+}
+
 void readKeysAndTrims()
 {
 
@@ -205,12 +210,7 @@ void debounceRotEncA()
 }
 
 
-#if ROTARY_ENCODERS > 0
-uint8_t rotEncADebounce;
-#endif
-#if ROTARY_ENCODERS > 1
-uint8_t rotEncBDebounce;
-#endif
+
 
 void debounceRotEncB()
 {

@@ -4,10 +4,10 @@
  *  Author: Andrew
  */ 
 
+#include "lcd_default_driver.h"
 
 #define NUMITERATIONFULLREFRESH  1
-#include "../../ObsoleteTX.h"
-#include "../../gui/lcd.h"
+
 
 void lcdSendCtl(uint8_t val)
 {
@@ -117,11 +117,12 @@ void lcdRefreshFast()
 #endif
     PORTC_LCD_CTRL |=  _BV(OUT_C_LCD_A0);
     PORTC_LCD_CTRL &= ~_BV(OUT_C_LCD_RnW);
-    for (coord_t x=LCD_W; x>0; --x) {
+    for (coord_t x=LCD_W; x>0; --x) 
+	{
       PORTA_LCD_DAT = *p++;
       PORTC_LCD_CTRL |= _BV(OUT_C_LCD_E);
       PORTC_LCD_CTRL &= ~_BV(OUT_C_LCD_E);
-    }
+	}
     PORTC_LCD_CTRL |=  _BV(OUT_C_LCD_A0);
     PORTC_LCD_CTRL |=  _BV(OUT_C_LCD_CS1);
   }

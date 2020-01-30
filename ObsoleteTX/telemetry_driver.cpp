@@ -5,7 +5,7 @@
  *  Author: Andrew
  */ 
 
-#include "ObsoleteTX.h"
+#include "telemetry_driver.h"
 
 uint8_t TelemetryRxBuffer[NUM_TELEM_RX_BUFFER][TELEM_RX_PACKET_SIZE];
 

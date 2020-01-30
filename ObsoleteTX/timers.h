@@ -9,7 +9,7 @@
 #ifndef TIMERS_H_
 #define TIMERS_H_
 
-
+#include "ObsoleteTX.h"
 
 #define TMR_OFF      0
 #define TMR_RUNNING  1
