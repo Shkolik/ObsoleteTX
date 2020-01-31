@@ -26,32 +26,32 @@
 
 #define EEPROM_VER             1
 
-#if defined(EXTERNALEEPROM)
-#define MAX_MODELS           55
-#define NUM_CHNOUT           16 // number of real output channels CH1-CH16
-#define MAX_FLIGHT_MODES     6
-#define MAX_MIXERS           40
-#define MAX_EXPOS            16
-#define NUM_LOGICAL_SWITCH   20 // number of custom switches
-#define GETSWITCH_RECURSIVE_TYPE uint32_t
-#define NUM_CFN              32 // number of functions assigned to switches
-#define MAX_GVARS            12
-#define NUM_TRAINER          8
-#define NUM_POTS             3
-
-#else
-#define MAX_MODELS           30
-#define NUM_CHNOUT           16 // number of real output channels CH1-CH16
-#define MAX_FLIGHT_MODES     6
-#define MAX_MIXERS           32
-#define MAX_EXPOS            16
-#define NUM_LOGICAL_SWITCH   15 // number of custom switches
-#define GETSWITCH_RECURSIVE_TYPE uint16_t
-#define NUM_CFN              24 // number of functions assigned to switches
-#define MAX_GVARS            6
-#define NUM_TRAINER          8
-#define NUM_POTS             3
-#endif
+//#if defined(EXTERNALEEPROM)
+//#define MAX_MODELS           55
+//#define NUM_CHNOUT           16 // number of real output channels CH1-CH16
+//#define MAX_FLIGHT_MODES     6
+//#define MAX_MIXERS           40
+//#define MAX_EXPOS            16
+//#define NUM_LOGICAL_SWITCH   20 // number of custom switches
+//#define GETSWITCH_RECURSIVE_TYPE uint32_t
+//#define NUM_CFN              32 // number of functions assigned to switches
+//#define MAX_GVARS            12
+//#define NUM_TRAINER          8
+//#define NUM_POTS             3
+//
+//#else
+//#define MAX_MODELS           15//30
+//#define NUM_CHNOUT           16 // number of real output channels CH1-CH16
+//#define MAX_FLIGHT_MODES     3//6
+//#define MAX_MIXERS           16//32
+//#define MAX_EXPOS            8//16
+//#define NUM_LOGICAL_SWITCH   5//15 // number of custom switches
+//#define GETSWITCH_RECURSIVE_TYPE uint16_t
+//#define NUM_CFN              10//24 // number of functions assigned to switches
+//#define MAX_GVARS            4//6
+//#define NUM_TRAINER          8
+//#define NUM_POTS             1//3
+//#endif
 
 #if defined(EXTERNALEEPROM)
 #define blkid_t    uint16_t
@@ -63,7 +63,7 @@
 #define blkid_t    uint8_t
 #define EESIZE     1024*4
 #define EEFS_VERS  5
-#define MAXFILES   36
+#define MAXFILES   20//36
 #define BS         16
 #endif
 

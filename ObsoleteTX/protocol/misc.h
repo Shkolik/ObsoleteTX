@@ -28,6 +28,12 @@
 #define PULSES_WORD_SIZE  72		// 72=((2+2*6)*10)/2+2
 // 72 (A 16 Channel PPM frame has 34 timing events + 1 int terminator).
 #define PULSES_BYTE_SIZE  (PULSES_WORD_SIZE * 2)
+
+#ifdef DX6I
+#define TIMER_MULTIPLIER 1
+#else
+#define TIMER_MULTIPLIER 2
+#endif
 //#endif
 
 extern union p2mhz_t

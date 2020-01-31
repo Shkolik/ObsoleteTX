@@ -145,7 +145,7 @@ struct TelemetryData {
 	TelemetryValueWithMinMax analog[TELEM_ANA_COUNT];
 	TelemetryValueWithMin    rssi[2];
 	TelemetrySerialData value;
-};
+} __attribute__((__packed__));
 #endif
 
 #endif /* TELEMETRY_DRIVER_H_ */

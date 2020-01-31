@@ -62,17 +62,17 @@
 #define NUM_POTS             3
 
 #else
-#define MAX_MODELS           30
+#define MAX_MODELS           15//30
 #define NUM_CHNOUT           16 // number of real output channels CH1-CH16
 #define MAX_FLIGHT_MODES     6
-#define MAX_MIXERS           32
-#define MAX_EXPOS            16
-#define NUM_LOGICAL_SWITCH   15 // number of custom switches
+#define MAX_MIXERS           16//32
+#define MAX_EXPOS            8//16
+#define NUM_LOGICAL_SWITCH   10//15 // number of custom switches
 #define GETSWITCH_RECURSIVE_TYPE uint16_t
-#define NUM_CFN              24 // number of functions assigned to switches
+#define NUM_CFN              12//24 // number of functions assigned to switches
 #define MAX_GVARS            6
 #define NUM_TRAINER          8
-#define NUM_POTS             3
+#define NUM_POTS             1//3
 
 #endif
 
@@ -334,7 +334,7 @@ typedef struct {
 	enum Protocols Protocol;
 	const pm_char* ProtoName;
 	CMDS Cmds; // Cmds
-} Proto_struct;
+} __attribute__((__packed__)) Proto_struct;
 
 typedef struct {
 	int32_t act:24;
@@ -347,7 +347,7 @@ typedef struct {
 struct t_inactivity{
 	uint16_t counter;
 	uint8_t  sum;
-};
+} __attribute__((__packed__));
 
 typedef struct {
 	uint8_t activeFunctions;		// current max = 8 functions
@@ -363,7 +363,7 @@ typedef struct {
 	{
 		memclear(this, sizeof(*this));
 	}
-} CustomFunctionsContext;
+} __attribute__((__packed__)) CustomFunctionsContext;
 
 #define BOOL1USED PIN0_bm
 #define BOOL2USED PIN1_bm
@@ -377,7 +377,7 @@ struct RfOptionSettingsvarstruct {
 	int8_t          rfOptionValue2Min;
 	int8_t          rfOptionValue2Max;
 	int8_t          rfOptionValue3Max;/*:5*/  //32 max -16 is min
-} ;
+} __attribute__((__packed__));
 
 struct RfOptionSettingsstruct {
 	uint8_t         rfProtoNeed:4;     // See usage in "PROTO_NEED_XX" Def
@@ -397,7 +397,7 @@ struct RfOptionSettingsstruct {
 	const pm_char*  rfOptionBool2Name;
 	uint8_t         rfOptionBool3Used:1;
 	const pm_char*  rfOptionBool3Name;
-} ;
+} __attribute__((__packed__));
 
 typedef struct {
 	uint8_t protocol;

@@ -41,12 +41,14 @@ void startPulses(enum ProtoCmds Command)
 	telemetryResetValue();
 	#endif
 
-	if (pulsesStarted()) {
+	if (pulsesStarted()) 
+	{
 		PROTO_Cmds(PROTOCMD_RESET);
 		TRACE("  ->  RESET Proto - %s -",  Protos[s_current_protocol].ProtoName);
 		SIMU_SLEEP(100);
 	}
-	if (g_model.rfProtocol > (PROTOCOL_COUNT-1)) g_model.rfProtocol = PROTOCOL_PPM;
+	if (g_model.rfProtocol > (PROTOCOL_COUNT-1)) 
+		g_model.rfProtocol = PROTOCOL_PPM;
 	s_current_protocol = g_model.rfProtocol;
 	PROTO_Cmds = *Protos[g_model.rfProtocol].Cmds;
 	TRACE("  ->  INIT Proto - %s -", Protos[g_model.rfProtocol].ProtoName);
@@ -60,7 +62,7 @@ ISR(RF_TIMER_COMPA_VECT) // ISR for Protocol Callback, PPMSIM and PPM16 (Last 8 
 {
 	timer_counts = timer_callback(); // Function pointer e.g. skyartec_cb().
 
-	if(! timer_counts) {
+	if(!timer_counts) {
 		PROTO_Cmds(PROTOCMD_RESET);
 		return;
 	}
@@ -78,27 +80,32 @@ void setupPulsesPPM(enum ppmtype proto)
 
 	// The pulse ISR is 2MHz that's why everything is multiplied by 2
 
-	int16_t PPM_range = g_model.extendedLimits ? 640*2 : 512*2;   //range of 0.7..1.7msec
+	int16_t PPM_range = g_model.extendedLimits ? 640*TIMER_MULTIPLIER : 512*TIMER_MULTIPLIER;   //range of 0.7..1.7msec
 
-	uint16_t q = (g_model.PPMDELAY*50+300)*2; // Channel sync pulse.
+	uint16_t q = (g_model.PPMDELAY*50+300)*TIMER_MULTIPLIER; // Channel sync pulse.
 
-	int32_t rest = 22500u*2 - q;
+	int32_t rest = 22500u*TIMER_MULTIPLIER - q;
 
 	// PPM 16 uses a fixed frame length of 22.5msec.
-	if(proto == PPM || proto == PPMSIM) rest += (int32_t(g_model.PPMFRAMELENGTH))*1000;
+	if(proto == PPM || proto == PPMSIM) 
+		rest += (int32_t(g_model.PPMFRAMELENGTH))*1000;
 
 	// PPM and PPM16 (Channels 1-8) use first half of array. PPMSIM and PPM16 (Channels 9-16) use last half.
 	uint16_t *ptr = (proto == PPM || proto == PPM16FIRST) ? &pulses2MHz.pword[0] : &pulses2MHz.pword[PULSES_WORD_SIZE/2];
 
 	uint8_t p;
 	// Fix PPM16 to 16 channels (8+8), No modification by GUI.
+	if(proto == PPM || proto == PPMSIM) 
+		p = 4 + (g_model.PPMNCH * 2); // Channels *2
+	else if(proto == PPM16FIRST) 
+		p = 8;
+	else 
+		p = 16; // PPM16 Channels 9-16.
 
-	if(proto == PPM || proto == PPMSIM) p = 4 + (g_model.PPMNCH * 2); // Channels *2
-	else if(proto == PPM16FIRST) p = 8;
-	else p = 16; // PPM16 Channels 9-16.
-
-	for (uint8_t i=(proto == PPM16LAST) ? 8 : 0; i<p; i++) { // Just do channels 1-8 unless PPM16 (9-16).
-		int16_t v = limit((int16_t)-PPM_range, channelOutputs[i], (int16_t)PPM_range) + 2*PPM_CH_CENTER(i);
+	for (uint8_t i=(proto == PPM16LAST) ? 8 : 0; i<p; i++) 
+	{ 
+		// Just do channels 1-8 unless PPM16 (9-16).
+		int16_t v = limit((int16_t)-PPM_range, channelOutputs[i], (int16_t)PPM_range) + PPM_CH_CENTER(i) * TIMER_MULTIPLIER;
 		rest -= v;
 		*ptr++ = q;
 		*ptr++ = v - q; // Total pulse width includes channel sync pulse.
@@ -108,7 +115,7 @@ void setupPulsesPPM(enum ppmtype proto)
 	if (rest > 65535) rest = 65535; // Prevents overflows.
 	if (rest < 9000)  rest = 9000;
 
-	*ptr++ = rest - (PULSES_SETUP_TIME_US *2);
+	*ptr++ = rest - (PULSES_SETUP_TIME_US * TIMER_MULTIPLIER);
 	*ptr = 0; // End array with (uint16_t) 0;
 }
 
