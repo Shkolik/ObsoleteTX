@@ -16,6 +16,18 @@ int16_t channelOutputs[PPMCHMAX];
 volatile uint16_t g_tmr10ms;
 volatile uint16_t framesTransmitted;
 
+void blinkLed()
+{
+	LED_PORT ^= LED_PIN;
+	_delay_ms(10);
+	LED_PORT ^= LED_PIN;
+}
+
+void togglePin()
+{
+	OUT_PORT ^= OUT_PIN;
+}
+
 //run every frame after the end of transmitting synchronization pulse 
 void setupPulsesPPM(enum ppmtype proto)
 {
@@ -108,18 +120,18 @@ int main(void)
 	
 	//Timer counts with frequency 1MHz
 	TCCR1A	= 0;							// Clear timer registers
-	TCCR1B	= 0;							//
+	TCCR1B	= 0;							// Normal mode
 	TCNT1	= 0;							// starts from 0
 	// An interrupt can be generated at each time the counter value reaches the TOP value by either using the OCF1A or ICF1 Flag,
 	// depending on the actual CTC mode. If the interrupt is enabled, the interrupt handler routine can be used for updating the TOP value.
-	#if 1									// The counter value (TCNT1) increases until a compare match occurs with OCR1A, and then TCNT1 is cleared.	
+	#if 0									// The counter value (TCNT1) increases until a compare match occurs with OCR1A, and then TCNT1 is cleared.	
 	TCCR1B	|= 1<<WGM12;					// code 4 (CTC, compare with OCR1A, Immediate update of OCR1x, overflow on MAX)
-	#else									// The counter value (TCNT1) increases until a compare match occurs with ICR1, and then TCNT1 is cleared.	
-	TCCR1B	|= 1<<WGM13 | 1<<WGM12;			// code 12 (CTC, compare with ICR1, Immediate update of OCR1x, overflow on MAX)
+	#else if 0								// The counter value (TCNT1) increases until a compare match occurs with ICR1, and then TCNT1 is cleared.	
+	TCCR1B	|= 1<<WGM13 | 1<<WGM12;			// code 12 (CTC, compare with ICR1, Immediate update of OCR1x, overflow on MAX)	
 	#endif
 	TCCR1B	|= 1<<CS11;						// F_TIMER1 = 1MHz (F_CPU/8), 1 tick per 1 microsecond
-	TCCR1C	= 0;//(1 << FOC1A);	
-	RF_TIMER_COMPA_REG	= 20000;						// Next frame starts in 20 mS	
+	TCCR1C	= 0;
+	RF_TIMER_COMPA_REG	= 20000;			// Next frame starts in 20 mS	
 	TIMSK	|= (1<<OCIE1A) | (1 << TOIE1);	// Enable output compare and overflow	
 	//////////////////////////////////////////////////////////////////////////
 	  
@@ -153,7 +165,7 @@ int main(void)
 	 Serial0.println(TCNT1);
 	 
 	//////////////////////////////////////////////////////////////////////////
-	framesPtr = &frames[0];
+	//framesPtr = &frames[0];
 	
 	sei();	// Enable global interrupts
 		
@@ -216,37 +228,21 @@ void setPinState(uint8_t state)
 
 ISR(RF_TIMER_COMPA_VECT)
 {
-	//uint16_t pulse = *pulses1MHzWPtr++;
-	//*framesPtr++ = pulse;
-	//if(*pulses1MHzWPtr == 0)
-	//pulses1MHzWPtr = pulses1MHz;
+	uint16_t pulse = *pulses1MHzWPtr++;
+	
+	if(pulse != 0)
+	{
+		togglePin();
+		RF_TIMER_COMPA_REG += pulse;
+	}
+	
 	//next pulse is termination
-	//now rest of frame - it's time to setup next frame
-	//if(pulse  == 0)
-	//{
-		//setPinState(PULSEPOL);
-		//RF_TIMER_COMPA_REG = 500;
-		//*(framesPtr++) = 500;
-		//pulses1MHzWPtr = pulses1MHz;		
-	//}
-	//else if(*pulses1MHzWPtr == 0)
-	//{
-		//setPinState(PULSEPOL);
-		//RF_TIMER_COMPA_REG = pulse;
-		//pulses1MHzWPtr = pulses1MHz;
-		//*(framesPtr++) = pulse;
-		////setupPulsesPPM(PPM);
-	//}
-	//else
-	//{
-		////just toggle pin		
-		//RF_TIMER_COMPA_REG = pulse;
-		//*(framesPtr++) = pulse;
-		//if(pulse > 300)
-			//setPinState(PULSEPOL);
-		//else
-			//setPinState(!PULSEPOL);		
-	//}
+	if(*pulses1MHzWPtr == 0)
+	{
+		setPinState(PULSEPOL);
+		blinkLed();
+		pulses1MHzWPtr = pulses1MHz;
+	}
 	
 	
 	/*
@@ -272,7 +268,5 @@ ISR(RF_TIMER_COMPA_VECT)
 
 ISR(TIMER1_OVF_vect)
 {
-	LED_PORT ^= LED_PIN;
-	_delay_ms(10);
-	LED_PORT ^= LED_PIN;
+	//blinkLed();
 }
