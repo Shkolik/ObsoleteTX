@@ -211,6 +211,7 @@ ISR(TIMER_10MS_VECT) //10ms timer
 
 ISR(TIMER0_OVF_vect)	//continuous timer 32.64ms (6MHz/1024)
 {
+	// does not work! TODO: Check what is going on!
 	//getADC();
 }
 
