@@ -7,6 +7,14 @@ Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ObsoleteTX", "ObsoleteTX\Ob
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ProtocolTest", "ProtocolTest\ProtocolTest.cppproj", "{FEB761C5-34C5-4516-A2EF-EFC4514214E7}"
 EndProject
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Blinky", "Blinky\Blinky.cppproj", "{DCD2C4D1-C2D2-4321-9E22-EBEA50D3657D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bootloader", "Bootloader", "{121A94A3-A2AC-467A-BF16-EB9939B71C4E}"
+	ProjectSection(SolutionItems) = preProject
+		Bootloader\flash_bootloader.bat = Bootloader\flash_bootloader.bat
+		Bootloader\optiboot_flash_atmega128_UART0_38400_8000000L_B5_BIGBOOT.hex = Bootloader\optiboot_flash_atmega128_UART0_38400_8000000L_B5_BIGBOOT.hex
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AVR = Debug|AVR
@@ -21,6 +29,10 @@ Global
 		{FEB761C5-34C5-4516-A2EF-EFC4514214E7}.Debug|AVR.Build.0 = Debug|AVR
 		{FEB761C5-34C5-4516-A2EF-EFC4514214E7}.Release|AVR.ActiveCfg = Release|AVR
 		{FEB761C5-34C5-4516-A2EF-EFC4514214E7}.Release|AVR.Build.0 = Release|AVR
+		{DCD2C4D1-C2D2-4321-9E22-EBEA50D3657D}.Debug|AVR.ActiveCfg = Debug|AVR
+		{DCD2C4D1-C2D2-4321-9E22-EBEA50D3657D}.Debug|AVR.Build.0 = Debug|AVR
+		{DCD2C4D1-C2D2-4321-9E22-EBEA50D3657D}.Release|AVR.ActiveCfg = Release|AVR
+		{DCD2C4D1-C2D2-4321-9E22-EBEA50D3657D}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

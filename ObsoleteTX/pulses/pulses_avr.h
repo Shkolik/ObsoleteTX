@@ -33,9 +33,6 @@ extern void (*ocr1b_function_ptr)(); // Function pointer to add flexibility and 
 
 extern uint16_t dt;
 
-
-
-
 enum ppmtype{
 	PPM,
 	PPMSIM,
