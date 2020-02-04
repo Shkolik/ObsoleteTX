@@ -126,7 +126,7 @@ int main(void)
 	// depending on the actual CTC mode. If the interrupt is enabled, the interrupt handler routine can be used for updating the TOP value.
 	#if 0									// The counter value (TCNT1) increases until a compare match occurs with OCR1A, and then TCNT1 is cleared.	
 	TCCR1B	|= 1<<WGM12;					// code 4 (CTC, compare with OCR1A, Immediate update of OCR1x, overflow on MAX)
-	#else if 0								// The counter value (TCNT1) increases until a compare match occurs with ICR1, and then TCNT1 is cleared.	
+	#elif 0									// The counter value (TCNT1) increases until a compare match occurs with ICR1, and then TCNT1 is cleared.	
 	TCCR1B	|= 1<<WGM13 | 1<<WGM12;			// code 12 (CTC, compare with ICR1, Immediate update of OCR1x, overflow on MAX)	
 	#endif
 	TCCR1B	|= 1<<CS11;						// F_TIMER1 = 1MHz (F_CPU/8), 1 tick per 1 microsecond
@@ -211,6 +211,7 @@ ISR(TIMER_10MS_VECT) //10ms timer
 
 ISR(TIMER0_OVF_vect)	//continuous timer 32.64ms (6MHz/1024)
 {
+	// does not work! TODO: Check what is going on!
 	//getADC();
 }
 
