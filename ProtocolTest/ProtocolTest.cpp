@@ -13,8 +13,11 @@ uint16_t *framesPtr;
 uint16_t pulses1MHz[PULSES_WORD_SIZE];
 int16_t channelOutputs[PPMCHMAX];
 
+uint16_t adcTime;
 volatile uint16_t g_tmr10ms;
-volatile uint16_t framesTransmitted;
+volatile uint8_t g_tmr32ms;
+
+uint16_t lastCalc;
 
 void blinkLed()
 {
@@ -26,6 +29,15 @@ void blinkLed()
 void togglePin()
 {
 	OUT_PORT ^= OUT_PIN;
+}
+
+static uint16_t getTmr128uS()
+{
+	while(1){
+		uint8_t hb  = g_tmr32ms;
+		uint8_t lb  = TCNT0;
+		if(hb-g_tmr32ms==0) return (hb<<8)|lb;
+	}
 }
 
 //run every frame after the end of transmitting synchronization pulse 
@@ -64,7 +76,11 @@ void setupPulsesPPM(enum ppmtype proto)
 }
 
 //run every 10ms
-//have TODO something with synchronization
+//for some reason, if call this method inside interrupt 
+//it breaks all the timings...
+//WTF???
+//For now - run inside main loop every 20ms
+//ACD time is 512uS
 void getADC()
 {
 	for (uint8_t adc_input=0; adc_input<6; adc_input++)
@@ -86,7 +102,6 @@ void getADC()
 		channelOutputs[adc_input] = temp_ana - 1024;			
 	}
 }
-
 
 int main(void)
 {
@@ -111,7 +126,7 @@ int main(void)
 	//////////////////////////////////////////////////////////////////////////
 	//Timer generates event every 10ms. Starts here and never stops
 	TIMER_10MS_COMPVAL	= 78;			// count to 10ms
-	TCCR0	= (7 << CS00);				// Norm mode, clk/1024 (1 << CS00 | 1 << CS01 | 1 << CS02
+	TCCR0	= (7 << CS00);				// Norm mode, clk/1024 (1 << CS00 | 1 << CS01 | 1 << CS02)
 	TIMSK	= (1<<OCIE0) | (1<<TOIE0);	// COMP - 78 (100Hz), OVF - 255 (30.64Hz)
 	//////////////////////////////////////////////////////////////////////////
 	
@@ -119,20 +134,13 @@ int main(void)
 	setupPulsesPPM(PPM);
 	
 	//Timer counts with frequency 1MHz
-	TCCR1A	= 0;							// Clear timer registers
-	TCCR1B	= 0;							// Normal mode
-	TCNT1	= 0;							// starts from 0
-	// An interrupt can be generated at each time the counter value reaches the TOP value by either using the OCF1A or ICF1 Flag,
-	// depending on the actual CTC mode. If the interrupt is enabled, the interrupt handler routine can be used for updating the TOP value.
-	#if 0									// The counter value (TCNT1) increases until a compare match occurs with OCR1A, and then TCNT1 is cleared.	
-	TCCR1B	|= 1<<WGM12;					// code 4 (CTC, compare with OCR1A, Immediate update of OCR1x, overflow on MAX)
-	#elif 0								// The counter value (TCNT1) increases until a compare match occurs with ICR1, and then TCNT1 is cleared.	
-	TCCR1B	|= 1<<WGM13 | 1<<WGM12;			// code 12 (CTC, compare with ICR1, Immediate update of OCR1x, overflow on MAX)	
-	#endif
-	TCCR1B	|= 1<<CS11;						// F_TIMER1 = 1MHz (F_CPU/8), 1 tick per 1 microsecond
+	TCCR1A	= 0;						// Clear timer registers
+	TCCR1B	= 0;						// Normal mode
 	TCCR1C	= 0;
-	RF_TIMER_COMPA_REG	= 20000;			// Next frame starts in 20 mS	
-	TIMSK	|= (1<<OCIE1A) | (1 << TOIE1);	// Enable output compare and overflow	
+	TCNT1	= 0;						// starts from 0	
+	TCCR1B	|= 1<<CS11;					// F_TIMER1 = 1MHz (F_CPU/8), 1 tick per 1 microsecond
+	RF_TIMER_COMPA_REG	= 20000;		// Next frame starts in 20 mS	
+	TIMSK	|= (1<<OCIE1A);				// Enable output compare
 	//////////////////////////////////////////////////////////////////////////
 	  
 	//////////////////////////////////////////////////////////////////////////
@@ -172,6 +180,13 @@ int main(void)
 	/* Replace with your application code */
 	while (1)
 	{
+		//uint16_t t0 = getTmr128uS();
+		//getADC();
+		//uint16_t t1 = getTmr128uS() - t0;
+		//if(t1 > adcTime)
+			//adcTime = t1;
+			//
+		//Serial0.println(adcTime);
 		//_delay_ms(1000);
 		//int dt = isr1 - latency - 500;
 		//latency = isr1;
@@ -197,7 +212,7 @@ int main(void)
 
 
 
-ISR(TIMER_10MS_VECT) //10ms timer
+ISR(TIMER_10MS_VECT, ISR_NOBLOCK ) //10ms timer
 {
 	// Clocks every 9.984ms & 10.112ms
 	static uint8_t accuracy = 0;
@@ -206,13 +221,13 @@ ISR(TIMER_10MS_VECT) //10ms timer
 	// 7 out of 8 times count to 9.984ms and 1 of 8 to 10.112ms
 	TIMER_10MS_COMPVAL += (++accuracy & 0x07) ? 78 : 79;
 	
-	++g_tmr10ms;
+	++g_tmr10ms;	
+	getADC();
 }
 
-ISR(TIMER0_OVF_vect)	//continuous timer 32.64ms (6MHz/1024)
+ISR(TIMER0_OVF_vect, ISR_NOBLOCK )	//continuous timer 32.64ms (8MHz/1024)
 {
-	// does not work! TODO: Check what is going on!
-	//getADC();
+	g_tmr32ms++;
 }
 
 void setPinState(uint8_t state)
@@ -241,8 +256,8 @@ ISR(RF_TIMER_COMPA_VECT)
 	if(*pulses1MHzWPtr == 0)
 	{
 		setPinState(PULSEPOL);
-		blinkLed();
-		pulses1MHzWPtr = pulses1MHz;
+		//blinkLed();
+		setupPulsesPPM(PPM);
 	}
 	
 	
@@ -265,9 +280,4 @@ ISR(RF_TIMER_COMPA_VECT)
 	if (dt > g_tmr1Latency_max) g_tmr1Latency_max = dt;
 	if (dt < g_tmr1Latency_min) g_tmr1Latency_min = dt;	
 	*/
-}
-
-ISR(TIMER1_OVF_vect)
-{
-	//blinkLed();
 }

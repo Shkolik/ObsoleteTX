@@ -1549,7 +1549,7 @@ uint16_t getTmr128uS()
 	//return getTmr128uS() * 2;
 //}
 
-ISR(TIMER0_OVF_vect, ISR_NOBLOCK)	//continuous timer 32.64ms (6MHz/1024)
+ISR(TIMER0_OVF_vect)	//continuous timer 32.64ms (8MHz/1024)
 {
 	g_tmr128uS++;
 }
