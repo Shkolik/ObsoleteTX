@@ -32,7 +32,7 @@ static uint16_t PROTO_PPM_cb()
 		setupPulsesPPM();
 		//For now latency to big > 100us
 		//TODO: Have to find solution how to fix it. 50-55us will be ok
-		dt = TCNT1 - RF_TIMER_COMPA_REG; // Show how long to setup pulses and ISR jitter.
+		CALCULATE_LAT_JIT();
 	}
 
 	if(dt > g_tmr1Latency_max) g_tmr1Latency_max = dt;
@@ -59,12 +59,10 @@ const void *PROTO_PPM_Cmds(enum ProtoCmds cmd)
 {
 	switch(cmd)
 	{
-		case PROTOCMD_INIT:
-			Serial0.println("PROTOCMD_INIT");
+		case PROTOCMD_INIT:			
 			PROTO_PPM_initialize();
 			return 0;
-		case PROTOCMD_RESET:
-			Serial0.println("PROTOCMD_RESET");
+		case PROTOCMD_RESET:			
 			PROTO_PPM_reset();
 			return 0;
 		case PROTOCMD_GETOPTIONS:

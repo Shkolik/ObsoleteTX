@@ -1,15 +1,14 @@
 /*
- * telemetry_driver.cpp
+ * usart_driver.cpp
  *
- * Created: 1/25/2020 8:53:38 PM
- *  Author: Andrew
+ * Created: 2/5/2020 10:16:52 AM
+ *  Author: andrew.shkolik
  */ 
 
-#include "telemetry_driver.h"
+#include "usart_driver.h"
+uint8_t pulsesBuff[USART_TX_PACKET_SIZE];
 
-uint8_t TelemetryRxBuffer[NUM_TELEM_RX_BUFFER][TELEM_RX_PACKET_SIZE];
-
-uint8_t * UsartTxBuffer = pulses2MHz.pbyte; // [USART_TX_PACKET_SIZE] bytes used
+uint8_t * UsartTxBuffer = pulsesBuff;//(uint8_t*)pulses1MHz;  //[USART_TX_PACKET_SIZE] bytes used
 
 uint8_t UsartTxBufferCount = 0;
 
@@ -49,11 +48,11 @@ void UsartSet8E2()
   UCSRC_N(TLM_USART) = (1 << UPM01) | (1 << USBS0)| (1 << UCSZ1_N(TLM_USART)) | (1 << UCSZ0_N(TLM_USART)); // set 2 stop bits, even parity BIT
 }
 
+#ifdef FRSKY_D
 void UsartSet9600BAUDS() //Frsky "D" telemetry
 {
 #undef BAUD
 #define BAUD 9600
-#include <util/setbaud.h>
   UBRRH_N(TLM_USART) = UBRRH_VALUE;
   UBRRL_N(TLM_USART) = UBRRL_VALUE;
 #if USE_2X
@@ -62,12 +61,13 @@ void UsartSet9600BAUDS() //Frsky "D" telemetry
    UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
 #endif
 }
+#endif
 
+#ifdef SPORT
 void UsartSet57600BAUDS() //Frsky S.port telemetry
 {
 #undef BAUD
 #define BAUD 57600
-#include <util/setbaud.h>
   UBRRH_N(TLM_USART) = UBRRH_VALUE;
   UBRRL_N(TLM_USART) = UBRRL_VALUE;
 #if USE_2X
@@ -76,12 +76,14 @@ void UsartSet57600BAUDS() //Frsky S.port telemetry
    UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
 #endif
 }
+#endif
 
+#ifdef DSM_SERIAL
 void UsartSet125000BAUDS() //DSM Serial protocol
 {
 #undef BAUD
 #define BAUD 125000
-#include <util/setbaud.h>
+//#include <util/setbaud.h>
   UBRRH_N(TLM_USART) = UBRRH_VALUE;
   UBRRL_N(TLM_USART) = UBRRL_VALUE;
 #if USE_2X
@@ -90,7 +92,9 @@ void UsartSet125000BAUDS() //DSM Serial protocol
    UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
 #endif
 }
+#endif
 
+#ifdef MULTI
 void UsartSet100000BAUDS() //Multiprotocol Serial
 {
 #undef BAUD
@@ -104,6 +108,7 @@ void UsartSet100000BAUDS() //Multiprotocol Serial
    UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
 #endif
 }
+#endif
 
 void UsartTransmitBuffer()
 {
@@ -181,3 +186,7 @@ ISR(USART_UDRE_vect_N(TLM_USART))
   }
 }
 
+NOINLINE void parseTelemFrskyByte(uint8_t data)
+{
+	
+}

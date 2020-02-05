@@ -18,7 +18,7 @@
 #endif
 
 #include "Serial.h"
-
+//#include <util/setbaud.h>
 // this next line disables the entire HwSerial.cpp,
 // this is so I can support Attiny series and any other chip without a uart
 #if (HW_SERIAL0_SUPPORT || HW_SERIAL1_SUPPORT)

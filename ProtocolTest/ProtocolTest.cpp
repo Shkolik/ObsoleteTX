@@ -21,11 +21,30 @@ uint16_t g_tmr1Latency_max;
 uint16_t g_tmr1Latency_min = 100;
 uint16_t dt;
 
+uint16_t Bind_tmr10ms = 0;
+
+const ModelData g_model = {
+	/*uint8_t   modelId:6;*/1,
+	/*uint8_t   rfProtocol:6;*/MM_RF_PROTO_DSM2,
+	/*uint8_t   rfSubType:4;*/MM_RF_DSM2_SUBTYPE_DSM2_22,
+	/*int8_t    rfOptionValue1;*/MM_RF_PROTO_DSM2,//dsm2
+	/*int8_t    rfOptionValue2;*/0,
+	/*uint8_t   rfOptionValue3:5;*/0,
+	/*uint8_t   rfOptionBool1:1;*/0,
+	/*uint8_t   rfOptionBool2:1;*/0,
+	/*uint8_t   rfOptionBool3:1;*/0,
+};
+
+bool rangeModeIsOn = false; // manage low power TX
+uint8_t protoMode = NORMAL_MODE;
+
 Proto_struct Protos[] = {
 	{ PROTOCOL_PPM, PROTO_PPM_Cmds }
 	//{ PROTOCOL_DSM_SERIAL, DSM_SERIAL_Cmds },
 	//{ PROTOCOL_MULTI, MULTI_Cmds }
 };
+
+const pm_char STR_DUMMY[]  PROGMEM = INDENT"***";
 
 FORCEINLINE uint8_t pulsesStarted()
 {
@@ -41,7 +60,7 @@ void PROTO_Start_Callback( uint16_t (*cb)())
 	if(!cb)
 	{
 		blinkLed(2);
-		Serial0.println("Callback not set!");
+		//Serial0.println("Callback not set!");
 		return;
 	}
 
@@ -63,6 +82,19 @@ void PROTO_Stop_Callback()
 	timer_callback = NULL;
 }
 
+void PROTO_SetBindState(uint16_t t10ms)
+{
+	if(t10ms)
+	{
+		protoMode = BIND_MODE;
+		Bind_tmr10ms = t10ms;
+	}
+	else 
+	{		
+		protoMode = NORMAL_MODE;
+	}
+}
+
 void sendStopPulses()
 {
 	PROTO_Cmds(PROTOCMD_RESET);
@@ -76,16 +108,13 @@ void startPulses(enum Protocols protocol)
 
 	//reset module
 	if (pulsesStarted())
-	{
-		Serial0.println("Stop pulses");
+	{		
 		PROTO_Cmds(PROTOCMD_RESET);
 	}
 	//set protocol
 	s_current_protocol = protocol;
 	//get callbacks
-	PROTO_Cmds = *Protos[s_current_protocol].Cmds;
-	Serial0.println("get callback");
-	Serial0.println(Protos[s_current_protocol].Protocol);
+	PROTO_Cmds = *Protos[s_current_protocol].Cmds;	
 	//run command
 	PROTO_Cmds(PROTOCMD_INIT);
 }
@@ -185,6 +214,19 @@ void getADC()
 	}
 }
 
+void per10ms()
+{
+	if(BIND_KEY)
+	{
+		PROTO_SetBindState(400);
+	}
+	if (Bind_tmr10ms)
+	{
+		if (!--Bind_tmr10ms)
+		protoMode = NORMAL_MODE;
+	}
+}
+
 int main(void)
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -260,6 +302,7 @@ ISR(TIMER_10MS_VECT, ISR_NOBLOCK )
 	TIMER_10MS_COMPVAL += (++accuracy & 0x07) ? 78 : 79;
 
 	++g_tmr10ms;
+	per10ms();
 	getADC();
 }
 
