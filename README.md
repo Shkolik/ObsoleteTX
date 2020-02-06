@@ -6,8 +6,8 @@ Please, do not use it :) Better stick with any of established products listed be
 
 
 This repository based on code from named :  
-OpenAVRc - https://github.com/Ingwie/OpenAVRc_Dev
-er9x - https://github.com/MikeBland/mbtx                     
-OpenTx - https://github.com/opentx/opentx                  
-Deviation - https://www.deviationtx.com/                   
+OpenAVRc - https://github.com/Ingwie/OpenAVRc_Dev     
+er9x - https://github.com/MikeBland/mbtx                      
+OpenTx - https://github.com/opentx/opentx                   
+Deviation - https://www.deviationtx.com/                    
                                                                      
