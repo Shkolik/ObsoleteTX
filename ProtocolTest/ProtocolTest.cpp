@@ -11,7 +11,7 @@ uint16_t *pulses1MHzWPtr;
 uint16_t pulses1MHz[PULSES_WORD_SIZE];
 int16_t channelOutputs[PPMCHMAX];
 
-volatile uint16_t g_tmr10ms;
+uint16_t g_tmr10ms;
 volatile uint8_t g_tmr32ms;
 
 uint16_t nextMixerEndTime = 0;
@@ -24,10 +24,10 @@ uint16_t dt;
 uint16_t Bind_tmr10ms = 0;
 
 const ModelData g_model = {
-	/*uint8_t   modelId:6;*/1,
-	/*uint8_t   rfProtocol:6;*/MM_RF_PROTO_DSM2,
-	/*uint8_t   rfSubType:4;*/MM_RF_DSM2_SUBTYPE_DSM2_22,
-	/*int8_t    rfOptionValue1;*/MM_RF_PROTO_DSM2,//dsm2
+	/*uint8_t   modelId:6;*/9,
+	/*uint8_t   rfProtocol:6;*/16,
+	/*uint8_t   rfSubType:4;*/4,//e010
+	/*int8_t    rfOptionValue1;*/16,//mjxq
 	/*int8_t    rfOptionValue2;*/0,
 	/*uint8_t   rfOptionValue3:5;*/0,
 	/*uint8_t   rfOptionBool1:1;*/0,
@@ -39,10 +39,23 @@ bool rangeModeIsOn = false; // manage low power TX
 uint8_t protoMode = NORMAL_MODE;
 
 Proto_struct Protos[] = {
-	{ PROTOCOL_PPM, PROTO_PPM_Cmds }
-	//{ PROTOCOL_DSM_SERIAL, DSM_SERIAL_Cmds },
-	//{ PROTOCOL_MULTI, MULTI_Cmds }
+	{ PROTOCOL_PPM, PROTO_PPM_Cmds },
+	//{ PROTOCOL_DSM_SERIAL, 0},//DSM_SERIAL_Cmds },
+	{ PROTOCOL_MULTI, MULTI_Cmds }
 };
+
+
+void SetRfOptionSettings(uint_farptr_t RfOptSet,
+const pm_char* rfSubTypeNames,
+const pm_char* rfOptionValue1Name,
+const pm_char* rfOptionValue2Name,
+const pm_char* rfOptionValue3Name,
+const pm_char* rfOptionBool1Name,
+const pm_char* rfOptionBool2Name,
+const pm_char* rfOptionBool3Name)
+{
+	
+}
 
 const pm_char STR_DUMMY[]  PROGMEM = INDENT"***";
 
@@ -60,7 +73,6 @@ void PROTO_Start_Callback( uint16_t (*cb)())
 	if(!cb)
 	{
 		blinkLed(2);
-		//Serial0.println("Callback not set!");
 		return;
 	}
 
@@ -113,8 +125,10 @@ void startPulses(enum Protocols protocol)
 	}
 	//set protocol
 	s_current_protocol = protocol;
+	//Serial0.println(s_current_protocol);
 	//get callbacks
 	PROTO_Cmds = *Protos[s_current_protocol].Cmds;	
+	//Serial0.println(Protos[s_current_protocol].Protocol );
 	//run command
 	PROTO_Cmds(PROTOCMD_INIT);
 }
@@ -216,14 +230,17 @@ void getADC()
 
 void per10ms()
 {
-	if(BIND_KEY)
+	
+	if (Bind_tmr10ms > 0)
 	{
-		PROTO_SetBindState(400);
-	}
-	if (Bind_tmr10ms)
-	{
-		if (!--Bind_tmr10ms)
-		protoMode = NORMAL_MODE;
+		Bind_tmr10ms--;
+		
+		Serial0.println(Bind_tmr10ms);
+		
+		if (0 == Bind_tmr10ms)
+		{
+			protoMode = NORMAL_MODE;
+		}
 	}
 }
 
@@ -233,7 +250,7 @@ int main(void)
 	/// setup registers
 	//////////////////////////////////////////////////////////////////////////
 	DDRB = 0b11111111;  PORTB = 0b11111111; // All Outputs PullUp
-	DDRD = 0b11111101;  PORTD = 0b00000010; // PD1 - bind Input PullUp
+	DDRD = 0b00111001;  PORTD = 0b11000010; // PD7 - bind Input
 	DDRE = 0b00010010;  PORTE = 0b11111110; // PE4 - led, PE1 - TX, PE0 - RX
 	DDRF = 0b00000000;  PORTF = 0b11111111; // All analog inputs PullUp
 	//////////////////////////////////////////////////////////////////////////
@@ -278,16 +295,23 @@ int main(void)
 	sei();	// Enable global interrupts
 
 	//Start protocol here!
-	startPulses(PROTOCOL_PPM);
-
+	startPulses(PROTOCOL_MULTI);
+	_delay_ms(3000);
+	PROTO_SetBindState(500);
 	/* Replace with your application code */
 	while (1)
 	{
-		Serial0.println("Max ISR latency:");
-		Serial0.println(g_tmr1Latency_max);
-		Serial0.println("Min ISR latency:");
-		Serial0.println(g_tmr1Latency_min);
-		_delay_ms(100);
+		//if(BIND_KEY)
+		//{
+			//PROTO_SetBindState(500);
+		//}
+		//Serial0.println("Bind key state:");
+		//Serial0.println(PORTD, 2);
+		//Serial0.println("Max ISR latency:");
+		//Serial0.println(g_tmr1Latency_max);
+		//Serial0.println("Min ISR latency:");
+		//Serial0.println(g_tmr1Latency_min);
+		//_delay_ms(1000);
 	}
 }
 

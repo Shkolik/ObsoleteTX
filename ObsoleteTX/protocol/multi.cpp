@@ -229,9 +229,9 @@ static uint16_t MULTI_cb()
 		}
 	}
 
-	#if !defined(SIMU)
+	//#if !defined(SIMU)
 	UsartTransmitBuffer();
-	#endif
+	//#endif
 
 	heartbeat |= HEART_TIMER_PULSES;
 	CALCULATE_LAT_JIT(); // Calculate latency and jitter.

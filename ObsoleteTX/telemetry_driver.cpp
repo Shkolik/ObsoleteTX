@@ -173,11 +173,13 @@ ISR(USART_RX_vect_N(TLM_USART))
 // USART0 Transmit Data Register Empty ISR (UDR was loaded in Shift Register)
 ISR(USART_UDRE_vect_N(TLM_USART))
 {
-  if (UsartTxBufferCount > 0) {
-    UDR_N(TLM_USART) = UsartTxBuffer[--UsartTxBufferCount];
-  }
-  else {
-    UCSRB_N(TLM_USART) &= ~(1 << UDRIE_N(TLM_USART)); // Disable UDRE interrupt.
-  }
+	  if (UsartTxBufferCount > 0) 
+	  {
+		UDR_N(TLM_USART) = UsartTxBuffer[--UsartTxBufferCount];
+	  }
+	  else 
+	  {
+		UCSRB_N(TLM_USART) &= ~(1 << UDRIE_N(TLM_USART)); // Disable UDRE interrupt.
+	  }
 }
 

@@ -99,23 +99,33 @@ void UsartSet100000BAUDS() //Multiprotocol Serial
 {
 #undef BAUD
 #define BAUD 100000
-#include <util/setbaud.h>
-  UBRRH_N(TLM_USART) = UBRRH_VALUE;
-  UBRRL_N(TLM_USART) = UBRRL_VALUE;
-#if USE_2X
+//#include <util/setbaud.h>
+// it's a hack for 8Mhz atmega128 in 2x mode
+// TODO: Make more correct calculations in future
+uint16_t baud_setting = 8;//(F_CPU / 4 / BAUD - 1) / 2;
+UBRRH_N(TLM_USART) = baud_setting >> 8;
+UBRRL_N(TLM_USART) = baud_setting;
+  //UBRRH_N(TLM_USART) = UBRRH_VALUE;
+  //UBRRL_N(TLM_USART) = UBRRL_VALUE;
+//#if USE_2X
    UCSRA_N(TLM_USART) |= (1 << U2X_N(TLM_USART));
-#else
-   UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
-#endif
+//#else
+//   UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
+//#endif
 }
 #endif
 
 void UsartTransmitBuffer()
 {
+	//uint8_t count = UsartTxBufferCount;
+	//for(uint8_t i = 0; i < count, UsartTxBufferCount > 0; i++, UsartTxBufferCount--)
+	//{
+		//Serial0.print(UsartTxBuffer[i]);		
+	//}
   UCSRB_N(TLM_USART) |= (1 << UDRIE_N(TLM_USART)); // enable Data Register Empty Interrupt
 }
 
-#if defined(FRSKY) || defined(MULTI)
+#if defined(FRSKY)
 
 ISR(USART_RX_vect_N(TLM_USART))
 {
@@ -160,15 +170,17 @@ ISR(USART_RX_vect_N(TLM_USART))
 
     data = UDR_N(TLM_USART); // USART data register 0
 
-    if (stat & ((1 << FE_N(TLM_USART)) | (1 << DOR_N(TLM_USART)) | (1 << UPE_N(TLM_USART))))
-      {
-        // discard buffer and start fresh on any error
-        parseTelemFrskyByte(START_STOP); // reset
-      }
-    else
-      {
-        parseTelemFrskyByte(data);
-      }
+    //if (stat & ((1 << FE_N(TLM_USART)) | (1 << DOR_N(TLM_USART)) | (1 << UPE_N(TLM_USART))))
+      //{
+        //// discard buffer and start fresh on any error
+        //processMultiTelemetryData(START_STOP); // reset
+		//parseTelemFrskyByte(data);
+      //}
+    //else
+      //{
+		  //processMultiTelemetryData(data);
+		  parseTelemFrskyByte(data);
+      //}
 
   }
   UCSRB_N(TLM_USART) |= (1 << RXCIE_N(TLM_USART)); // enable Interrupt
@@ -188,5 +200,5 @@ ISR(USART_UDRE_vect_N(TLM_USART))
 
 NOINLINE void parseTelemFrskyByte(uint8_t data)
 {
-	
+	Serial0.print(data);
 }

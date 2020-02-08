@@ -19,9 +19,9 @@
 #include <avr/pgmspace.h>
 #include "Serial.h"
 #include "usart_driver.h"
-
+#include "telemetry.h"
 #define MULTI
-
+#define TELEMETRY
 //////////////////////////////////////////////////////////////////////////
 //PGM_TYPES
 //////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ typedef uint32_t		pm_uint32_t;
 #define LED_PIN		PIN4_bm
 
 #define BIND_PORT	PORTD
-#define BIND_KEY	~(PORTD & PIN1_bm)
+#define BIND_KEY	~(BIND_PORT >> 7)
 
 #define ADC_VREF_TYPE (1 << REFS0) // AVCC with external capacitor at AREF pin
 
@@ -305,7 +305,7 @@ template<class t> FORCEINLINE t limit(t mi, t x, t ma){	return min(max(mi,x),ma)
 
 enum Protocols {
 	PROTOCOL_PPM,
-	PROTOCOL_DSM_SERIAL,
+	//PROTOCOL_DSM_SERIAL,
 	PROTOCOL_MULTI,
 	PROTOCOL_COUNT
 };
@@ -342,6 +342,7 @@ extern bool rangeModeIsOn;
 
 extern uint16_t Bind_tmr10ms;
 
+extern uint16_t g_tmr10ms;
 extern void blinkLed(uint8_t count);
 extern void setPinState(uint8_t state);
 extern void togglePin();
@@ -351,10 +352,14 @@ extern void PROTO_SetBindState(uint16_t t10ms);
 
 extern void setupPulsesPPM();
 extern const void * PROTO_PPM_Cmds(enum ProtoCmds);
+extern const void *MULTI_Cmds(enum ProtoCmds cmd);
 extern const void * (*PROTO_Cmds)(enum ProtoCmds);  //protocol callback
 extern uint16_t (*timer_callback)(void);			// Function pointer to add flexibility and simplicity to ISR.
 
 extern void parseTelemFrskyByte(uint8_t data);
 
 extern const ModelData g_model;
+
+#define IS_SPIMODULES_PROTOCOL(protocol)  (0)
+#define LASTPROTOMENU1 PROTOCOL_COUNT-1
 #endif /* MAIN_H_ */

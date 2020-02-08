@@ -109,14 +109,16 @@ static void MULTI_Reset()
 }
 
 static uint16_t MULTI_cb()
-{
+{	
 	//add later
 	//SCHEDULE_MIXER_END_IN_US(22000); // Schedule next Mixer calculations.
-
+	 
 	// Send data
 	if (UsartTxBufferCount) 
+	{
 		return 1000 *2; // return, if buffer is not empty
-	UsartTxBufferCount = 26;
+	}
+	UsartTxBufferCount = 27;
 	//TODO: Use pointer instead and share buffer between PPM and multi
 	uint8_t multiTxBufferCount = UsartTxBufferCount;
 
@@ -124,10 +126,12 @@ static uint16_t MULTI_cb()
 	int8_t type = g_model.MULTIRFPROTOCOL + 1; //MULTIRFPROTOCOL
 	int8_t subtype = g_model.rfSubType;
 	int8_t optionValue = g_model.rfOptionValue2;
-
+	
 	uint8_t protoByte = 0;
 	if (protoMode == BIND_MODE)
+	{
 		protoByte |= MULTI_SEND_BIND;
+	}
 	else if (rangeModeIsOn)
 		protoByte |= MULTI_SEND_RANGECHECK;
 
@@ -137,7 +141,8 @@ static uint16_t MULTI_cb()
 		// Auto binding should always be done in DSMX 11ms
 		if(g_model.rfOptionBool2 && protoMode == BIND_MODE)
 			subtype = MM_RF_DSM2_SUBTYPE_AUTO;
-
+		else
+			subtype = MM_RF_DSM2_SUBTYPE_DSM2_22;
 		// Multi module in DSM mode wants the number of channels to be used as option value
 		optionValue = MULTI_CHANS;
 	}
@@ -200,7 +205,9 @@ static uint16_t MULTI_cb()
 
 	// header, byte 0,  0x55 for protocol 0-31 0x54 for 32-63
 	if (type <= 31)
-		UsartTxBuffer[--multiTxBufferCount] = 0x55;
+	{
+		UsartTxBuffer[--multiTxBufferCount] = 0x55;		
+	}
 	else
 		UsartTxBuffer[--multiTxBufferCount] = 0x54;
 
@@ -211,13 +218,13 @@ static uint16_t MULTI_cb()
 
 	// sendByteMulti(protoByte);
 	UsartTxBuffer[--multiTxBufferCount] = protoByte;
-
-	// byte 2, subtype, power mode, model id
+	
+	//subprotocol no (0-7) bits 4-6
+	// byte 2, subtype, power mode, model id 1&0f | 0 &7 | 0 << 7
 	UsartTxBuffer[--multiTxBufferCount] = ((uint8_t) ((g_model.modelId & 0x0f)
 	| ((subtype & 0x7) << 4)
 	| (g_model.LOWPOWERMODE << 7))
 	);
-
 	// byte 3
 	UsartTxBuffer[--multiTxBufferCount] = (uint8_t) optionValue;
 
@@ -232,6 +239,7 @@ static uint16_t MULTI_cb()
 
 		// Scale to 80%
 		value =  value*8/10 + 1024;
+		
 		bits |= ((uint32_t)limit<int16_t>(0, value, 2047)) << bitsavailable;
 		bitsavailable += MULTI_CHAN_BITS;
 
@@ -241,10 +249,15 @@ static uint16_t MULTI_cb()
 			bitsavailable -= 8;
 		}
 	}
-
+	
+	//byte 26 - extended protocol 0-255
+	//UsartTxBuffer[--multiTxBufferCount] = 0x10;
+	
+	UsartTransmitBuffer();
 	//enable later
 	//heartbeat |= HEART_TIMER_PULSES;
 	CALCULATE_LAT_JIT(); // Calculate latency and jitter.
+	
 	return 22000U * TIMER_MULTIPLIER; // 22 mSec loop
 }
 
@@ -269,14 +282,14 @@ const void *MULTI_Cmds(enum ProtoCmds cmd)
 {
 	switch(cmd)
 	{
-		case PROTOCMD_INIT:
+		case PROTOCMD_INIT:			
 			MULTI_initialize();
 			return 0;
-		case PROTOCMD_RESET:	
+		case PROTOCMD_RESET:				
 			PROTO_Stop_Callback();	
 			MULTI_Reset();
 			return 0;
-		case PROTOCMD_GETOPTIONS:
+		case PROTOCMD_GETOPTIONS:			
 			SetRfOptionSettings(pgm_get_far_address(RfOpt_Multi_Ser),
 			STR_DUMMY,       //Sub protocol
 			STR_DUMMY,       //Option 1 (int)

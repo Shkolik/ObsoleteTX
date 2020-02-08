@@ -173,6 +173,12 @@
     <Compile Include="Stream.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="telemetry.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="telemetry.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="temp.h">
       <SubType>compile</SubType>
     </Compile>
