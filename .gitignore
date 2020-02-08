@@ -4,3 +4,6 @@
 /ObsoleteTX/Debug
 /ProtocolTest/Release
 /ProtocolTest/Debug
+/read dump/reader/bin
+/read dump/reader/obj
+/read dump/reader/.vs/
