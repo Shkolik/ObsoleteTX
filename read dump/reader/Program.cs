@@ -70,7 +70,7 @@ namespace reader
             frame.RangeCheckBit = (bytes[1] & 0x20) > 0;
             frame.RxNum = bytes[2] & 0x0F;
             frame.Power = (bytes[2] & 0x10) > 0;
-            frame.SubProtocol = bytes[2] >> 5;
+            frame.SubProtocol = bytes[2] >> 4;
             frame.Option = bytes[3];
 
             StringBuilder sb = new StringBuilder();

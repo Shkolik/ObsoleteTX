@@ -21,19 +21,24 @@ uint16_t g_tmr1Latency_max;
 uint16_t g_tmr1Latency_min = 100;
 uint16_t dt;
 
-uint16_t Bind_tmr10ms = 0;
+uint8_t heartbeat;
+uint16_t bind_tmr10ms = 0;
+uint8_t change_debounce_tmr10ms = 0;
 
 const ModelData g_model = {
 	/*uint8_t   modelId:6;*/9,
-	/*uint8_t   rfProtocol:6;*/16,
+	/*uint8_t   rfProtocol:6;*/MM_RF_PROTO_MJXQ,
 	/*uint8_t   rfSubType:4;*/4,//e010
-	/*int8_t    rfOptionValue1;*/16,//mjxq
+	/*int8_t    rfOptionValue1;*/MM_RF_PROTO_MJXQ,//mjxq
 	/*int8_t    rfOptionValue2;*/0,
 	/*uint8_t   rfOptionValue3:5;*/0,
 	/*uint8_t   rfOptionBool1:1;*/0,
 	/*uint8_t   rfOptionBool2:1;*/0,
 	/*uint8_t   rfOptionBool3:1;*/0,
 };
+
+uint16_t (*timer_callback)(void);
+const void * (*PROTO_Cmds)(enum ProtoCmds);
 
 bool rangeModeIsOn = false; // manage low power TX
 uint8_t protoMode = NORMAL_MODE;
@@ -44,35 +49,16 @@ Proto_struct Protos[] = {
 	{ PROTOCOL_MULTI, MULTI_Cmds }
 };
 
-
-void SetRfOptionSettings(uint_farptr_t RfOptSet,
-const pm_char* rfSubTypeNames,
-const pm_char* rfOptionValue1Name,
-const pm_char* rfOptionValue2Name,
-const pm_char* rfOptionValue3Name,
-const pm_char* rfOptionBool1Name,
-const pm_char* rfOptionBool2Name,
-const pm_char* rfOptionBool3Name)
-{
-	
-}
-
-const pm_char STR_DUMMY[]  PROGMEM = INDENT"***";
-
 FORCEINLINE uint8_t pulsesStarted()
 {
 	return (s_current_protocol != 255);
 }
 
-uint16_t (*timer_callback)(void);
-const void * (*PROTO_Cmds)(enum ProtoCmds);
-
-
 void PROTO_Start_Callback( uint16_t (*cb)())
 {
 	if(!cb)
 	{
-		blinkLed(2);
+		debugln("Protocol callback not set");
 		return;
 	}
 
@@ -99,7 +85,7 @@ void PROTO_SetBindState(uint16_t t10ms)
 	if(t10ms)
 	{
 		protoMode = BIND_MODE;
-		Bind_tmr10ms = t10ms;
+		bind_tmr10ms = t10ms;
 	}
 	else 
 	{		
@@ -125,25 +111,24 @@ void startPulses(enum Protocols protocol)
 	}
 	//set protocol
 	s_current_protocol = protocol;
-	//Serial0.println(s_current_protocol);
+	debugln("Current protocol:");
+	debugln(s_current_protocol);
 	//get callbacks
 	PROTO_Cmds = *Protos[s_current_protocol].Cmds;	
-	//Serial0.println(Protos[s_current_protocol].Protocol );
+	
 	//run command
 	PROTO_Cmds(PROTOCMD_INIT);
 }
 
-void blinkLed(uint8_t count)
+void nextProtocol()
 {
-	count++;
-	while(count > 0)
-	{
-		count--;
-		LED_PORT ^= LED_PIN;
-		_delay_ms(10);
-	}
+	if(s_current_protocol < PROTOCOL_COUNT - 1)
+		startPulses((Protocols)(s_current_protocol+1));
+	else
+		startPulses(PROTOCOL_PPM);
 }
 
+//TODO: Can be replaced with macros
 void setPinState(uint8_t state)
 {
 	if(state)
@@ -156,6 +141,7 @@ void setPinState(uint8_t state)
 	}
 }
 
+//TODO: Can be replaced with macros
 void togglePin()
 {
 	OUT_PORT ^= OUT_PIN;
@@ -206,6 +192,7 @@ void setupPulsesPPM()
 }
 
 //run every 10ms
+//For some reason 1 and 2 channels not correct
 void getADC()
 {
 	for (uint8_t adc_input=0; adc_input<6; adc_input++)
@@ -228,19 +215,148 @@ void getADC()
 	}
 }
 
+uint8_t switchState(EnumKeys key)
+{
+	uint8_t result = 0 ;
+
+	//if (key < NUM_KEYS)
+	//return keys[enuk].state() ? 1 : 0;
+	//
+	switch(key) 
+	{
+		//case SW_ELE:
+		//result = !(PINL & INP_L_ElevDR);
+		//break;
+	//
+		//case SW_AIL:
+		//result = !(PIND & INP_D_AileDR);
+		//break;
+	//
+		//case SW_RUD:
+		//result = !(PING & INP_G_RuddDR);
+		//break;
+	//
+		////       INP_C_ID1  INP_C_ID2
+		//// ID0      0          1
+		//// ID1      1          1
+		//// ID2      1          0
+		//case SW_ID0:
+		//result = !(PINC & INP_C_ID1);
+		//break;
+	//
+		//case SW_ID1:
+		//result = (PINC & INP_C_ID1) && (PINC & INP_C_ID2);
+		//break;
+	//
+		//case SW_ID2:
+		//result = !(PINC & INP_C_ID2);
+		//break;
+	//
+		//case SW_GEA:
+		//result = !(PING & INP_G_Gear);
+		//break;
+	
+		case SW_THR:
+		result = IS_PIN_LOW(PING, 4);
+		break;
+	
+		case SW_TRN:
+		result = IS_PIN_LOW(PING, 3);
+		break;
+	
+		default:break;
+	}
+
+	return result;
+}
+
+void readKeysAndTrims()
+{
+	//uint8_t index = KEY_MENU;
+
+	// Test buttons ...
+	uint8_t in = ~PING;
+	
+	keys[1].input(in & (1<<3));
+	keys[2].input(in & (1<<4));
+	
+	
+	//// User buttons ...
+	//uint8_t in = ~PINB;
+	//for (int i=1; i<7; i++) {
+		//keys[index].input(in & (1<<i));
+		//++index;
+	//}
+//
+	//// Trims ...
+	//in = ~PIND;
+	//for (int i=0; i<8; i++) {
+		//// INP_D_TRM_RH_UP   0 .. INP_D_TRM_LH_UP   7
+		//keys[index].input(trimHelper(in, i));
+		//++index;
+	//}
+//
+	//#if defined(ROTARY_ENCODER_NAVIGATION)
+	//keys[index].input(ROTENC_DOWN()); // Rotary Enc. Switch
+	//#endif
+//
+	//#if defined(NAVIGATION_STICKS)
+	//if (~PINB & 0x7E) {
+		//StickScrollTimer = STICK_SCROLL_TIMEOUT;
+	//}
+	//#endif
+}
+
 void per10ms()
 {
+	readKeysAndTrims();
 	
-	if (Bind_tmr10ms > 0)
+	uint8_t evt = getEvent();
+	
+	switch(evt)
 	{
-		Bind_tmr10ms--;
-		
-		Serial0.println(Bind_tmr10ms);
-		
-		if (0 == Bind_tmr10ms)
-		{
+		case EVT_KEY_FIRST(KEY_BIND):
+			PORTE &= ~( 1<< 4);
+			protoMode = BIND_MODE;
+			debugln("Set bind");
+			break;
+		case EVT_KEY_BREAK(KEY_BIND):
 			protoMode = NORMAL_MODE;
-		}
+			PORTE |= ( 1<< 4);
+			debugln("Set normal");
+			break;
+		case EVT_KEY_FIRST(KEY_CHANGE):
+			nextProtocol();
+			break;		
+	}
+	
+	//if(BIND_PRESSED && protoMode == NORMAL_MODE)
+	//{
+		//PORTE &= ~( 1<< 4);
+		//PROTO_SetBindState(300);
+	//}
+	//
+	//if(CHANGE_PRESSED)
+	//{
+		//if(change_debounce_tmr10ms > 0)
+			//change_debounce_tmr10ms--;
+		//else
+			//nextProtocol();
+	//}
+	if (bind_tmr10ms > 0)
+	{
+		//check if bind button was released
+		if(!BIND_PRESSED)
+		{
+			bind_tmr10ms--;
+			
+			if (0 == bind_tmr10ms)
+			{
+				protoMode = NORMAL_MODE;
+				PORTE |= ( 1<< 4);
+				debugln("Set normal");
+			}
+		}		
 	}
 }
 
@@ -249,9 +365,18 @@ int main(void)
 	//////////////////////////////////////////////////////////////////////////
 	/// setup registers
 	//////////////////////////////////////////////////////////////////////////
-	DDRB = 0b11111111;  PORTB = 0b11111111; // All Outputs PullUp
-	DDRD = 0b00111001;  PORTD = 0b11000010; // PD7 - bind Input
-	DDRE = 0b00010010;  PORTE = 0b11111110; // PE4 - led, PE1 - TX, PE0 - RX
+	//Led				//TX0				//RX0
+	DDRE |= (1 << 4);	DDRE |= (1 << 1);	DDRE  &= ~(1 << 0);
+	PORTE|= (1 << 4);	PORTE|= (1 << 1);	PORTE &= ~(1 << 0);
+	
+	//PPM OUT			//RX1				//TX1				
+	DDRD |= (1 << 0);	DDRD  &= ~(1 << 2);	DDRD |= (1 << 3);	
+	PORTD|= (1 << 0);	PORTD &= ~(1 << 2);	PORTD|= (1 << 3);	
+	
+	//Change proto		//BIND				
+	DDRG &= ~(1 << 4);	DDRG &= ~(1 << 3);	
+	PORTG|= (1 << 4);	PORTG |= (1 << 3);	
+		
 	DDRF = 0b00000000;  PORTF = 0b11111111; // All analog inputs PullUp
 	//////////////////////////////////////////////////////////////////////////
 
@@ -278,40 +403,30 @@ int main(void)
 	TCNT1	= 0;						// starts from 0
 	TCCR1B	|= 1<<CS11;					// F_TIMER1 = 1MHz (F_CPU/8), 1 tick per 1 microsecond
 	RF_TIMER_COMPA_REG	= 20000;		// Next frame starts in 20 mS
-	//Interrupt will be enabled by protocol callback
-	//When started
-	//TIMSK	|= (1<<OCIE1A);				// Enable output compare
+	//Interrupt will be enabled by protocol callback when started	
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
-	//setup UARTS
+	//setup UART for debug
 	//////////////////////////////////////////////////////////////////////////
-	Serial0.init(115200);
+	init_debug(115200);
 	//////////////////////////////////////////////////////////////////////////
 
 
 	//////////////////////////////////////////////////////////////////////////
-
 	sei();	// Enable global interrupts
 
 	//Start protocol here!
 	startPulses(PROTOCOL_MULTI);
-	_delay_ms(3000);
-	PROTO_SetBindState(500);
+	//startPulses(PROTOCOL_PPM);
+	
 	/* Replace with your application code */
 	while (1)
 	{
-		//if(BIND_KEY)
-		//{
-			//PROTO_SetBindState(500);
-		//}
-		//Serial0.println("Bind key state:");
-		//Serial0.println(PORTD, 2);
-		//Serial0.println("Max ISR latency:");
-		//Serial0.println(g_tmr1Latency_max);
-		//Serial0.println("Min ISR latency:");
-		//Serial0.println(g_tmr1Latency_min);
-		//_delay_ms(1000);
+		if (heartbeat == HEART_WDT_CHECK) {
+			wdt_reset();
+			heartbeat = 0;
+		}
 	}
 }
 
@@ -328,6 +443,7 @@ ISR(TIMER_10MS_VECT, ISR_NOBLOCK )
 	++g_tmr10ms;
 	per10ms();
 	getADC();
+	heartbeat |= HEART_TIMER_10MS;
 }
 
 //continuous timer, call every 32.64ms (8MHz/1024)
@@ -337,15 +453,13 @@ ISR(TIMER0_OVF_vect, ISR_NOBLOCK )
 }
 
 // 1MHz clock, normal node, OCR1A for compare
-ISR(RF_TIMER_COMPA_VECT)
+ISR(RF_TIMER_COMPA_VECT, ISR_NOBLOCK)
 {
 	if(timer_callback)
 	{
 		uint16_t timer_counts = timer_callback(); // Protocol function pointer
-
 		if(!timer_counts)
 		{
-			blinkLed(5);
 			PROTO_Cmds(PROTOCMD_RESET);
 			return;
 		}

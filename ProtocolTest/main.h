@@ -8,6 +8,7 @@
 
 #ifndef MAIN_H_
 #define MAIN_H_
+
 #define F_CPU 8000000UL
 
 #include <avr/io.h>
@@ -17,24 +18,26 @@
 #include <avr/sfr_defs.h>
 #include <stddef.h>
 #include <avr/pgmspace.h>
-#include "Serial.h"
+#include <avr/wdt.h>
+#include <string.h>
+#include "pgmtypes.h"
+
+//in case we need debug output
+#ifdef USART_DBG
+#include "USART_DBG/Serial.h"
+#define debugln(ln) Serial0.println(ln)
+#define debug(ln) Serial0.print(ln)
+#define init_debug(baud) Serial0.init(baud)
+#else
+#define debugln(ln) 
+#define debug(ln) 
+#define init_debug(baud)
+#endif
+
 #include "usart_driver.h"
-#include "telemetry.h"
+#include "keys.h"
+
 #define MULTI
-#define TELEMETRY
-//////////////////////////////////////////////////////////////////////////
-//PGM_TYPES
-//////////////////////////////////////////////////////////////////////////
-typedef void			pm_void;
-typedef char			pm_char;
-typedef unsigned char	pm_uchar;
-typedef int8_t			pm_int8_t;
-typedef uint8_t			pm_uint8_t;
-typedef int16_t			pm_int16_t;
-typedef uint16_t		pm_uint16_t;
-typedef int32_t			pm_int32_t;
-typedef uint32_t		pm_uint32_t;
-//////////////////////////////////////////////////////////////////////////
 
 #ifndef PIN0_bm
 #define PIN0_bm  0x01
@@ -60,6 +63,9 @@ typedef uint32_t		pm_uint32_t;
 #ifndef PIN7_bm
 #define PIN7_bm  0x80
 #endif
+
+#define IS_PIN_HI(reg, pin) ((reg & (1 << pin)) > 0)
+#define IS_PIN_LOW(reg, pin) !IS_PIN_HI(reg, pin)
 
 
 #define DBG_UART_USB
@@ -95,8 +101,8 @@ typedef uint32_t		pm_uint32_t;
 #define LED_PORT	PORTE
 #define LED_PIN		PIN4_bm
 
-#define BIND_PORT	PORTD
-#define BIND_KEY	~(BIND_PORT >> 7)
+#define BIND_PRESSED	IS_PIN_LOW(PING, 3)
+#define CHANGE_PRESSED	IS_PIN_LOW(PING, 4)
 
 #define ADC_VREF_TYPE (1 << REFS0) // AVCC with external capacitor at AREF pin
 
@@ -328,6 +334,8 @@ typedef struct {
 #define PULSEPOL 0
 #define PPMCHMAX 6
 
+extern uint8_t heartbeat;
+
 extern uint8_t s_current_protocol;
 
 extern int16_t channelOutputs[PPMCHMAX];
@@ -340,10 +348,10 @@ extern uint16_t dt;
 extern uint8_t protoMode;
 extern bool rangeModeIsOn;
 
-extern uint16_t Bind_tmr10ms;
+extern uint16_t bind_tmr10ms;
 
 extern uint16_t g_tmr10ms;
-extern void blinkLed(uint8_t count);
+//extern void blinkLed(uint8_t count);
 extern void setPinState(uint8_t state);
 extern void togglePin();
 extern void PROTO_Stop_Callback();
@@ -360,6 +368,16 @@ extern void parseTelemFrskyByte(uint8_t data);
 
 extern const ModelData g_model;
 
+#define HEART_TIMER_10MS              1
+#define HEART_TIMER_PULSES            2 // when multiple modules this is the first one
+#define HEART_WDT_CHECK               (HEART_TIMER_10MS + HEART_TIMER_PULSES)
+
 #define IS_SPIMODULES_PROTOCOL(protocol)  (0)
 #define LASTPROTOMENU1 PROTOCOL_COUNT-1
+
+//  Dimension of Arrays
+#define DIM(array) ((sizeof array) / (sizeof *array))
+#define memclear(p, s) memset(p, 0, s)
+
+
 #endif /* MAIN_H_ */
