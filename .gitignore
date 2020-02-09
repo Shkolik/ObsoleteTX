@@ -7,3 +7,7 @@
 /read dump/reader/bin
 /read dump/reader/obj
 /read dump/reader/.vs/
+/Blinky/Release
+/Blinky/USART_DBG
+/ObsoleteTX/USART_DBG
+/ProtocolTest/USART_DBG

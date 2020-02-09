@@ -24,7 +24,7 @@
 
 //in case we need debug output
 #ifdef USART_DBG
-#include "USART_DBG/Serial.h"
+#include "DBG/Serial.h"
 #define debugln(ln) Serial0.println(ln)
 #define debug(ln) Serial0.print(ln)
 #define init_debug(baud) Serial0.init(baud)
