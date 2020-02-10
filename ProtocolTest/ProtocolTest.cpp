@@ -195,7 +195,27 @@ void setupPulsesPPM()
 //For some reason 1 and 2 channels not correct
 void getADC()
 {
-	for (uint8_t adc_input=0; adc_input<6; adc_input++)
+	#if defined(INV_STICK_RH) || defined(INV_STICK_LV) || defined(INV_STICK_RV) || defined(INV_STICK_LH)
+	uint8_t invMask = 0
+	#if defined(INV_STICK_RH)
+	+ _BV(0)
+	#endif
+	#if defined(INV_STICK_LV)
+	+ _BV(1)
+	#endif
+	#if defined(INV_STICK_RV)
+	+ _BV(2)
+	#endif
+	#if defined(INV_STICK_LH)
+	+ _BV(3)
+	#endif
+	;
+	#endif
+	
+	//F0 for some reason connected with F1 on my board... 
+	//TODO: find out why...
+	//for (uint8_t adc_input=0; adc_input<6; adc_input++)
+	for (uint8_t adc_input=1; adc_input<5; adc_input++)
 	{
 		//need at least 2 conversions for more reliable result
 		int16_t temp_ana;
@@ -210,9 +230,22 @@ void getADC()
 		// Wait for the AD conversion to complete
 		while bit_is_set(ADCSRA,ADSC);
 		temp_ana += ADC;
+		
+		#if defined(INV_STICK_RH) || defined(INV_STICK_LV) || defined(INV_STICK_RV) || defined(INV_STICK_LH)
+		if (invMask & 0x1)
+		{
+			temp_ana = 0x7FE - temp_ana;
+		}
+		invMask >>= 1;
+		#endif
+		
 		//save result
-		channelOutputs[adc_input] = temp_ana - 1024;
+		channelOutputs[adc_input-1] = temp_ana - 1024;
+		//see above
+		//channelOutputs[adc_input] = temp_ana - 1024;
 	}
+	for(uint8_t i = 5; i<PPMCHMAX; i++)
+		channelOutputs[i] = -1024;
 }
 
 uint8_t switchState(EnumKeys key)

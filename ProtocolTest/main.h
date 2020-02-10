@@ -39,6 +39,9 @@
 
 #define MULTI
 
+//invert throttle for test pp only
+#define INV_STICK_RH
+
 #ifndef PIN0_bm
 #define PIN0_bm  0x01
 #endif
