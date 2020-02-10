@@ -22,7 +22,7 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-#define F_CPU 8000000UL
+#include "board/test.h"
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -49,12 +49,6 @@
 
 #include "usart_driver.h"
 #include "keys.h"
-
-#define MULTI
-#define DSM
-
-//invert throttle for test pp only
-#define INV_STICK_RH
 
 #ifndef PIN0_bm
 #define PIN0_bm  0x01
@@ -85,15 +79,6 @@
 #define IS_PIN_LOW(reg, pin) !IS_PIN_HI(reg, pin)
 
 
-#define DBG_UART_USB
-
-#define CALCULATE_LAT_JIT()  dt = TCNT1 - OCR1A		// Calculate latency and jitter.
-
-#define TIMER_10MS_VECT		TIMER0_COMP_vect //10ms timer
-#define TIMER_10MS_COMPVAL	OCR0
-
-#define RF_TIMER_COMPA_REG  OCR1A
-#define RF_TIMER_COMPA_VECT TIMER1_COMPA_vect
 
 #define MAX_MIXER_DELTA_US	(50000)	// 50ms max as an interval between 2 mixer calculations
 
@@ -109,19 +94,7 @@
 //for 8MHz we need divide some values by 2 (using bit-shift)
 #define TIMER_DEMULTIPLIER (F_CPU == 8000000L ? 1 : 0)
 
-#define OUT_PORT	PORTD
-#define OUT_PIN		PIN0_bm
 
-#define IN_PORT		PORTF
-#define IN_PIN		PIN1_bm
-
-#define LED_PORT	PORTE
-#define LED_PIN		PIN4_bm
-
-#define BIND_PRESSED	IS_PIN_LOW(PING, 3)
-#define CHANGE_PRESSED	IS_PIN_LOW(PING, 4)
-
-#define ADC_VREF_TYPE (1 << REFS0) // AVCC with external capacitor at AREF pin
 
 //////////////////////////////////////////////////////////////////////////
 //MULTI
@@ -204,76 +177,6 @@ enum MMRFrskySubtypes {
 
 //////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////
-///USART
-//////////////////////////////////////////////////////////////////////////
-//USART driver (static register dispatcher)
-
-#define RXD_DDR1 DDRD
-#define RXD_DDR_PIN1 DDD2
-#define RXD_PORT1 PORTD
-#define RXD_PORT_PIN1 PORTD2
-#define RXD_DDR0 DDRE
-#define RXD_DDR_PIN0 DDE0
-#define RXD_PORT0 PORTE
-#define RXD_PORT_PIN0 PORTE0
-
-#define _DOR_N(usart_no) DOR ## usart_no
-#define _FE_N(usart_no) FE ## usart_no
-#define _RXCIE_N(usart_no) RXCIE ## usart_no
-#define _RXC_N(usart_no) RXC ## usart_no
-#define _RXD_DDR_N(usart_no) RXD_DDR ## usart_no
-#define _RXD_DDR_PIN_N(usart_no) RXD_DDR ## usart_no
-#define _RXD_PORT_N(usart_no) RXD_DDR ## usart_no
-#define _RXD_PORT_PIN_N(usart_no) RXD_DDR ## usart_no
-#define _RXEN_N(usart_no) RXEN ## usart_no
-#define _TXCIE_N(usart_no) TXCIE ## usart_no
-#define _TXEN_N(usart_no) TXEN ## usart_no
-#define _U2X_N(usart_no) U2X ## usart_no
-#define _UBRRH_N(usart_no) UBRR ## usart_no ## H
-#define _UBRRL_N(usart_no) UBRR ## usart_no ## L
-#define _UCSRA_N(usart_no) UCSR ## usart_no ## A
-#define _UCSRB_N(usart_no) UCSR ## usart_no ## B
-#define _UCSRC_N(usart_no) UCSR ## usart_no ## C
-#define _UCSZ0_N(usart_no) UCSZ ## usart_no ## 0
-#define _UCSZ1_N(usart_no) UCSZ ## usart_no ## 1
-#define _UCSZ2_N(usart_no) UCSZ ## usart_no ## 2
-#define _UDRIE_N(usart_no) UDRIE ## usart_no
-#define _UDR_N(usart_no) UDR ## usart_no
-#define _UPE_N(usart_no) UPE ## usart_no
-#define _USART_RX_vect_N(usart_no) USART ## usart_no ## _RX_vect
-#define _USART_UDRE_vect_N(usart_no) USART ## usart_no ## _UDRE_vect
-
-#define DOR_N(usart_no) _DOR_N(usart_no)
-#define FE_N(usart_no) _FE_N(usart_no)
-#define RXCIE_N(usart_no) _RXCIE_N(usart_no)
-#define RXC_N(usart_no) _RXC_N(usart_no)
-#define RXD_DDR_N(usart_no) _RXD_DDR_N(usart_no)
-#define RXD_DDR_PIN_N(usart_no) _RXD_DDR_PIN_N(usart_no)
-#define RXD_PORT_N(usart_no) _RXD_PORT_N(usart_no)
-#define RXD_PORT_PIN_N(usart_no) _RXD_PORT_PIN_N(usart_no)
-#define RXEN_N(usart_no) _RXEN_N(usart_no)
-#define TXCIE_N(usart_no) _TXCIE_N(usart_no)
-#define TXEN_N(usart_no) _TXEN_N(usart_no)
-#define U2X_N(usart_no) _U2X_N(usart_no)
-#define UBRRH_N(usart_no) _UBRRH_N(usart_no)
-#define UBRRL_N(usart_no) _UBRRL_N(usart_no)
-#define UCSRA_N(usart_no) _UCSRA_N(usart_no)
-#define UCSRB_N(usart_no) _UCSRB_N(usart_no)
-#define UCSRC_N(usart_no) _UCSRC_N(usart_no)
-#define UCSZ0_N(usart_no) _UCSZ0_N(usart_no)
-#define UCSZ1_N(usart_no) _UCSZ1_N(usart_no)
-#define UCSZ2_N(usart_no) _UCSZ2_N(usart_no)
-#define UDRIE_N(usart_no) _UDRIE_N(usart_no)
-#define UDR_N(usart_no) _UDR_N(usart_no)
-#define UPE_N(usart_no) _UPE_N(usart_no)
-#define USART_RX_vect_N(usart_no) _USART_RX_vect_N(usart_no)
-#define USART_UDRE_vect_N(usart_no) _USART_UDRE_vect_N(usart_no)
-
-//#define USART_RX_vect USART0_RX_vect
-//END: USART driver (static register dispatcher)
-//////////////////////////////////////////////////////////////////////////
-
 typedef struct {
 	//Rf data
 	uint8_t   modelId:6;         //64 max
@@ -351,16 +254,13 @@ extern const void *MULTI_Cmds(enum ProtoCmds cmd);
 extern const void * (*PROTO_Cmds)(enum ProtoCmds);  //protocol callback
 extern uint16_t (*timer_callback)(void);			// Function pointer to add flexibility and simplicity to ISR.
 
-extern void parseTelemFrskyByte(uint8_t data);
+extern void getADC();
 
 extern const ModelData g_model;
 
 #define HEART_TIMER_10MS              1
 #define HEART_TIMER_PULSES            2 // when multiple modules this is the first one
 #define HEART_WDT_CHECK               (HEART_TIMER_10MS + HEART_TIMER_PULSES)
-
-#define IS_SPIMODULES_PROTOCOL(protocol)  (0)
-#define LASTPROTOMENU1 PROTOCOL_COUNT-1
 
 //  Dimension of Arrays
 #define DIM(array) ((sizeof array) / (sizeof *array))

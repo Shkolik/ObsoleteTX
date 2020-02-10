@@ -204,6 +204,12 @@
     <OutputPath>bin\USART_DBG\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="board\test.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="board\test.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="keys.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -257,6 +263,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="board" />
     <Folder Include="protocol" />
     <Folder Include="DBG" />
   </ItemGroup>

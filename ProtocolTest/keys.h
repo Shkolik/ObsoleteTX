@@ -112,6 +112,5 @@ struct t_inactivity{
 	uint8_t  sum;
 } __attribute__((__packed__));
 
-extern Key keys[NUM_KEYS];
 
 #endif /* KEYS_H_ */
