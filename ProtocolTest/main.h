@@ -1,10 +1,23 @@
 /*
- * main.h
+ * Copyright (C) ObsoleteTX
  *
- * Created: 1/31/2020 6:26:04 PM
- *  Author: andrew.shkolik
+ * Based on code named
+ *   th9x - https://github.com/thus1/th9x
+ *   er9x - https://github.com/MikeBland/mbtx
+ *   OpenTx - https://github.com/opentx/opentx
+ *   OpenAVRc - https://github.com/Ingwie/OpenAVRc_Dev
+ *
+ * License GPLv2: http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
-
 
 #ifndef MAIN_H_
 #define MAIN_H_
@@ -38,6 +51,7 @@
 #include "keys.h"
 
 #define MULTI
+#define DSM
 
 //invert throttle for test pp only
 #define INV_STICK_RH
@@ -188,38 +202,6 @@ enum MMRFrskySubtypes {
 	MM_RF_FRSKY_SUBTYPE_D16_LBT_8CH
 };
 
-typedef struct {
-	uint8_t protocol;
-	const pm_char *subTypeString;
-	uint8_t maxSubtype;
-	const char *optionsstr;
-} __attribute__((__packed__)) mm_protocol_definition;
-
-struct RfOptionSettingsvarstruct {
-	uint8_t         rfProtoNeed:4;     // See usage in "PROTO_NEED_XX" Def
-	uint8_t         rfSubTypeMax:4;       //16 max
-	int8_t          rfOptionValue1Min;
-	int8_t          rfOptionValue1Max;
-	int8_t          rfOptionValue2Min;
-	int8_t          rfOptionValue2Max;
-	int8_t          rfOptionValue3Max;/*:5*/  //32 max -16 is min
-} __attribute__((__packed__));
-
-#define BOOL1USED PIN0_bm
-#define BOOL2USED PIN1_bm
-#define BOOL3USED PIN2_bm
-
-void SetRfOptionSettings(uint_farptr_t RfOptSet,
-const pm_char* rfSubTypeNames,
-const pm_char* rfOptionValue1Name,
-const pm_char* rfOptionValue2Name,
-const pm_char* rfOptionValue3Name,
-const pm_char* rfOptionBool1Name,
-const pm_char* rfOptionBool2Name,
-const pm_char* rfOptionBool3Name);
-
-extern const pm_char STR_DUMMY[];
-#define INDENT               "\001"
 //////////////////////////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////////////////////////
@@ -314,7 +296,7 @@ template<class t> FORCEINLINE t limit(t mi, t x, t ma){	return min(max(mi,x),ma)
 
 enum Protocols {
 	PROTOCOL_PPM,
-	//PROTOCOL_DSM_SERIAL,
+	PROTOCOL_DSM,
 	PROTOCOL_MULTI,
 	PROTOCOL_COUNT
 };
@@ -362,7 +344,9 @@ extern void PROTO_Start_Callback( uint16_t (*cb)());
 extern void PROTO_SetBindState(uint16_t t10ms);
 
 extern void setupPulsesPPM();
-extern const void * PROTO_PPM_Cmds(enum ProtoCmds);
+
+extern const void *DSM_Cmds(enum ProtoCmds);
+extern const void *PPM_Cmds(enum ProtoCmds);
 extern const void *MULTI_Cmds(enum ProtoCmds cmd);
 extern const void * (*PROTO_Cmds)(enum ProtoCmds);  //protocol callback
 extern uint16_t (*timer_callback)(void);			// Function pointer to add flexibility and simplicity to ISR.

@@ -1,9 +1,23 @@
 /*
- * multi.cpp
+ * Copyright (C) ObsoleteTX
  *
- * Created: 2/5/2020 10:12:46 AM
- *  Author: andrew.shkolik
- */ 
+ * Based on code named
+ *   th9x - https://github.com/thus1/th9x
+ *   er9x - https://github.com/MikeBland/mbtx
+ *   OpenTx - https://github.com/opentx/opentx
+ *   OpenAVRc - https://github.com/Ingwie/OpenAVRc_Dev
+ *
+ * License GPLv2: http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ */
 
 #include "../main.h"
 
@@ -288,17 +302,17 @@ const void *MULTI_Cmds(enum ProtoCmds cmd)
 			MULTI_Reset();
 			return 0;
 		//Same iu crap - enable later
-		//case PROTOCMD_GETOPTIONS:			
-			//SetRfOptionSettings(pgm_get_far_address(RfOpt_Multi_Ser),
-			//STR_DUMMY,       //Sub protocol
-			//STR_DUMMY,       //Option 1 (int)
-			//STR_DUMMY,       //Option 2 (int)
-			//STR_DUMMY,       //Option 3 (uint 0 to 31)
-			//STR_DUMMY,       //OptionBool 1
-			//STR_DUMMY,       //OptionBool 2
-			//STR_DUMMY        //OptionBool 3
-			//);
-			//return 0;
+		/*case PROTOCMD_GETOPTIONS:			
+			SetRfOptionSettings(pgm_get_far_address(RfOpt_Multi_Ser),
+			STR_DUMMY,       //Sub protocol
+			STR_DUMMY,       //Option 1 (int)
+			STR_DUMMY,       //Option 2 (int)
+			STR_DUMMY,       //Option 3 (uint 0 to 31)
+			STR_DUMMY,       //OptionBool 1
+			STR_DUMMY,       //OptionBool 2
+			STR_DUMMY        //OptionBool 3
+			);
+			return 0;*/
 		default: break;
 	}
 	return 0;

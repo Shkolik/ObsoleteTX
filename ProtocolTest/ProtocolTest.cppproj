@@ -222,10 +222,16 @@
     <Compile Include="main.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="protocol\dsm.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="protocol\dsm.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="protocol\multi.cpp">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="protocol\proto_ppm.cpp">
+    <Compile Include="protocol\ppm.cpp">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="DBG\Print.cpp">

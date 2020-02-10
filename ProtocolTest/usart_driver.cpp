@@ -1,14 +1,28 @@
 /*
- * usart_driver.cpp
+ * Copyright (C) ObsoleteTX
  *
- * Created: 2/5/2020 10:16:52 AM
- *  Author: andrew.shkolik
+ * Based on code named
+ *   th9x - https://github.com/thus1/th9x
+ *   er9x - https://github.com/MikeBland/mbtx
+ *   OpenTx - https://github.com/opentx/opentx
+ *   OpenAVRc - https://github.com/Ingwie/OpenAVRc_Dev
+ *
+ * License GPLv2: http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */ 
 
 #include "usart_driver.h"
 uint8_t pulsesBuff[USART_TX_PACKET_SIZE];
 
-uint8_t * UsartTxBuffer = pulsesBuff;//(uint8_t*)pulses1MHz;  //[USART_TX_PACKET_SIZE] bytes used
+uint8_t * UsartTxBuffer = pulsesBuff;//[USART_TX_PACKET_SIZE] bytes used
 
 uint8_t UsartTxBufferCount = 0;
 
@@ -50,18 +64,26 @@ void UsartSet8E2()
   UCSRC_N(TLM_USART) = (1 << UPM01) | (1 << USBS0)| (1 << UCSZ1_N(TLM_USART)) | (1 << UCSZ0_N(TLM_USART)); // set 2 stop bits, even parity BIT
 }
 
-#ifdef DSM_SERIAL
+#ifdef DSM
 void UsartSet125000BAUDS() //DSM Serial protocol
 {
 #undef BAUD
 #define BAUD 125000
-//#include <util/setbaud.h>
-  UBRRH_N(TLM_USART) = UBRRH_VALUE;
-  UBRRL_N(TLM_USART) = UBRRL_VALUE;
-#if USE_2X
-   UCSRA_N(TLM_USART) |= (1 << U2X_N(TLM_USART));
+#if F_CPU < 16000000UL
+	// it's a hack for 8Mhz atmega128 in 1x mode
+	// TODO: Make more correct calculations in future
+	uint16_t baud_setting = 3;//7;
+	UBRRH_N(TLM_USART) = baud_setting >> 8;
+	UBRRL_N(TLM_USART) = baud_setting;
 #else
-   UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
+	#include <util/setbaud.h>
+	UBRRH_N(TLM_USART) = UBRRH_VALUE;
+	UBRRL_N(TLM_USART) = UBRRL_VALUE;
+#if USE_2X
+	(TLM_USART) |= (1 << U2X_N(TLM_USART));
+#else
+	UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
+#endif
 #endif
 }
 #endif

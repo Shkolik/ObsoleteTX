@@ -19,17 +19,24 @@
  * GNU General Public License for more details.
  */
 
+#ifndef DSM_H_
+#define DSM_H_
+#include "../main.h"
 
-#ifndef STREAM_H_
-#define STREAM_H_
+// DSM2 control bits
+#define DSM2_CHANS                         6
+#define FRANCE_BIT                         0x10
+#define DSMX_BIT                           0x08
+#define BAD_DATA                           0x47
+#define DSM2_SEND_BIND                     0x80
+#define DSM2_SEND_RANGECHECK               0x20
 
-#include "Print.h"
-
-class Stream : public Print
-{
-	public:
-	virtual uint8_t available() = 0;
-	virtual uint8_t read() = 0;
+enum SubProtoDsm {
+	Sub_LP45 = 0,
+	Sub_DSM2,
+	Sub_DSMX
 };
 
-#endif /* STREAM_H_ */
+
+
+#endif /* DSM_H_ */

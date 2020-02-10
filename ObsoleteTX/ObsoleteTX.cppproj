@@ -393,6 +393,12 @@
     <Compile Include="pgmtypes.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="protocol\dsm.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="protocol\dsm.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="protocol\interface.h">
       <SubType>compile</SubType>
     </Compile>

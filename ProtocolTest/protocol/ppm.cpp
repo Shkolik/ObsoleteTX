@@ -1,9 +1,24 @@
 /*
- * proto_ppm.cpp
+ * Copyright (C) ObsoleteTX
  *
- * Created: 1/26/2020 12:11:14 AM
- *  Author: Andrew
+ * Based on code named
+ *   th9x - https://github.com/thus1/th9x
+ *   er9x - https://github.com/MikeBland/mbtx
+ *   OpenTx - https://github.com/opentx/opentx
+ *   OpenAVRc - https://github.com/Ingwie/OpenAVRc_Dev
+ *
+ * License GPLv2: http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  */
+
 #include "../main.h"
 
 /*
@@ -57,7 +72,7 @@ static void PROTO_PPM_initialize()
 	PROTO_Start_Callback(PROTO_PPM_cb);
 }
 
-const void *PROTO_PPM_Cmds(enum ProtoCmds cmd)
+const void *PPM_Cmds(enum ProtoCmds cmd)
 {
 	switch(cmd)
 	{
@@ -68,9 +83,9 @@ const void *PROTO_PPM_Cmds(enum ProtoCmds cmd)
 		case PROTOCMD_RESET:			
 			PROTO_PPM_reset();
 			return 0;
-		case PROTOCMD_GETOPTIONS:
-			//sendOptionsSettingsPpm();
-			return 0;
+		/*case PROTOCMD_GETOPTIONS:
+			sendOptionsSettingsPpm();
+			return 0;*/
         default: break;
 	}
 	return 0;
