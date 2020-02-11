@@ -30,6 +30,8 @@
 #define MULTI
 #define DSM
 
+
+
 //invert throttle for test pp only
 #define INV_STICK_RH
 
@@ -55,9 +57,7 @@
 
 #define ADC_VREF_TYPE (1 << REFS0) // AVCC with external capacitor at AREF pin
 
-
-//USART driver (static register dispatcher)
-
+//USART driver
 #define RXD_DDR1 DDRD
 #define RXD_DDR_PIN1 DDD2
 #define RXD_PORT1 PORTD
@@ -66,5 +66,7 @@
 #define RXD_DDR_PIN0 DDE0
 #define RXD_PORT0 PORTE
 #define RXD_PORT_PIN0 PORTE0
+
+extern void getADC();
 
 #endif /* TEST_H_ */

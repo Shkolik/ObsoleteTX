@@ -19,27 +19,17 @@
  * GNU General Public License for more details.
  */
 
-#ifndef DSM_H_
-#define DSM_H_
+#ifndef PPM_H_
+#define PPM_H_
+
 #include "../main.h"
 
-// DSM2 control bits
-#define DSM2_CHANS              6
-#define FRANCE_BIT              0x10
-#define DSMX_BIT                0x08
-#define BAD_DATA                0x47
-#define DSM2_SEND_BIND          0x80
-#define DSM2_SEND_RANGECHECK	0x20
+// PPM Def
+#define PPMFRAMELENGTH  rfOptionValue1 // 0=22.5ms  (10ms-30ms) 0.5ms increments
+#define PPMDELAY        rfOptionValue2
+#define PPMNCH          rfSubType
+#define PULSEPOL        rfOptionBool1
 
-#define DSM_TYPE				rfSubType
+extern const void *PPM_Cmds(enum ProtoCmds);
 
-enum SubProtoDsm {
-	Sub_LP45 = 0,
-	Sub_DSM2,
-	Sub_DSMX
-};
-
-extern const void *DSM_Cmds(enum ProtoCmds);
-
-
-#endif /* DSM_H_ */
+#endif /* PPM_H_ */

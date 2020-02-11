@@ -23,7 +23,7 @@
 
 bool dsmRange = 0;
 
-static void DSM2_SERIAL_Reset()
+static void DSM2_Reset()
 {
 	UsartDisableTx();
 #ifdef TELEMETRY
@@ -31,7 +31,7 @@ static void DSM2_SERIAL_Reset()
 #endif
 }
 
-static uint16_t DSM_SERIAL_cb()
+static uint16_t DSM_cb()
 {
 	// Schedule next Mixer calculations.
 	//SCHEDULE_MIXER_END_IN_US(22000);
@@ -42,7 +42,7 @@ static uint16_t DSM_SERIAL_cb()
 
 	uint8_t dsm_header;
 
-	switch(g_model.rfSubType)
+	switch(g_model.DSM_TYPE)
 	{
 		case Sub_LP45:
 			dsm_header = 0x00;
@@ -56,7 +56,7 @@ static uint16_t DSM_SERIAL_cb()
 	
 	if(protoMode == BIND_MODE)
 		dsm_header |= DSM2_SEND_BIND;
-	else if(dsmRange)
+	else if(protoMode == RANGE_CHECK_MODE)
 		dsm_header |= DSM2_SEND_RANGECHECK;
 
 	UsartTxBuffer[--dsmTxBufferCount] = dsm_header;
@@ -80,14 +80,14 @@ static uint16_t DSM_SERIAL_cb()
 	return 22000U * TIMER_MULTIPLIER; // 22 mSec Frame.
 }
 
-static void DSM_SERIAL_initialize()
+static void DSM_initialize()
 {
 	// 125K 8N1
 	UsartSet125000BAUDS();
 	UsartSet8N1();
 	UsartEnableTx();
 	UsartTxBufferCount = 0;
-	PROTO_Start_Callback( DSM_SERIAL_cb);
+	PROTO_Start_Callback( DSM_cb);
 }
 
 const void *DSM_Cmds(enum ProtoCmds cmd)
@@ -95,11 +95,13 @@ const void *DSM_Cmds(enum ProtoCmds cmd)
 	switch(cmd) 
 	{
 		case PROTOCMD_INIT:
-			DSM_SERIAL_initialize();
+			DSM_initialize();
+			debugln("DSM_initialize");
 			return 0;		
 		case PROTOCMD_RESET:
+			debugln("DSM2_Reset");
 			PROTO_Stop_Callback();
-			DSM2_SERIAL_Reset();
+			DSM2_Reset();
 			return 0;
 		//Same iu crap - enable later
 		/*case PROTOCMD_GETOPTIONS:

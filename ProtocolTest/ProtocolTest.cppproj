@@ -237,6 +237,9 @@
     <Compile Include="protocol\multi.cpp">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="protocol\multi.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="protocol\ppm.cpp">
       <SubType>compile</SubType>
     </Compile>
@@ -253,6 +256,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="DBG\Stream.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="protocol\ppm.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="usart_driver.cpp">

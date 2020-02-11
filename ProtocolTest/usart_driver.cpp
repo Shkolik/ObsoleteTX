@@ -28,40 +28,40 @@ uint8_t UsartTxBufferCount = 0;
 
 void UsartEnableTx()
 {
-  UCSRB_N(TLM_USART) |= (1 << TXEN_N(TLM_USART)); // enable TX
+  UCSRB_N(PROTOCOL_USART) |= (1 << TXEN_N(PROTOCOL_USART)); // enable TX
 }
 
 void UsartDisableTx()
 {
-  UCSRB_N(TLM_USART) &= ~(1 << UDRIE_N(TLM_USART));// disable Interrupt
-  UCSRB_N(TLM_USART) &= ~(1 << TXEN_N(TLM_USART)); // disable TX
+  UCSRB_N(PROTOCOL_USART) &= ~(1 << UDRIE_N(PROTOCOL_USART));// disable Interrupt
+  UCSRB_N(PROTOCOL_USART) &= ~(1 << TXEN_N(PROTOCOL_USART)); // disable TX
 }
 
 #ifdef TELEMETRY
 void UsartEnableRx()
 {
-	UCSRB_N(TLM_USART) |= (1 << RXEN_N(TLM_USART));  // enable RX
-	UCSRB_N(TLM_USART) |= (1 << RXCIE_N(TLM_USART)); // enable Interrupt
-	while (UCSRA_N(TLM_USART) & (1 << RXC_N(TLM_USART))) UDR_N(TLM_USART); // Flush RX buffer.
+	UCSRB_N(PROTOCOL_USART) |= (1 << RXEN_N(PROTOCOL_USART));  // enable RX
+	UCSRB_N(PROTOCOL_USART) |= (1 << RXCIE_N(PROTOCOL_USART)); // enable Interrupt
+	while (UCSRA_N(PROTOCOL_USART) & (1 << RXC_N(PROTOCOL_USART))) UDR_N(PROTOCOL_USART); // Flush RX buffer.
 }
 
 void UsartDisableRx()
 {
-  UCSRB_N(TLM_USART) &= ~(1 << RXCIE_N(TLM_USART)); // disable Interrupt
-  UCSRB_N(TLM_USART) &= ~(1 << RXEN_N(TLM_USART));  // disable RX
+  UCSRB_N(PROTOCOL_USART) &= ~(1 << RXCIE_N(PROTOCOL_USART)); // disable Interrupt
+  UCSRB_N(PROTOCOL_USART) &= ~(1 << RXEN_N(PROTOCOL_USART));  // disable RX
 }
 #endif
 
 void UsartSet8N1()
 {
-  UCSRB_N(TLM_USART) = (0 << RXCIE_N(TLM_USART)) | (0 << TXCIE_N(TLM_USART)) | (0 << UDRIE_N(TLM_USART)) | (0 << RXEN_N(TLM_USART)) | (0 << TXEN_N(TLM_USART)) | (0 << UCSZ2_N(TLM_USART));
-  UCSRC_N(TLM_USART) = (1 << UCSZ1_N(TLM_USART)) | (1 << UCSZ0_N(TLM_USART)); // Set 1 stop bit, No parity bit.
+  UCSRB_N(PROTOCOL_USART) = (0 << RXCIE_N(PROTOCOL_USART)) | (0 << TXCIE_N(PROTOCOL_USART)) | (0 << UDRIE_N(PROTOCOL_USART)) | (0 << RXEN_N(PROTOCOL_USART)) | (0 << TXEN_N(PROTOCOL_USART)) | (0 << UCSZ2_N(PROTOCOL_USART));
+  UCSRC_N(PROTOCOL_USART) = (1 << UCSZ1_N(PROTOCOL_USART)) | (1 << UCSZ0_N(PROTOCOL_USART)); // Set 1 stop bit, No parity bit.
 }
 
 void UsartSet8E2()
 {
-  UCSRB_N(TLM_USART) = (0 << RXCIE_N(TLM_USART)) | (0 << TXCIE_N(TLM_USART)) | (0 << UDRIE_N(TLM_USART)) | (0 << RXEN_N(TLM_USART)) | (0 << TXEN_N(TLM_USART)) | (0 << UCSZ2_N(TLM_USART));
-  UCSRC_N(TLM_USART) = (1 << UPM01) | (1 << USBS0)| (1 << UCSZ1_N(TLM_USART)) | (1 << UCSZ0_N(TLM_USART)); // set 2 stop bits, even parity BIT
+  UCSRB_N(PROTOCOL_USART) = (0 << RXCIE_N(PROTOCOL_USART)) | (0 << TXCIE_N(PROTOCOL_USART)) | (0 << UDRIE_N(PROTOCOL_USART)) | (0 << RXEN_N(PROTOCOL_USART)) | (0 << TXEN_N(PROTOCOL_USART)) | (0 << UCSZ2_N(PROTOCOL_USART));
+  UCSRC_N(PROTOCOL_USART) = (1 << UPM01) | (1 << USBS0)| (1 << UCSZ1_N(PROTOCOL_USART)) | (1 << UCSZ0_N(PROTOCOL_USART)); // set 2 stop bits, even parity BIT
 }
 
 #ifdef DSM
@@ -73,16 +73,16 @@ void UsartSet125000BAUDS() //DSM Serial protocol
 	// it's a hack for 8Mhz atmega128 in 1x mode
 	// TODO: Make more correct calculations in future
 	uint16_t baud_setting = 3;//7;
-	UBRRH_N(TLM_USART) = baud_setting >> 8;
-	UBRRL_N(TLM_USART) = baud_setting;
+	UBRRH_N(PROTOCOL_USART) = baud_setting >> 8;
+	UBRRL_N(PROTOCOL_USART) = baud_setting;
 #else
 	#include <util/setbaud.h>
-	UBRRH_N(TLM_USART) = UBRRH_VALUE;
-	UBRRL_N(TLM_USART) = UBRRL_VALUE;
+	UBRRH_N(PROTOCOL_USART) = UBRRH_VALUE;
+	UBRRL_N(PROTOCOL_USART) = UBRRL_VALUE;
 #if USE_2X
-	(TLM_USART) |= (1 << U2X_N(TLM_USART));
+	(PROTOCOL_USART) |= (1 << U2X_N(PROTOCOL_USART));
 #else
-	UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
+	UCSRA_N(PROTOCOL_USART) &= ~(1 << U2X_N(PROTOCOL_USART));
 #endif
 #endif
 }
@@ -98,16 +98,16 @@ void UsartSet100000BAUDS() //Multiprotocol Serial
 	// it's a hack for 8Mhz atmega128 in 1x mode
 	// TODO: Make more correct calculations in future
 	uint16_t baud_setting = 4;//8;
-	UBRRH_N(TLM_USART) = baud_setting >> 8;
-	UBRRL_N(TLM_USART) = baud_setting;
+	UBRRH_N(PROTOCOL_USART) = baud_setting >> 8;
+	UBRRL_N(PROTOCOL_USART) = baud_setting;
 #else
 #include <util/setbaud.h>
-	UBRRH_N(TLM_USART) = UBRRH_VALUE;
-	UBRRL_N(TLM_USART) = UBRRL_VALUE;
+	UBRRH_N(PROTOCOL_USART) = UBRRH_VALUE;
+	UBRRL_N(PROTOCOL_USART) = UBRRL_VALUE;
 #if USE_2X
-	UCSRA_N(TLM_USART) |= (1 << U2X_N(TLM_USART));
+	UCSRA_N(PROTOCOL_USART) |= (1 << U2X_N(PROTOCOL_USART));
 #else
-	UCSRA_N(TLM_USART) &= ~(1 << U2X_N(TLM_USART));
+	UCSRA_N(PROTOCOL_USART) &= ~(1 << U2X_N(PROTOCOL_USART));
 #endif
 #endif
 }
@@ -115,17 +115,17 @@ void UsartSet100000BAUDS() //Multiprotocol Serial
 
 void UsartTransmitBuffer()
 {
-	UCSRB_N(TLM_USART) |= (1 << UDRIE_N(TLM_USART)); // enable Data Register Empty Interrupt
+	UCSRB_N(PROTOCOL_USART) |= (1 << UDRIE_N(PROTOCOL_USART)); // enable Data Register Empty Interrupt
 }
 
 // USART0 Transmit Data Register Empty ISR (UDR was loaded in Shift Register)
-ISR(USART_UDRE_vect_N(TLM_USART))
+ISR(USART_UDRE_vect_N(PROTOCOL_USART))
 {
   if (UsartTxBufferCount > 0) {
-    UDR_N(TLM_USART) = UsartTxBuffer[--UsartTxBufferCount];
+    UDR_N(PROTOCOL_USART) = UsartTxBuffer[--UsartTxBufferCount];
   }
   else {
-    UCSRB_N(TLM_USART) &= ~(1 << UDRIE_N(TLM_USART)); // Disable UDRE interrupt.
+    UCSRB_N(PROTOCOL_USART) &= ~(1 << UDRIE_N(PROTOCOL_USART)); // Disable UDRE interrupt.
   }
 }
 

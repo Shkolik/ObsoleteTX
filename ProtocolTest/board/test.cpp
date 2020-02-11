@@ -74,6 +74,8 @@ void getADC()
 		//see above
 		//channelOutputs[adc_input] = temp_ana - 1024;
 	}
-	for(uint8_t i = 5; i<PPMCHMAX; i++)
-	channelOutputs[i] = -1024;
+	//Hack to fix unused channels
+	//remove when mixer ready
+	for(uint8_t i = 5; i<CHMAX; i++)
+		channelOutputs[i] = -1024;
 }

@@ -19,7 +19,7 @@
  * GNU General Public License for more details.
  */
 
-#include "../main.h"
+#include "multi.h"
 
 /* UI crap... enable later
 
@@ -132,32 +132,33 @@ static uint16_t MULTI_cb()
 
 	// Our enumeration starts at 0
 	int8_t type = g_model.MULTIRFPROTOCOL + 1; //MULTIRFPROTOCOL
-	int8_t subtype = g_model.rfSubType;
-	int8_t optionValue = g_model.rfOptionValue2;
+	int8_t subtype = g_model.SUB_TYPE;
+	int8_t optionValue = g_model.OPTION;
 	
 	uint8_t protoByte = 0;
 	if (protoMode == BIND_MODE)
 	{
 		protoByte |= MULTI_SEND_BIND;
 	}
-	else if (rangeModeIsOn)
+	else if (protoMode == RANGE_CHECK_MODE)
 		protoByte |= MULTI_SEND_RANGECHECK;
 
 	// rfProtocol
 	if (g_model.MULTIRFPROTOCOL == MM_RF_PROTO_DSM2) 
 	{
 		// Auto binding should always be done in DSMX 11ms
-		if(g_model.rfOptionBool2 && protoMode == BIND_MODE)
+		if(g_model.AUTOBINDMODE && protoMode == BIND_MODE)
 			subtype = MM_RF_DSM2_SUBTYPE_AUTO;
 		else
 			subtype = MM_RF_DSM2_SUBTYPE_DSM2_22;
+			
 		// Multi module in DSM mode wants the number of channels to be used as option value
 		optionValue = MULTI_CHANS;
 	}
 
 	if (g_model.MULTIRFPROTOCOL == MM_RF_PROTO_DEVO || g_model.MULTIRFPROTOCOL == MM_RF_PROTO_WK_2X01)
 	{
-		if(g_model.rfOptionBool2)
+		if(g_model.AUTOBINDMODE)
 			optionValue = 0;
 		else
 			optionValue = 1;
@@ -244,7 +245,7 @@ static uint16_t MULTI_cb()
 	// Range for pulses (channelsOutputs) is [-1024:+1024] for [-100%;100%]
 	// Multi uses [204;1843] as [-100%;100%]
 	for (uint8_t i=0; i<MULTI_CHANS; i++) {
-		int16_t value = i < PPMCHMAX ? FULL_CHANNEL_OUTPUTS(i) : 0;
+		int16_t value = i < CHMAX ? FULL_CHANNEL_OUTPUTS(i) : 0;
 
 		// Scale to 80%
 		value =  value*8/10 + 1024;

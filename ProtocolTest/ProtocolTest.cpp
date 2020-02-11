@@ -21,9 +21,7 @@
 
 
 #include "main.h"
-uint16_t *pulses1MHzWPtr;
-uint16_t pulses1MHz[PULSES_WORD_SIZE];
-int16_t channelOutputs[PPMCHMAX];
+int16_t channelOutputs[CHMAX];
 
 uint16_t g_tmr10ms;
 volatile uint8_t g_tmr32ms;
@@ -39,7 +37,7 @@ uint8_t heartbeat;
 uint16_t bind_tmr10ms = 0;
 uint8_t change_debounce_tmr10ms = 0;
 
-const ModelData g_model = {
+/*const*/ ModelData g_model = {
 	/*uint8_t   modelId:6;*/9,
 	/*uint8_t   rfProtocol:6;*/MM_RF_PROTO_MJXQ,
 	/*uint8_t   rfSubType:4;*/4,//e010
@@ -49,6 +47,7 @@ const ModelData g_model = {
 	/*uint8_t   rfOptionBool1:1;*/0,
 	/*uint8_t   rfOptionBool2:1;*/0,
 	/*uint8_t   rfOptionBool3:1;*/0,
+	/*uint8_t   extendedLimits:1*/0
 };
 
 uint16_t (*timer_callback)(void);
@@ -59,8 +58,12 @@ uint8_t protoMode = NORMAL_MODE;
 
 Proto_struct Protos[] = {
 	{ PROTOCOL_PPM, PPM_Cmds },
+#ifdef DSM
 	{ PROTOCOL_DSM, DSM_Cmds },
+#endif
+#ifdef MULTI
 	{ PROTOCOL_MULTI, MULTI_Cmds }
+#endif
 };
 
 FORCEINLINE uint8_t pulsesStarted()
@@ -127,6 +130,32 @@ void startPulses(enum Protocols protocol)
 	s_current_protocol = protocol;
 	debugln("Current protocol:");
 	debugln(s_current_protocol);
+	
+	//////////////////////////////////////////////////////////////////////////
+	//For test only
+	//TODO:Remove when UI ready
+	switch(s_current_protocol)
+	{
+		case PROTOCOL_PPM:
+		g_model.rfProtocol = PROTOCOL_PPM;
+		g_model.PPMNCH = 6;
+		g_model.PPMDELAY = 0;
+		g_model.PPMFRAMELENGTH = 0;
+		g_model.PULSEPOL = 0;
+		break;
+		case PROTOCOL_DSM:
+		g_model.rfProtocol = PROTOCOL_DSM;
+		g_model.DSM_TYPE = Sub_DSM2;
+		break;
+		
+		case PROTOCOL_MULTI:
+		g_model.rfProtocol = PROTOCOL_MULTI;
+		g_model.MULTIRFPROTOCOL = MM_RF_PROTO_MJXQ;
+		g_model.SUB_TYPE = 4;
+		break;
+	}
+	//////////////////////////////////////////////////////////////////////////
+	
 	//get callbacks
 	PROTO_Cmds = *Protos[s_current_protocol].Cmds;	
 	
@@ -170,40 +199,7 @@ static uint16_t getTmr128uS()
 	}
 }
 
-//run every frame after the end of transmitting synchronization pulse
-void setupPulsesPPM()
-{
-	int16_t PPM_range = 512;	// range of 0.7...1.2...1.7msec
-								// channels will have resolution of 1024 (-512...512)
-	uint16_t q = 300;			// Channel sync pulse.
 
-	//65535us aka 65.535ms more than enough for ppm frame even if we running 2MHz timer instead of 1MHz
-	//so multiplier will be 2 and frame len set to 30ms, this is unreal
-	uint16_t rest = 22500u*TIMER_MULTIPLIER;
-
-	// pointer to first event in ppm frame
-	pulses1MHzWPtr = &pulses1MHz[0];
-
-	for (uint8_t i = 0; i < PPMCHMAX; i++)
-	{
-		// Just do channels 1-8 -512=1500 = 988 512+1500=2012
-		int16_t ch = channelOutputs[i] >> TIMER_DEMULTIPLIER;
-		int16_t v = limit((int16_t)-PPM_range, ch, (int16_t)PPM_range) + PPM_CENTER*TIMER_MULTIPLIER;
-		rest -= v;
-		*pulses1MHzWPtr++ = q;
-		*pulses1MHzWPtr++ = v - q; // Total pulse width without channel sync pulse.
-	}
-
-	*pulses1MHzWPtr++ = q;
-
-	rest = limit((uint16_t)9000, rest, (uint16_t)653535); // Prevents overflows.
-
-	*pulses1MHzWPtr++ = rest;
-	*pulses1MHzWPtr = 0;			// End array with (uint16_t) 0;
-
-	//reset pointer to the first element of frame
-	pulses1MHzWPtr = &pulses1MHz[0];
-}
 
 
 uint8_t switchState(EnumKeys key)
