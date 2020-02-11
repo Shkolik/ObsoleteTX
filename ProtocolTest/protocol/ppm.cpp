@@ -73,7 +73,7 @@ static uint16_t PROTO_PPM_cb()
 	//good pulse
 	if(pulse != 0)
 	{
-		togglePin();
+		TOGGLE(OUT_PORT, OUT_PIN);
 	}
 	else //should never happened
 	{
@@ -83,7 +83,7 @@ static uint16_t PROTO_PPM_cb()
 	//next pulse is termination, time to make a new frame
 	if(*pulses1MHzPtr == 0)
 	{
-		setPinState(g_model.PULSEPOL);
+		SETPIN(OUT_PORT, OUT_PIN, g_model.PULSEPOL);
 		setupPulsesPPM();
 		//For now latency to big > 100us
 		//TODO: Have to find solution how to fix it. 50-55us will be ok
@@ -100,9 +100,8 @@ static uint16_t PROTO_PPM_cb()
 
 static void PROTO_PPM_reset()
 {
-
 	// Make pin idle state before stop transmitting.
-	setPinState(g_model.PULSEPOL);
+	SETPIN(OUT_PORT, OUT_PIN, g_model.PULSEPOL);
 	TIMSK &= ~(1<<OCIE1A); // Disable Output Compare A interrupt.
 }
 

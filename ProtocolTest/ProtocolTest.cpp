@@ -171,25 +171,6 @@ void nextProtocol()
 		startPulses(PROTOCOL_PPM);
 }
 
-//TODO: Can be replaced with macros
-void setPinState(uint8_t state)
-{
-	if(state)
-	{
-		OUT_PORT |= OUT_PIN;
-	}
-	else
-	{
-		OUT_PORT &= ~OUT_PIN;
-	}
-}
-
-//TODO: Can be replaced with macros
-void togglePin()
-{
-	OUT_PORT ^= OUT_PIN;
-}
-
 static uint16_t getTmr128uS()
 {
 	while(1){

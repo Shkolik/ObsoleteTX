@@ -212,8 +212,9 @@ extern uint16_t bind_tmr10ms;
 
 extern uint16_t g_tmr10ms;
 
-extern void setPinState(uint8_t state);
-extern void togglePin();
+#define TOGGLE(port, pin) (port ^= pin)
+#define SETPIN(port, pin, state) (state ? (port |= pin) : (port &= ~pin))
+
 extern void PROTO_Stop_Callback();
 extern void PROTO_Start_Callback( uint16_t (*cb)());
 extern void PROTO_SetBindState(uint16_t t10ms);
