@@ -42,10 +42,7 @@ void getADC()
 	;
 	#endif
 	
-	//F0 for some reason connected with F1 on my board...
-	//TODO: find out why...
-	//for (uint8_t adc_input=0; adc_input<6; adc_input++)
-	for (uint8_t adc_input=1; adc_input<5; adc_input++)
+	for (uint8_t adc_input=0; adc_input<6; adc_input++)	
 	{
 		//need at least 2 conversions for more reliable result
 		int16_t temp_ana;
@@ -70,12 +67,11 @@ void getADC()
 		#endif
 		
 		//save result
-		channelOutputs[adc_input-1] = temp_ana - 1024;
-		//see above
-		//channelOutputs[adc_input] = temp_ana - 1024;
+		channelOutputs[adc_input] = temp_ana - 1024;
 	}
 	//Hack to fix unused channels
 	//remove when mixer ready
-	for(uint8_t i = 5; i<CHMAX; i++)
+	for(uint8_t i = 4; i<CHMAX; i++)
 		channelOutputs[i] = -1024;
 }
+

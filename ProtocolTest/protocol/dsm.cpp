@@ -35,7 +35,7 @@ static uint16_t DSM_cb()
 {
 	// Schedule next Mixer calculations.
 	//SCHEDULE_MIXER_END_IN_US(22000);
-
+	
 	UsartTxBufferCount = 0;
 
 	uint8_t dsmTxBufferCount = 14;

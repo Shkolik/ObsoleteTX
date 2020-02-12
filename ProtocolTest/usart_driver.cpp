@@ -72,7 +72,7 @@ void UsartSet125000BAUDS() //DSM Serial protocol
 #if F_CPU < 16000000UL
 	// it's a hack for 8Mhz atmega128 in 1x mode
 	// TODO: Make more correct calculations in future
-	uint16_t baud_setting = 3;//7;
+	uint16_t baud_setting = 3;
 	UBRRH_N(PROTOCOL_USART) = baud_setting >> 8;
 	UBRRL_N(PROTOCOL_USART) = baud_setting;
 #else
@@ -80,7 +80,7 @@ void UsartSet125000BAUDS() //DSM Serial protocol
 	UBRRH_N(PROTOCOL_USART) = UBRRH_VALUE;
 	UBRRL_N(PROTOCOL_USART) = UBRRL_VALUE;
 #if USE_2X
-	(PROTOCOL_USART) |= (1 << U2X_N(PROTOCOL_USART));
+	UCSRA_N(PROTOCOL_USART) |= (1 << U2X_N(PROTOCOL_USART));
 #else
 	UCSRA_N(PROTOCOL_USART) &= ~(1 << U2X_N(PROTOCOL_USART));
 #endif

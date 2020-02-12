@@ -180,64 +180,6 @@ static uint16_t getTmr128uS()
 	}
 }
 
-
-
-
-uint8_t switchState(EnumKeys key)
-{
-	uint8_t result = 0 ;
-
-	//if (key < NUM_KEYS)
-	//return keys[enuk].state() ? 1 : 0;
-	//
-	switch(key) 
-	{
-		//case SW_ELE:
-		//result = !(PINL & INP_L_ElevDR);
-		//break;
-	//
-		//case SW_AIL:
-		//result = !(PIND & INP_D_AileDR);
-		//break;
-	//
-		//case SW_RUD:
-		//result = !(PING & INP_G_RuddDR);
-		//break;
-	//
-		////       INP_C_ID1  INP_C_ID2
-		//// ID0      0          1
-		//// ID1      1          1
-		//// ID2      1          0
-		//case SW_ID0:
-		//result = !(PINC & INP_C_ID1);
-		//break;
-	//
-		//case SW_ID1:
-		//result = (PINC & INP_C_ID1) && (PINC & INP_C_ID2);
-		//break;
-	//
-		//case SW_ID2:
-		//result = !(PINC & INP_C_ID2);
-		//break;
-	//
-		//case SW_GEA:
-		//result = !(PING & INP_G_Gear);
-		//break;
-	
-		case SW_THR:
-		result = IS_PIN_LOW(PING, 4);
-		break;
-	
-		case SW_TRN:
-		result = IS_PIN_LOW(PING, 3);
-		break;
-	
-		default:break;
-	}
-
-	return result;
-}
-
 void readKeysAndTrims()
 {
 	//uint8_t index = KEY_MENU;
@@ -285,7 +227,7 @@ void per10ms()
 	{
 		case EVT_KEY_FIRST(KEY_BIND):
 			PORTE &= ~( 1<< 4);
-			protoMode = BIND_MODE;
+			protoMode = BIND_MODE;			
 			debugln("Set bind");
 			break;
 		case EVT_KEY_BREAK(KEY_BIND):
@@ -298,19 +240,6 @@ void per10ms()
 			break;		
 	}
 	
-	//if(BIND_PRESSED && protoMode == NORMAL_MODE)
-	//{
-		//PORTE &= ~( 1<< 4);
-		//PROTO_SetBindState(300);
-	//}
-	//
-	//if(CHANGE_PRESSED)
-	//{
-		//if(change_debounce_tmr10ms > 0)
-			//change_debounce_tmr10ms--;
-		//else
-			//nextProtocol();
-	//}
 	if (bind_tmr10ms > 0)
 	{
 		//check if bind button was released
@@ -384,9 +313,15 @@ int main(void)
 	//////////////////////////////////////////////////////////////////////////
 	sei();	// Enable global interrupts
 
+	if(BIND_PRESSED)
+	{
+		debug("BIND on STARTUP");
+		//if started with bind pressed
+		PROTO_SetBindState(500);
+	}
+	
 	//Start protocol here!
-	startPulses(PROTOCOL_MULTI);
-	//startPulses(PROTOCOL_PPM);
+	startPulses(PROTOCOL_DSM);
 	
 	/* Replace with your application code */
 	while (1)
