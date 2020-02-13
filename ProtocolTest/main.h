@@ -125,16 +125,7 @@ enum ProtoCmds {
 	PROTOCMD_GETOPTIONS
 };
 
-enum Protocols {
-	PROTOCOL_PPM,
-	#ifdef DSM
-	PROTOCOL_DSM,
-	#endif
-	#ifdef MULTI
-	PROTOCOL_MULTI,
-	#endif
-	PROTOCOL_COUNT
-};
+
 
 #include "protocol/ppm.h"
 
@@ -159,11 +150,9 @@ template<class t> FORCEINLINE t limit(t mi, t x, t ma){	return min(max(mi,x),ma)
 typedef const void* (*CMDS)(enum ProtoCmds);
 
 typedef struct {
-	enum Protocols Protocol;
+	enum ModuleType moduleType;
 	CMDS Cmds; // Cmds
-} __attribute__((__packed__)) Proto_struct;
-
-
+} __attribute__((__packed__)) Module_struct;
 
 extern uint8_t heartbeat;
 extern uint8_t stickMode;

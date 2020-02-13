@@ -26,6 +26,17 @@
 
 #define EEPROM_VER	1
 
+enum ModuleType {
+	MODULE_PPM,
+	#ifdef DSM
+	MODULE_DSM,
+	#endif
+	#ifdef MULTI
+	MODULE_MULTI,
+	#endif
+	MODULETYPES_COUNT
+};
+
 // Used to hold tx id
 typedef union {
 	uint8_t   ID_8[4];
@@ -55,6 +66,10 @@ typedef struct {
 // Transmitter settings
 typedef struct {
 	uint8_t			version;
+	//RF data
+	ModuleType		rfModuleType:2;			// PPM = 0, DSM = 1, MULTI = 2 maybe more from enum Protocols		
+	//end of RF data
+	
 	Calibration		calib[NUM_STICKS+NUM_POTS];
 	uint16_t		checkSum;
 	int8_t			currentModel;
@@ -90,7 +105,7 @@ typedef struct {
 	
 	//Rf data
 	uint8_t   modelId:6;			//64 max
-	uint8_t   rfProtocol:6;			//64 max
+	//uint8_t   rfProtocol:6;		
 	uint8_t   rfSubType:4;			//16 max
 	int8_t    rfOptionValue1;
 	int8_t    rfOptionValue2;

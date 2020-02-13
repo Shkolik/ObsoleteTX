@@ -39,18 +39,9 @@ uint8_t stickMode;
 uint16_t bind_tmr10ms = 0;
 uint8_t change_debounce_tmr10ms = 0;
 
-/*const*/ ModelSettings g_model = {
-	/*uint8_t   modelId:6;*/9,
-	/*uint8_t   rfProtocol:6;*/MM_RF_PROTO_MJXQ,
-	/*uint8_t   rfSubType:4;*/4,//e010
-	/*int8_t    rfOptionValue1;*/MM_RF_PROTO_MJXQ,//mjxq
-	/*int8_t    rfOptionValue2;*/0,
-	/*uint8_t   rfOptionValue3:5;*/0,
-	/*uint8_t   rfOptionBool1:1;*/0,
-	/*uint8_t   rfOptionBool2:1;*/0,
-	/*uint8_t   rfOptionBool3:1;*/0,
-	/*uint8_t   extendedLimits:1*/0
-};
+
+ModelSettings g_model;
+GeneralSettings g_general;
 
 const pm_uint8_t bchout_ar[] PROGMEM = {
 	0x1B, 0x1E, 0x27, 0x2D, 0x36, 0x39,
@@ -129,13 +120,13 @@ const void * (*PROTO_Cmds)(enum ProtoCmds);
 bool rangeModeIsOn = false; // manage low power TX
 uint8_t protoMode = NORMAL_MODE;
 
-Proto_struct Protos[] = {
-	{ PROTOCOL_PPM, PPM_Cmds },
+Module_struct Protos[] = {
+	{ MODULE_PPM, PPM_Cmds },
 #ifdef DSM
-	{ PROTOCOL_DSM, DSM_Cmds },
+	{ MODULE_DSM, DSM_Cmds },
 #endif
 #ifdef MULTI
-	{ PROTOCOL_MULTI, MULTI_Cmds }
+	{ MODULE_MULTI, MULTI_Cmds }
 #endif
 };
 
@@ -178,7 +169,7 @@ void PROTO_SetBindState(uint16_t t10ms)
 	}
 }
 
-void startPulses(enum Protocols protocol)
+void startPulses(enum ModuleType module)
 {
 	//stop transmit
 	PROTO_Stop_Callback();
@@ -189,7 +180,7 @@ void startPulses(enum Protocols protocol)
 		PROTO_Cmds(PROTOCMD_RESET);
 	}
 	//set protocol
-	s_current_protocol = protocol;
+	s_current_protocol = module;
 	debugln("Current protocol:");
 	debugln(s_current_protocol);
 	
@@ -198,20 +189,20 @@ void startPulses(enum Protocols protocol)
 	//TODO:Remove when UI ready
 	switch(s_current_protocol)
 	{
-		case PROTOCOL_PPM:
-		g_model.rfProtocol = PROTOCOL_PPM;
+		case MODULE_PPM:
+		g_general.rfModuleType = MODULE_PPM;
 		g_model.PPMNCH = 6;
 		g_model.PPMDELAY = 0;
 		g_model.PPMFRAMELENGTH = 0;
 		g_model.PULSEPOL = 0;
 		break;
-		case PROTOCOL_DSM:
-		g_model.rfProtocol = PROTOCOL_DSM;
+		case MODULE_DSM:
+		g_general.rfModuleType = MODULE_DSM;
 		g_model.DSM_TYPE = Sub_DSM2;
 		break;
 		
-		case PROTOCOL_MULTI:
-		g_model.rfProtocol = PROTOCOL_MULTI;
+		case MODULE_MULTI:
+		g_general.rfModuleType = MODULE_MULTI;
 		g_model.MULTIRFPROTOCOL = MM_RF_PROTO_MJXQ;
 		g_model.SUB_TYPE = 4;
 		break;
@@ -227,10 +218,10 @@ void startPulses(enum Protocols protocol)
 
 void nextProtocol()
 {
-	if(s_current_protocol < PROTOCOL_COUNT - 1)
-		startPulses((Protocols)(s_current_protocol+1));
+	if(s_current_protocol < MODULETYPES_COUNT - 1)
+		startPulses((ModuleType)(s_current_protocol+1));
 	else
-		startPulses(PROTOCOL_PPM);
+		startPulses(MODULE_PPM);
 }
 
 static uint16_t getTmr128uS()
@@ -383,7 +374,7 @@ int main(void)
 	}
 	
 	//Start protocol here!
-	startPulses(PROTOCOL_DSM);
+	startPulses(g_general.rfModuleType);
 	
 	/* Replace with your application code */
 	while (1)
