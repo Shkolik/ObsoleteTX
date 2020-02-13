@@ -34,10 +34,12 @@ uint16_t g_tmr1Latency_min = 100;
 uint16_t dt;
 
 uint8_t heartbeat;
+uint8_t stickMode;
+
 uint16_t bind_tmr10ms = 0;
 uint8_t change_debounce_tmr10ms = 0;
 
-/*const*/ ModelData g_model = {
+/*const*/ ModelSettings g_model = {
 	/*uint8_t   modelId:6;*/9,
 	/*uint8_t   rfProtocol:6;*/MM_RF_PROTO_MJXQ,
 	/*uint8_t   rfSubType:4;*/4,//e010
@@ -49,6 +51,77 @@ uint8_t change_debounce_tmr10ms = 0;
 	/*uint8_t   rfOptionBool3:1;*/0,
 	/*uint8_t   extendedLimits:1*/0
 };
+
+const pm_uint8_t bchout_ar[] PROGMEM = {
+	0x1B, 0x1E, 0x27, 0x2D, 0x36, 0x39,
+	0x4B, 0x4E, 0x63, 0x6C, 0x72, 0x78,
+	0x87, 0x8D, 0x93, 0x9C, 0xB1, 0xB4,
+	0xC6, 0xC9, 0xD2, 0xD8, 0xE1, 0xE4
+};
+
+uint8_t channel_order(uint8_t x)
+{
+	return ( ((pgm_read_byte_near(bchout_ar + g_general.templateSetup) >> (6-(x-1) * 2)) & 3 ) + 1 );
+}
+
+/*
+mode1 rud ele thr ail
+mode2 rud thr ele ail
+mode3 ail ele thr rud
+mode4 ail thr ele rud
+*/
+const pm_uint8_t modn12x3[] PROGMEM = {
+	0, 1, 2, 3,
+	0, 2, 1, 3,
+	3, 1, 2, 0,
+	3, 2, 1, 0
+};
+
+#if defined(TEMPLATES)
+inline void applyDefaultTemplate()
+{
+	applyTemplate(TMPL_SIMPLE_4CH); // calls eeDirty internally
+	g_model.PPMNCH = 2; // 8Ch
+}
+#else
+void applyDefaultTemplate()
+{
+	eeDirty(EE_MODEL);
+	/* TODO: ADD mixes to model
+	for (uint8_t i=0; i<NUM_STICKS; ++i)
+	{
+		MixData *mix = mixAddress(i);
+		mix->destCh = i;
+		mix->weight = 100;
+		mix->srcRaw = MIXSRC_Rud - 1 + channel_order(i+1);
+	}
+	g_model.PPMNCH = 2; // 8Ch
+	*/
+}
+#endif
+
+void modelDefault(uint8_t id)
+{
+	memset(&g_model, 0, sizeof(g_model));
+	applyDefaultTemplate();
+	g_model.modelId = id+1;
+}
+
+void generalDefault()
+{
+	memclear(&g_general, sizeof(g_general));
+	g_general.version  = EEPROM_VER;
+	g_general.contrast = 33;
+	g_general.vBatMin = 50;
+	g_general.vBatMax = 90;
+	g_general.vBatWarning = 60;
+	#if defined(DEFAULT_MODE)
+	g_general.stickMode = DEFAULT_MODE - 1;
+	#endif
+	g_general.inactivityTimer = 10;
+	g_general.checkSum = 0xFFFF;
+}
+
 
 uint16_t (*timer_callback)(void);
 const void * (*PROTO_Cmds)(enum ProtoCmds);
@@ -65,11 +138,6 @@ Proto_struct Protos[] = {
 	{ PROTOCOL_MULTI, MULTI_Cmds }
 #endif
 };
-
-FORCEINLINE uint8_t pulsesStarted()
-{
-	return (s_current_protocol != 255);
-}
 
 void PROTO_Start_Callback( uint16_t (*cb)())
 {
@@ -108,12 +176,6 @@ void PROTO_SetBindState(uint16_t t10ms)
 	{		
 		protoMode = NORMAL_MODE;
 	}
-}
-
-void sendStopPulses()
-{
-	PROTO_Cmds(PROTOCMD_RESET);
-	PROTO_Stop_Callback();
 }
 
 void startPulses(enum Protocols protocol)

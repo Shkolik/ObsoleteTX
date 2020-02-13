@@ -20,20 +20,20 @@ void eeDirty(uint8_t msk)
 uint8_t eeFindEmptyModel(uint8_t id, bool down)
 {
 	uint8_t i = id;
-	for (;;) {
+	for (;;) 
+	{
 		i = (MAX_MODELS + (down ? i+1 : i-1)) % MAX_MODELS;
-		if (!eeModelExists(i)) break;
-		if (i == id) return 0xff; // no free space in directory left
+		if (!eeModelExists(i)) 
+			break;
+		if (i == id) // no free space left
+			return 0xff; 
 	}
 	return i;
 }
 
 void selectModel(uint8_t sub)
 {
-	#if defined(FRSKY)
-	if (checkIfModelIsOff()) return;
-	#endif
-	POPUP(STR_LOADINGMODEL);
+	//POPUP(STR_LOADINGMODEL);
 	saveTimers();
 	eeCheck(true); // force writing of current model data before this is changed
 	g_eeGeneral.currModel = sub;

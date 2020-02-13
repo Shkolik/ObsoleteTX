@@ -33,7 +33,11 @@
 #include <avr/pgmspace.h>
 #include <avr/wdt.h>
 #include <string.h>
+#include <avr/eeprom.h>
 #include "pgmtypes.h"
+
+#define FORCEINLINE inline __attribute__ ((always_inline))
+#define NOINLINE __attribute__ ((noinline))
 
 
 #define CHMAX 6
@@ -53,6 +57,10 @@
 
 #include "usart_driver.h"
 #include "keys.h"
+#include "data/data.h"
+#include "data/eeprom_common.h"
+#include "data/eepromFS.h"
+
 
 #ifndef PIN0_bm
 #define PIN0_bm  0x01
@@ -99,7 +107,6 @@
 #define TIMER_DEMULTIPLIER (F_CPU == 8000000L ? 1 : 0)
 
 
-
 //////////////////////////////////////////////////////////////////////////
 //protocols
 //////////////////////////////////////////////////////////////////////////
@@ -141,47 +148,9 @@ enum Protocols {
 
 //////////////////////////////////////////////////////////////////////////
 
-typedef struct {
-	//Rf data
-	uint8_t   modelId:6;			//64 max
-	uint8_t   rfProtocol:6;			//64 max
-	uint8_t   rfSubType:4;			//16 max
-	int8_t    rfOptionValue1;
-	int8_t    rfOptionValue2;
-	uint8_t   rfOptionValue3:5;		//32 max
-	uint8_t   rfOptionBool1:1;
-	uint8_t   rfOptionBool2:1;
-	uint8_t   rfOptionBool3:1;
-	//end of RF data	
-	
-	//TimerData timers[MAX_TIMERS];
-	//uint8_t   thrTrim:1;            // Enable Throttle Trim
-	//int8_t    trimInc:3;            // Trim Increments
-	//uint8_t   disableThrottleWarning:1;
-	uint8_t   extendedLimits:1;
-	//uint8_t   extendedTrims:1;	
-	//BeepANACenter beepANACenter;
-	//MixData   mixData[MAX_MIXERS];
-	//LimitData limitData[NUM_CHNOUT];
-	//ExpoData  expoData[MAX_EXPOS];
-	//CURVDATA  curves[MAX_CURVES];
-	//int8_t    points[NUM_POINTS];
-	//LogicalSwitchData logicalSw[NUM_LOGICAL_SWITCH];
-	//CustomFunctionData customFn[NUM_CFN];
-	//FlightModeData flightModeData[MAX_FLIGHT_MODES];
-	//MODEL_GVARS_NAME // gvars name
-	//uint8_t thrTraceSrc:5;
-	//uint8_t thrSwitch:3;
-	//swarnstate_t  switchWarningState;
-	//swarnenable_t switchWarningEnable;
-	//SwashRingData swashR;          // Heli data
-	//uint8_t UnusedModel; // Use later .. todo
-	//FrSkyData telemetry;
-	
-} __attribute__((__packed__)) ModelData;
 
-#define FORCEINLINE inline __attribute__ ((always_inline))
-#define NOINLINE __attribute__ ((noinline))
+
+
 
 template<class t> FORCEINLINE t min(t a, t b){ return a<b?a:b; }
 template<class t> FORCEINLINE t max(t a, t b){ return a>b?a:b; }
@@ -197,8 +166,11 @@ typedef struct {
 
 
 extern uint8_t heartbeat;
+extern uint8_t stickMode;
 
 extern uint8_t s_current_protocol;
+
+
 
 extern int16_t channelOutputs[CHMAX];
 
@@ -222,7 +194,16 @@ extern void PROTO_SetBindState(uint16_t t10ms);
 extern const void * (*PROTO_Cmds)(enum ProtoCmds);  //protocol callback
 extern uint16_t (*timer_callback)(void);			// Function pointer to add flexibility and simplicity to ISR.
 
-extern /*const*/  ModelData g_model;
+FORCEINLINE uint8_t pulsesStarted()
+{
+	return (s_current_protocol != 255);
+}
+
+FORCEINLINE void sendStopPulses()
+{
+	PROTO_Cmds(PROTOCMD_RESET);
+	PROTO_Stop_Callback();
+}
 
 #define HEART_TIMER_10MS              1
 #define HEART_TIMER_PULSES            2
@@ -232,5 +213,7 @@ extern /*const*/  ModelData g_model;
 #define DIM(array) ((sizeof array) / (sizeof *array))
 #define memclear(p, s) memset(p, 0, s)
 
+extern void modelDefault(uint8_t id);
+extern void generalDefault();
 
 #endif /* MAIN_H_ */

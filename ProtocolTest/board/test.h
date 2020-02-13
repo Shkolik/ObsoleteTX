@@ -25,15 +25,18 @@
 
 #define F_CPU 8000000UL
 
-#include "../main.h"
-
 #define MULTI
 #define DSM
 
-
-
 //invert throttle for test pp only
 #define INV_STICK_RH
+#define NUM_STICKS		4
+#define NUM_POTS		0
+#define LEN_MODEL_NAME	10
+#define MAX_MODELS		15
+#define DEFAULT_MODE	1
+#include "../main.h"
+
 
 #define CALCULATE_LAT_JIT()  dt = TCNT1 - OCR1A		// Calculate latency and jitter.
 
