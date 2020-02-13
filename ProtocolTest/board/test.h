@@ -37,6 +37,7 @@
 #define DEFAULT_MODE	1
 #include "../main.h"
 
+#define UNEXPECTED_SHUTDOWN()   (mcusr & _BV(WDRF))
 
 #define CALCULATE_LAT_JIT()  dt = TCNT1 - OCR1A		// Calculate latency and jitter.
 
@@ -71,6 +72,6 @@
 #define RXD_PORT_PIN0 PORTE0
 
 extern void getADC();
-
+extern void boardInit();
 
 #endif /* TEST_H_ */

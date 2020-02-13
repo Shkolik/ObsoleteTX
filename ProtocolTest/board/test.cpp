@@ -21,6 +21,52 @@
 
 #include "test.h"
 
+void boardInit()
+{
+	//////////////////////////////////////////////////////////////////////////
+	/// setup registers
+	//////////////////////////////////////////////////////////////////////////
+	//Led				//TX0				//RX0
+	DDRE |= (1 << 4);	DDRE |= (1 << 1);	DDRE  &= ~(1 << 0);
+	PORTE|= (1 << 4);	PORTE|= (1 << 1);	PORTE &= ~(1 << 0);
+	
+	//PPM OUT			//RX1				//TX1
+	DDRD |= (1 << 0);	DDRD  &= ~(1 << 2);	DDRD |= (1 << 3);
+	PORTD|= (1 << 0);	PORTD &= ~(1 << 2);	PORTD|= (1 << 3);
+	
+	//Change proto		//BIND
+	DDRG &= ~(1 << 4);	DDRG &= ~(1 << 3);
+	PORTG|= (1 << 4);	PORTG |= (1 << 3);
+	
+	DDRF = 0b00000000;  PORTF = 0b11111111; // All analog inputs PullUp
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	/// setup ADC
+	//////////////////////////////////////////////////////////////////////////
+	ADMUX = ADC_VREF_TYPE;
+	ADCSRA = (1 << ADEN)| (1 << ADPS2); // ADC enabled, prescaler division=16 (no interrupt, no auto-triggering)
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	/// setup timers
+	//////////////////////////////////////////////////////////////////////////
+	//Timer generates event every 10ms. Starts here and never stops
+	TIMER_10MS_COMPVAL	= 78;			// count to 10ms
+	TCCR0	= (7 << CS00);				// Norm mode, clk/1024 (1 << CS00 | 1 << CS01 | 1 << CS02)
+	TIMSK	= (1<<OCIE0) | (1<<TOIE0);	// COMP - 78 (100Hz), OVF - 255 (30.64Hz)
+	//////////////////////////////////////////////////////////////////////////
+
+	//Timer counts with frequency 1MHz
+	TCCR1A	= 0;						// Clear timer registers
+	TCCR1B	= 0;						// Normal mode
+	TCCR1C	= 0;
+	TCNT1	= 0;						// starts from 0
+	TCCR1B	|= 1<<CS11;					// F_TIMER1 = 1MHz (F_CPU/8), 1 tick per 1 microsecond
+	RF_TIMER_COMPA_REG	= 20000;		// Next frame starts in 20 mS
+	//Interrupt will be enabled by protocol callback when started
+	//////////////////////////////////////////////////////////////////////////
+}
 //run every 10ms
 //For some reason 1 and 2 channels not correct
 void getADC()
