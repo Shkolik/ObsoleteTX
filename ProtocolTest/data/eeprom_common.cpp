@@ -57,10 +57,13 @@ void selectModel(uint8_t sub)
 
 void eeReadAll()
 {
-	if (!eepromOpen() || !eeLoadGeneral())
+	debugln("eeReadAll()");
+	
+	if (!eeLoadGeneral())//!eepromOpen() || !eeLoadGeneral())
 	{
+		debugln("eraising eeprom....");
 		eeErase(true);
 	}
 	stickMode = g_general.stickMode;
-	eeLoadModel(g_general.currentModel);
+	//eeLoadModel(g_general.currentModel);
 }

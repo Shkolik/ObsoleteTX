@@ -28,7 +28,7 @@
 #define blkid_t    uint8_t
 #define EESIZE     1024*4
 #define EEFS_VERS  5
-#define MAXFILES   36
+#define MAXFILES   18
 #define BS         16
 
 // File header

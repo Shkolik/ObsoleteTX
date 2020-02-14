@@ -21,8 +21,8 @@
 
 #include "eepromFS.h"
 
-uint8_t   s_write_err = 0;    // error reasons
-RlcFile   theFile;  //used for any file operation
+uint8_t   s_write_err = 0;		// error reasons
+RlcFile   theFile;				//used for any file operation
 EeFs      eeFs;
 
 uint8_t  s_sync_write = false;
@@ -60,15 +60,13 @@ ISR(EE_READY_vect)
     }
 	else
     {
-		debugln("ISR EE_READY_vect Cleared : Eeprom is saved");
+		//debugln("ISR EE_READY_vect");
 		EECR &= ~(1<<EERIE);
     }
 }
 
 void eepromWriteBlock(uint8_t * i_pointer_ram, uint16_t i_pointer_eeprom, size_t size)
 {
-	debugln("eeprom buffer empty");
-
 	eeprom_pointer = i_pointer_eeprom;
 	eeprom_buffer_data = i_pointer_ram;
 	eeprom_buffer_size = size+1;
@@ -164,7 +162,7 @@ void eepromCheck()
 	uint8_t *bufp = (uint8_t *)&g_model;
 	memclear(bufp, BLOCKS);
 	blkid_t blk ;
-
+	
 	for (uint8_t i=0; i<=MAXFILES; i++)
 	{
 		blkid_t *startP = (i==MAXFILES ? &eeFs.freeList : &eeFs.files[i].startBlk);
@@ -211,6 +209,8 @@ void eepromCheck()
 
 void eepromFormat()
 {
+	debugln("eepromFormat()");
+	
 	ENABLE_SYNC_WRITE(true);
 
 	uint8_t fil[4] = {0xFF,0xFF,0xFF,0xFF};
@@ -234,17 +234,24 @@ void eepromFormat()
 	EeFsFlush();
 
 	ENABLE_SYNC_WRITE(false);
+	debugln("eeprom Format completed");
 }
 
 bool eepromOpen()
 {
+	debugln("eeprom opening....");
+	
 	EEPROMREADBLOCK((uint8_t *)&eeFs, 0, sizeof(eeFs));
 
+	debugln("eeFs check....");
+	debug("eeFs version: ");
+	debugln(eeFs.version);
 	if (eeFs.version != EEFS_VERS || eeFs.size != sizeof(eeFs))
-	{
+	{	
 		return false;
 	}
-
+	
+	debugln("eeprom check....");
 	eepromCheck();
 	return true;
 }
@@ -296,6 +303,7 @@ void EFile::openRd(uint8_t i_fileId)
 
 void RlcFile::openRlc(uint8_t i_fileId)
 {
+	debugln("RlcFile::openRlc");
 	EFile::openRd(i_fileId);
 	m_zeroes   = 0;
 	m_bRlc     = 0;
@@ -511,7 +519,7 @@ bool RlcFile::copy(uint8_t i_fileDst, uint8_t i_fileSrc)
 	eeFs.files[FILE_TMP].size = m_pos;
 	EFile::swap(m_fileId, FILE_TMP);
 
-	debugln("error copying " + !m_write_step);
+	debug("error copying ");debugln(!m_write_step);
 
 	// s_sync_write is set to false in swap();
 	return true;
@@ -519,8 +527,12 @@ bool RlcFile::copy(uint8_t i_fileDst, uint8_t i_fileSrc)
 
 void RlcFile::writeRlc(uint8_t i_fileId, uint8_t type, uint8_t *buf, uint16_t i_len, uint8_t sync_write)
 {
+	debug("RlcFile::writeRlc fileId=");debugln(i_fileId);
+	
 	create(i_fileId, type, sync_write);
 
+	debugln("File created");
+	
 	m_write_step = WRITE_START_STEP;
 	m_rlc_buf = buf;
 	m_rlc_len = i_len;
@@ -564,7 +576,7 @@ void RlcFile::nextRlcWriteStep()
 		{
 			if (run0)
 			{
-				debugln("error cnt0==0 " + cnt0==0);
+				debug("error cnt0==0 ");debugln(cnt0==0);
 				if (cnt<8 && i != m_rlc_len)
 				cnt0 = cnt; //aufbew fuer spaeter
 				else
@@ -684,17 +696,22 @@ void RlcFile::DisplayProgressBar(uint8_t x)
 
 bool eeLoadGeneral()
 {
+	debugln("theFile.openRlc");
 	theFile.openRlc(FILE_GENERAL);
+	
+	debug("g_general.version="); debugln(g_general.version);
+	
 	if (theFile.readRlc((uint8_t*)&g_general, 1) == 1 && g_general.version == EEPROM_VER)
 	{
 		theFile.openRlc(FILE_GENERAL);
 		if (theFile.readRlc((uint8_t*)&g_general, sizeof(g_general)) <= sizeof(GeneralSettings))
 		{
+			debug("g_general check OK");
 			return true;
 		}
 	}
 
-	debugln("Bad EEPROM version " + g_general.version);
+	debug("Bad EEPROM version "); debugln(g_general.version);
 	return false;
 }
 
@@ -725,16 +742,17 @@ void eeLoadModel(uint8_t id)
 		theFile.openRlc(FILE_MODEL(id));
 		uint16_t sz = theFile.readRlc((uint8_t*)&g_model, sizeof(g_model));
 
-		bool newModel = false;
+		//bool newModel = false;
       
-		/* TODO: Model initialization 
+		
 		if (sz < 256)
 		{
 			modelDefault(id);
 			eeCheck(true);
-			newModel = true;
+			//newModel = true;
 		}
-
+		
+/* TODO: Model initialization 
 		flightReset();
 		logicalSwitchesReset();
 		setThrSource();
@@ -761,6 +779,7 @@ void eeLoadModel(uint8_t id)
 void eeErase(bool warn)
 {
 	generalDefault();
+	debugln("generalDefault()");
 	/* TODO: Separate GUI and logic
 	if (warn)
 	{

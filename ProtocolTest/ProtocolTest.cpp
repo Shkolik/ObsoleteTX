@@ -95,21 +95,22 @@ void applyDefaultTemplate()
 void modelDefault(uint8_t id)
 {
 	memset(&g_model, 0, sizeof(g_model));
-	applyDefaultTemplate();
+	//applyDefaultTemplate();
 	g_model.modelId = id+1;
 }
 
 void generalDefault()
 {
 	memclear(&g_general, sizeof(g_general));
+	
 	g_general.version  = EEPROM_VER;
+	//g_general.rfModuleType = MODULE_MULTI;
+	g_general.currentModel = 0;
 	g_general.contrast = 33;
+	g_general.vBatWarning = 60;	
 	g_general.vBatMin = 50;
 	g_general.vBatMax = 90;
-	g_general.vBatWarning = 60;
-	#if defined(DEFAULT_MODE)
 	g_general.stickMode = DEFAULT_MODE - 1;
-	#endif
 	g_general.inactivityTimer = 10;
 	g_general.checkSum = 0xFFFF;
 }
@@ -319,6 +320,12 @@ void doMixerCalculations()
 void doSplash()
 {
 	debugln("Welcome to ObsoleteTX V1.0");
+	
+	//debug("GeneralSettings size: ");
+	//debugln(sizeof(GeneralSettings)); //67
+	//
+	//debug("ModelSettings size: ");
+	//debugln(sizeof(ModelSettings)); //16
 }
 
 void Start() // Run only if it is not a WDT reboot
@@ -336,38 +343,25 @@ void Start() // Run only if it is not a WDT reboot
 	#endif*/
 }
 
-void Init(uint8_t mcusr)
+void Init()
 {
 	eeReadAll();
 	
-	if (UNEXPECTED_SHUTDOWN())
-	{
-		unexpectedShutdown = true;
-	}
-	else
-	{
-		Start(); // All functions called in Start() are not used if a WDT reset occur.
-	}
-
-	if (!g_general.unexpectedShutdown)
-	{
-		g_general.unexpectedShutdown = 1;
-		eeDirty(EE_GENERAL);
-	}
+	Start(); // All functions called in Start() are not used if a WDT reset occur.
 	
 	doMixerCalculations();
 
-	if(BIND_PRESSED)
-	{
-		debug("BIND on STARTUP");
-		//if started with bind pressed
-		PROTO_SetBindState(500);
-	}
+	//if(BIND_PRESSED)
+	//{
+	//debug("BIND on STARTUP");
+	////if started with bind pressed
+	//PROTO_SetBindState(500);
+	//}
 	
 	//Start protocol here!
 	startPulses(g_general.rfModuleType);
-	
-	// Enable watchdog.
+	//startPulses(MODULE_PPM);
+	//Enable watchdog.
 	wdt_enable(WDTO_500MS);
 }
 
@@ -378,11 +372,7 @@ void perMain()
 
 int main(void)
 {
-	uint8_t mcusr = MCUCSR; // save the WDT (etc) flags
-
-	MCUCSR = 0; // must be zeroed before disabling the WDT
-	MCUCSR |= (1<<JTD);    // Disable JTAG port that can interfere with POT3
-	MCUCSR |= (1<<JTD);   // Must be done twice within four cycles
+	MCUCSR = 0;
 	wdt_disable();
 	
 	boardInit();
@@ -396,13 +386,13 @@ int main(void)
 	//////////////////////////////////////////////////////////////////////////
 	sei();	// Enable global interrupts
 
-	Init(mcusr);
+	Init();
 	
 	/* Replace with your application code */
 	while (1)
 	{
-		perMain();
-		
+		_delay_ms(15);
+		//perMain();		
 		if (heartbeat == HEART_WDT_CHECK) {
 			wdt_reset();
 			heartbeat = 0;
@@ -423,7 +413,7 @@ ISR(TIMER_10MS_VECT, ISR_NOBLOCK )
 	++g_tmr10ms;
 	per10ms();
 	getADC();
-	heartbeat |= HEART_TIMER_10MS;
+	heartbeat |= HEART_TIMER_10MS;	
 }
 
 //continuous timer, call every 32.64ms (8MHz/1024)

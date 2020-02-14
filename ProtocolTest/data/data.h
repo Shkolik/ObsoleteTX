@@ -93,7 +93,6 @@ typedef struct {
 	uint8_t			templateSetup;   // TAER order for receiver channels
 	int8_t			PPM_Multiplier;
 	uint8_t			stickReverse;	
-	uint8_t			unexpectedShutdown:1;
 	
 	// 32 bits or 4*8 bits fixed ID
 	fixed_ID	fixedID;
