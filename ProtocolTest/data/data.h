@@ -45,97 +45,96 @@ typedef union {
 
 // Struct to hold calibration data for analogs
 typedef struct {
-	int16_t middle;
-	int16_t min;
-	int16_t max;
-} __attribute__((__packed__)) Calibration;
+	int16_t middle;			//2bytes
+	int16_t min;			//2bytes
+	int16_t max;			//2bytes
+} __attribute__((__packed__)) Calibration; //6 bytes total
 
 // Trainer settings
 typedef struct {
-	uint8_t channel;//:6; // 0-7 = ch1-8
-	uint8_t mode;//:2;   // off,add-mode,subst-mode
-	int8_t  weight;
-} __attribute__((__packed__)) TrainerChannel;
+	uint8_t channel;		//1byte		//:6; // 0-7 = ch1-8
+	uint8_t mode;			//1byte		//:2;   // off,add-mode,subst-mode
+	int8_t  weight;			//1byte
+} __attribute__((__packed__)) TrainerChannel; //3 bytes total
 
 // Trainer settings
 typedef struct {
-	int16_t        calib[4];
-	TrainerChannel mix[4];
-} __attribute__((__packed__)) TrainerInput;
+	int16_t        calib[4];	//8 bytes	(2*4)
+	TrainerChannel mix[4];		//12 bytes	(3*4)
+} __attribute__((__packed__)) TrainerInput; //20 bytes total
 
 // Transmitter settings
 typedef struct {
-	uint8_t			version;
+	uint8_t			version;					//1byte
 	//RF data
-	ModuleType		rfModuleType:2;			// PPM = 0, DSM = 1, MULTI = 2 maybe more from enum Protocols		
+	ModuleType		rfModuleType:2;				//1byte		// PPM = 0, DSM = 1, MULTI = 2 maybe more from enum Protocols		
 	//end of RF data
 	
-	Calibration		calib[NUM_STICKS+NUM_POTS];
-	uint16_t		checkSum;
-	int8_t			currentModel;
-	uint8_t			contrast;
-	uint8_t			vBatWarning;
-	int8_t			voltageCalibration;
-	uint8_t			vBatMin;
-	uint8_t			vBatMax;
-	TrainerInput	trainer;
-	uint8_t			mainView;            // index of view in main screen	
-	int8_t			beepMode:2;      // -2=quiet, -1=only alarms, 0=no keys, 1=all
-	int8_t			beepLength:3;
-	int8_t			hapticMode:2;    // -2=quiet, -1=only alarms, 0=no keys, 1=all
-	int8_t			hapticLength;
-	int8_t			hapticStrength:3;
-	uint8_t			alarmsFlash:1;
-	uint8_t			disableMemoryWarning:1;
-	uint8_t			disableAlarmWarning:1;
-	uint8_t			stickMode:1;	
-	uint8_t			inactivityTimer;		
-	uint8_t			templateSetup;   // TAER order for receiver channels
-	int8_t			PPM_Multiplier;
-	uint8_t			stickReverse;	
+	Calibration		calib[NUM_STICKS+NUM_POTS];	//24 bytes (6*4) or 36 bytes with 2 pots 
+	uint16_t		checkSum;					//2bytes
+	int8_t			currentModel;				//1byte
+	uint8_t			contrast;					//1byte
+	uint8_t			vBatWarning;				//1byte
+	int8_t			voltageCalibration;			//1byte
+	uint8_t			vBatMin;					//1byte
+	uint8_t			vBatMax;					//1byte
+	TrainerInput	trainer;					//20bytes
+	uint8_t			mainView;					//1byte		// index of view in main screen	
+	int8_t			beepMode:2;					//1byte		// -2=quiet, -1=only alarms, 0=no keys, 1=all
+	int8_t			beepLength:3;				//1byte
+	int8_t			hapticMode:2;				//1byte		// -2=quiet, -1=only alarms, 0=no keys, 1=all
+	int8_t			hapticLength;				//1byte
+	int8_t			hapticStrength:3;			//1byte
+	uint8_t			alarmsFlash:1;				//1byte
+	uint8_t			disableMemoryWarning:1;		//1byte
+	uint8_t			disableAlarmWarning:1;		//1byte
+	uint8_t			stickMode:1;				//1byte
+	uint8_t			inactivityTimer;			//1byte
+	uint8_t			templateSetup;				//1byte		// TAER order for receiver channels
+	int8_t			PPM_Multiplier;				//1byte
+	uint8_t			stickReverse;				//1byte
 	
 	// 32 bits or 4*8 bits fixed ID
-	fixed_ID	fixedID;
-} __attribute__((__packed__)) GeneralSettings;
+	fixed_ID	fixedID;						//4bytes
+} __attribute__((__packed__)) GeneralSettings;	//66 bytes total (at least) or 78 with 2 pots 
 
 // Model settings
 typedef struct {
-	char      name[LEN_MODEL_NAME]; // must be first for eeLoadModelName
+	char      name[LEN_MODEL_NAME];				//10 bytes	// must be first for eeLoadModelName
 	
 	//Rf data
-	uint8_t   modelId:6;			//64 max
-	//uint8_t   rfProtocol:6;		
-	uint8_t   rfSubType:4;			//16 max
-	int8_t    rfOptionValue1;
-	int8_t    rfOptionValue2;
-	uint8_t   rfOptionValue3:5;		//32 max
-	uint8_t   rfOptionBool1:1;
-	uint8_t   rfOptionBool2:1;
-	uint8_t   rfOptionBool3:1;
+	uint8_t   modelId:6;						//1byte
+	uint8_t   rfSubType:4;						//1byte
+	int8_t    rfOptionValue1;					//1byte
+	int8_t    rfOptionValue2;					//1byte
+	uint8_t   rfOptionValue3:5;					//1byte
+	uint8_t   rfOptionBool1:1;					//1byte
+	uint8_t   rfOptionBool2:1;					//1byte
+	uint8_t   rfOptionBool3:1;					//1byte
 	//end of RF data
 	
-	//TimerData timers[MAX_TIMERS];
-	//uint8_t   thrTrim:1;            // Enable Throttle Trim
-	//int8_t    trimInc:3;            // Trim Increments
-	//uint8_t   disableThrottleWarning:1;
-	uint8_t   extendedLimits:1;
-	//uint8_t   extendedTrims:1;
-	//BeepANACenter beepANACenter;
-	//MixData   mixData[MAX_MIXERS];
-	//LimitData limitData[NUM_CHNOUT];
-	//ExpoData  expoData[MAX_EXPOS];
-	//CURVDATA  curves[MAX_CURVES];
-	//int8_t    points[NUM_POINTS];
+	//TimerData timers[MAX_TIMERS];				//18bytes (2 timers)
+	//uint8_t   thrTrim:1;						//1byte		// Enable Throttle Trim
+	//int8_t    trimInc:3;						//1byte		// Trim Increments
+	//uint8_t   disableThrottleWarning:1;		//1byte
+	uint8_t   extendedLimits:1;					//1byte
+	//uint8_t   extendedTrims:1;				//1byte
+	//BeepANACenter beepANACenter;				//2bytes
+	//MixData   mixData[MAX_MIXERS];			//304bytes (19*16 mixes) 
+	//LimitData limitData[NUM_CHNOUT];			//144bytes (9*16channels)
+	//ExpoData  expoData[MAX_EXPOS];			//64bytes (8*8expos)
+	//CURVDATA  curves[MAX_CURVES];				//8bytes
+	//int8_t    points[NUM_POINTS];				//104bytes
 	//LogicalSwitchData logicalSw[NUM_LOGICAL_SWITCH];
-	//CustomFunctionData customFn[NUM_CFN];
+	//CustomFunctionData customFn[NUM_CFN];		//84 bytes (7*12 funcs)
 	//FlightModeData flightModeData[MAX_FLIGHT_MODES];
-	//uint8_t thrTraceSrc:5;
-	//uint8_t thrSwitch:3;
-	//swarnstate_t  switchWarningState;
-	//swarnenable_t switchWarningEnable;
-	//SwashRingData swashR;          // Heli data
+	//uint8_t thrTraceSrc:5;					//1byte
+	//uint8_t thrSwitch:3;						//1byte
+	//swarnstate_t  switchWarningState;			//1byte
+	//swarnenable_t switchWarningEnable;		//1byte
+	//SwashRingData swashR;						//6bytes		// Heli data
 	//uint8_t UnusedModel; // Use later .. todo	
-} __attribute__((__packed__)) ModelSettings;
+} __attribute__((__packed__)) ModelSettings;   //753bytes so... 
 
 extern ModelSettings g_model;
 extern GeneralSettings g_general;

@@ -59,11 +59,11 @@ void eeReadAll()
 {
 	debugln("eeReadAll()");
 	
-	if (!eeLoadGeneral())//!eepromOpen() || !eeLoadGeneral())
+	if (!eepromOpen() || !eeLoadGeneral())
 	{
 		debugln("eraising eeprom....");
 		eeErase(true);
 	}
 	stickMode = g_general.stickMode;
-	//eeLoadModel(g_general.currentModel);
+	eeLoadModel(g_general.currentModel);
 }
