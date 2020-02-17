@@ -28,7 +28,7 @@
 #define blkid_t    uint8_t
 #define EESIZE     1024*4
 #define EEFS_VERS  5
-#define MAXFILES   18
+#define MAXFILES   36
 #define BS         16
 
 // File header
@@ -83,10 +83,9 @@ extern EeFs eeFs;
 #define ERR_NONE 0
 #define ERR_FULL 1
 
-/// fileId of general file
-#define FILE_GENERAL   0
-/// convert model number 0..MAX_MODELS-1  int fileId
-#define FILE_MODEL(n) (1+(n))
+#define FILE_GENERAL   0		// fileId of general file
+
+#define FILE_MODEL(n) (1+(n))	// convert model number 0..MAX_MODELS-1 to  int fileId
 #define FILE_TMP      (1+MAX_MODELS)
 
 #define RESV          sizeof(EeFs)  //reserved for eeprom header with directory (eeFs)

@@ -69,6 +69,22 @@ const pm_uint8_t modn12x3[] PROGMEM = {
 	3, 2, 1, 0
 };
 
+
+ExpoData *expoAddress(uint8_t idx )
+{
+	return &g_model.expoData[idx];
+}
+
+MixData *mixAddress(uint8_t idx)
+{
+	return &g_model.mixData[idx];
+}
+
+LimitData *limitAddress(uint8_t idx)
+{
+	return &g_model.limitData[idx];
+}
+
 #if defined(TEMPLATES)
 inline void applyDefaultTemplate()
 {
@@ -79,7 +95,7 @@ inline void applyDefaultTemplate()
 void applyDefaultTemplate()
 {
 	eeDirty(EE_MODEL);
-	/* TODO: ADD mixes to model
+	
 	for (uint8_t i=0; i<NUM_STICKS; ++i)
 	{
 		MixData *mix = mixAddress(i);
@@ -87,15 +103,14 @@ void applyDefaultTemplate()
 		mix->weight = 100;
 		mix->srcRaw = MIXSRC_Rud - 1 + channel_order(i+1);
 	}
-	g_model.PPMNCH = 2; // 8Ch
-	*/
+	//g_model.PPMNCH = 2; // 8Ch	
 }
 #endif
 
 void modelDefault(uint8_t id)
 {
 	memset(&g_model, 0, sizeof(g_model));
-	//applyDefaultTemplate();
+	applyDefaultTemplate();
 	g_model.modelId = id+1;
 }
 
@@ -104,7 +119,7 @@ void generalDefault()
 	memclear(&g_general, sizeof(g_general));
 	
 	g_general.version  = EEPROM_VER;
-	//g_general.rfModuleType = MODULE_MULTI;
+	g_general.rfModuleType = MODULE_MULTI;
 	g_general.currentModel = 0;
 	g_general.contrast = 33;
 	g_general.vBatWarning = 60;	
@@ -363,6 +378,7 @@ void Init()
 	//startPulses(MODULE_PPM);
 	//Enable watchdog.
 	wdt_enable(WDTO_500MS);
+	debugln("WD Timer enabled!");
 }
 
 void perMain()
@@ -386,15 +402,25 @@ int main(void)
 	//////////////////////////////////////////////////////////////////////////
 	sei();	// Enable global interrupts
 
+	
+	
 	Init();
+	
+	//sendStopPulses();
+	//g_general.rfModuleType = MODULE_MULTI;
+	//eeDirty(EE_GENERAL);
+	//eeDirty(EE_MODEL);
+	//startPulses(g_general.rfModuleType);
+	
 	
 	/* Replace with your application code */
 	while (1)
 	{
-		_delay_ms(15);
+		_delay_ms(1);
 		//perMain();		
-		if (heartbeat == HEART_WDT_CHECK) {
+		if (heartbeat == HEART_WDT_CHECK) {			
 			wdt_reset();
+			//debugln("heartbeat");
 			heartbeat = 0;
 		}
 	}

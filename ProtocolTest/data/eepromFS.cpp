@@ -22,8 +22,8 @@
 #include "eepromFS.h"
 
 uint8_t   s_write_err = 0;		// error reasons
-RlcFile   theFile;				//used for any file operation
-EeFs      eeFs;
+RlcFile   theFile;				// used for any file operation
+EeFs      eeFs;					// file system
 
 uint8_t  s_sync_write = false;
 
@@ -36,7 +36,8 @@ inline void eeprom_write_byte()
 {
 	EEAR = eeprom_pointer;
 	EECR |= 1<<EERE;
-	if(*eeprom_buffer_data == EEDR) return;
+	if(*eeprom_buffer_data == EEDR) 
+		return;
 
 	EEDR = *eeprom_buffer_data;
 
@@ -59,8 +60,7 @@ ISR(EE_READY_vect)
 		eeprom_write_byte();
     }
 	else
-    {
-		//debugln("ISR EE_READY_vect");
+    {		
 		EECR &= ~(1<<EERIE);
     }
 }
@@ -139,7 +139,7 @@ uint16_t EeFsGetFree()
 	return (ret > 0 ? ret : 0);
 }
 
-/// free one or more blocks
+// Free one or more blocks
 static void EeFsFree(blkid_t blk)
 {
 	blkid_t i = blk;
@@ -155,16 +155,20 @@ static void EeFsFree(blkid_t blk)
 	EeFsFlushFreelist();
 }
 
+// Check file system
 void eepromCheck()
 {
+	debug("eeprom check....");
+	
 	ENABLE_SYNC_WRITE(true);
 
 	uint8_t *bufp = (uint8_t *)&g_model;
+
 	memclear(bufp, BLOCKS);
 	blkid_t blk ;
 	
 	for (uint8_t i=0; i<=MAXFILES; i++)
-	{
+	{		
 		blkid_t *startP = (i==MAXFILES ? &eeFs.freeList : &eeFs.files[i].startBlk);
 		blkid_t lastBlk = 0;
 		blk = *startP;
@@ -204,6 +208,7 @@ void eepromCheck()
 		}
 	}
 
+	debugln("completed!");
 	ENABLE_SYNC_WRITE(false);
 }
 
@@ -225,7 +230,7 @@ void eepromFormat()
 	eeFs.size		= sizeof(eeFs);
 	eeFs.freeList	= 0;
 	eeFs.bs			= BS;
-	for (blkid_t i=FIRSTBLK; i<BLOCKS-1; i++)
+	for (blkid_t i = FIRSTBLK; i < BLOCKS-1; i++)
 	{
 		EeFsSetLink(i, i+1);
 	}
@@ -242,16 +247,14 @@ bool eepromOpen()
 	debugln("eeprom opening....");
 	
 	EEPROMREADBLOCK((uint8_t *)&eeFs, 0, sizeof(eeFs));
-
-	debugln("eeFs check....");
-	debug("eeFs version: ");
-	debugln(eeFs.version);
+	
+	TRACE("eeFs version: ", eeFs.version);
 	if (eeFs.version != EEFS_VERS || eeFs.size != sizeof(eeFs))
 	{	
+		debugln("bad eeFs version or size");
 		return false;
 	}
 	
-	debugln("eeprom check....");
 	eepromCheck();
 	return true;
 }
@@ -261,9 +264,7 @@ bool EFile::exists(uint8_t i_fileId)
 	return eeFs.files[i_fileId].startBlk;
 }
 
-/*
- * Swap two files in eeprom
- */
+// Swap two files in eeprom
 void EFile::swap(uint8_t i_fileId1, uint8_t i_fileId2)
 {
 	DirEnt            tmp = eeFs.files[i_fileId1];
@@ -276,6 +277,7 @@ void EFile::swap(uint8_t i_fileId1, uint8_t i_fileId2)
 	ENABLE_SYNC_WRITE(false);
 }
 
+// Remove file
 void EFile::rm(uint8_t i_fileId)
 {
 	blkid_t i = eeFs.files[i_fileId].startBlk;
@@ -288,10 +290,7 @@ void EFile::rm(uint8_t i_fileId)
 	ENABLE_SYNC_WRITE(false);
 }
 
-/*
- * Open file i_fileId for reading.
- * Return the file's type
- */
+// Open file i_fileId for reading.
 void EFile::openRd(uint8_t i_fileId)
 {
 	m_fileId	= i_fileId;
@@ -303,7 +302,6 @@ void EFile::openRd(uint8_t i_fileId)
 
 void RlcFile::openRlc(uint8_t i_fileId)
 {
-	debugln("RlcFile::openRlc");
 	EFile::openRd(i_fileId);
 	m_zeroes   = 0;
 	m_bRlc     = 0;
@@ -335,9 +333,7 @@ uint8_t EFile::read(uint8_t *buf, uint8_t i_len)
 	return i_len;
 }
 
-/*
- * Read runlength (RLE) compressed bytes into buf.
- */
+ // Read run length (RLE) compressed bytes into buf.
 uint16_t RlcFile::readRlc(uint8_t *buf, uint16_t i_len)
 {
 	uint16_t i = 0;
@@ -392,6 +388,7 @@ void RlcFile::write(uint8_t *buf, uint8_t i_len)
 	while (IS_SYNC_WRITE_ENABLE() && m_write_len && !s_write_err);
 }
 
+// Another part of magic
 void RlcFile::nextWriteStep()
 {
 	if (!m_currBlk && m_pos==0)
@@ -465,6 +462,7 @@ void RlcFile::nextWriteStep()
 
 	if (s_write_err == ERR_FULL)
 	{
+		debugln("Eeprom OVERFLOW!");
 		//TODO: GUI
 		//POPUP_WARNING(STR_EEPROMOVERFLOW);
 		m_write_step = 0;
@@ -477,6 +475,7 @@ void RlcFile::nextWriteStep()
 	}
 }
 
+// Create new file
 void RlcFile::create(uint8_t i_fileId, uint8_t type, uint8_t sync_write)
 {
 	// all write operations will be executed on FILE_TMP
@@ -487,9 +486,8 @@ void RlcFile::create(uint8_t i_fileId, uint8_t type, uint8_t sync_write)
 	ENABLE_SYNC_WRITE(sync_write);
 }
 
-/*
- * Copy file src to dst
- */
+
+// Copy file src to dst
 bool RlcFile::copy(uint8_t i_fileDst, uint8_t i_fileSrc)
 {
 	EFile theFile2;
@@ -519,12 +517,13 @@ bool RlcFile::copy(uint8_t i_fileDst, uint8_t i_fileSrc)
 	eeFs.files[FILE_TMP].size = m_pos;
 	EFile::swap(m_fileId, FILE_TMP);
 
-	debug("error copying ");debugln(!m_write_step);
+	TRACE("error copying ",!m_write_step);
 
 	// s_sync_write is set to false in swap();
 	return true;
 }
 
+// Write file to eeprom
 void RlcFile::writeRlc(uint8_t i_fileId, uint8_t type, uint8_t *buf, uint16_t i_len, uint8_t sync_write)
 {
 	debug("RlcFile::writeRlc fileId=");debugln(i_fileId);
@@ -548,6 +547,7 @@ void RlcFile::writeRlc(uint8_t i_fileId, uint8_t type, uint8_t *buf, uint16_t i_
 	while (IS_SYNC_WRITE_ENABLE() && m_write_step && !s_write_err);
 }
 
+// Whole black magic! If someone can explain what is going on here - will be appreciated! 
 void RlcFile::nextRlcWriteStep()
 {
 	uint8_t cnt    = 1;
@@ -665,6 +665,7 @@ void RlcFile::nextRlcWriteStep()
     }
 }
 
+// Commit write file to eeprom
 void RlcFile::flush()
 {
 	while (eeprom_buffer_size)
@@ -694,27 +695,29 @@ void RlcFile::DisplayProgressBar(uint8_t x)
 }
 #endif
 
+// Load general settings. Run ones on startup.
 bool eeLoadGeneral()
 {
-	debugln("theFile.openRlc");
+	debugln("open GeneralSettings File");
 	theFile.openRlc(FILE_GENERAL);
 	
-	debug("g_general.version="); debugln(g_general.version);
-	
+	// Read GeneralSettings version. Should be first byte.
 	if (theFile.readRlc((uint8_t*)&g_general, 1) == 1 && g_general.version == EEPROM_VER)
 	{
+		// Version is ok -> read whole file
 		theFile.openRlc(FILE_GENERAL);
 		if (theFile.readRlc((uint8_t*)&g_general, sizeof(g_general)) <= sizeof(GeneralSettings))
 		{
-			debug("g_general check OK");
+			debugln("GeneralSettings loaded");
 			return true;
 		}
 	}
 
-	debug("Bad EEPROM version "); debugln(g_general.version);
+	TRACE("Bad EEPROM version: ", g_general.version);	
 	return false;
 }
 
+// Load only model name into memory. GUI staff
 void eeLoadModelName(uint8_t id, char *name)
 {
 	memclear(name, sizeof(g_model.name));
@@ -725,34 +728,39 @@ void eeLoadModelName(uint8_t id, char *name)
 	}
 }
 
+// Check if model exists
 bool eeModelExists(uint8_t id)
 {
 	return EFile::exists(FILE_MODEL(id));
 }
 
+// Load model settings from eeprom
 void eeLoadModel(uint8_t id)
 {
 	if (id<MAX_MODELS)
 	{
-		if (pulsesStarted())
-		{
-			sendStopPulses();
-		}
+		//TODO: Find better way
+		//if (pulsesStarted())
+		//{
+			//sendStopPulses();
+		//}
 
 		theFile.openRlc(FILE_MODEL(id));
 		uint16_t sz = theFile.readRlc((uint8_t*)&g_model, sizeof(g_model));
 
-		//bool newModel = false;
+		bool newModel = false;
       
 		
 		if (sz < 256)
 		{
 			modelDefault(id);
 			eeCheck(true);
-			//newModel = true;
+			
+			debugln("new model created!");
+			newModel = true;
 		}
 		
-/* TODO: Model initialization 
+/* TODO: Model initialization needs implementation
 		flightReset();
 		logicalSwitchesReset();
 		setThrSource();
@@ -765,7 +773,7 @@ void eeLoadModel(uint8_t id)
 				checkAll();
 			}
 	#endif
-			startPulses(PROTOCMD_INIT);
+			startPulses(g_general.rfModuleType);
 		}
 
 		modelFunctionsContext.reset();
@@ -776,6 +784,7 @@ void eeLoadModel(uint8_t id)
 	}
 }
 
+// Erase eeprom and save default settings
 void eeErase(bool warn)
 {
 	generalDefault();
@@ -794,6 +803,7 @@ void eeErase(bool warn)
 	theFile.writeRlc(FILE_MODEL(0), FILE_TYPE_MODEL, (uint8_t*)&g_model, sizeof(g_model), true);
 }
 
+// Write changes to eeprom if needed
 void eeCheck(bool immediately)
 {
 	if (immediately)

@@ -64,6 +64,8 @@ void eeReadAll()
 		debugln("eraising eeprom....");
 		eeErase(true);
 	}
+	debugln("eeReadAll() completed!");
 	stickMode = g_general.stickMode;
+	debug("Attempting to load model id: ");debugln(g_general.currentModel);
 	eeLoadModel(g_general.currentModel);
 }

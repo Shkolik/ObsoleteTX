@@ -40,6 +40,7 @@
 #define NOINLINE __attribute__ ((noinline))
 
 
+
 #define CHMAX 6
 
 //in case we need debug output
@@ -51,9 +52,10 @@
 #else
 #define debugln(ln) 
 #define debug(ln) 
-#define init_debug(baud)
+#define init_debug(baud) 
 #endif
 
+#define TRACE(ln, arg) debug(ln); debugln(arg)
 
 #include "usart_driver.h"
 #include "keys.h"

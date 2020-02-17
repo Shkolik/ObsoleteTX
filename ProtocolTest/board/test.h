@@ -30,11 +30,24 @@
 
 //invert throttle for test pp only
 #define INV_STICK_RH
-#define NUM_STICKS		4
-#define NUM_POTS		0
-#define LEN_MODEL_NAME	10
-#define MAX_MODELS		15
-#define DEFAULT_MODE	1
+#define NUM_STICKS			4
+#define NUM_POTS			0
+#define LEN_MODEL_NAME		10
+#define MAX_MODELS			30
+#define NUM_CHNOUT          16 // number of real output channels CH1-CH16
+#define MAX_EXPOS           16
+#define DEFAULT_MODE		1
+#define MAX_TIMERS          2
+#define LEN_FLIGHT_MODE_NAME 6
+#define MAX_CURVES           8
+#define NUM_POINTS           (112-MAX_CURVES)
+
+#define MAX_FLIGHT_MODES     6
+#define MAX_MIXERS           32
+#define NUM_LOGICAL_SWITCH   15 // number of custom switches
+#define NUM_CFN              24 // number of functions assigned to switches
+#define MAX_GVARS            6
+#define NUM_TRAINER          8
 #include "../main.h"
 
 #define UNEXPECTED_SHUTDOWN()   (mcusr & _BV(WDRF))
