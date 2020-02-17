@@ -23,10 +23,16 @@
 #ifndef TEST_H_
 #define TEST_H_
 
+#include <inttypes.h>
+
 #define F_CPU 8000000UL
 
 #define MULTI
 #define DSM
+
+#define TIMERS 2
+#define STICK_TOLERANCE 64
+#define EXTRA_3POS 0
 
 //invert throttle for test pp only
 #define INV_STICK_RH
@@ -37,7 +43,7 @@
 #define NUM_CHNOUT          16 // number of real output channels CH1-CH16
 #define MAX_EXPOS           16
 #define DEFAULT_MODE		1
-#define MAX_TIMERS          2
+
 #define LEN_FLIGHT_MODE_NAME 6
 #define MAX_CURVES           8
 #define NUM_POINTS           (112-MAX_CURVES)
@@ -86,5 +92,19 @@
 
 extern void getADC();
 extern void boardInit();
+extern uint8_t trimDown(uint8_t idx);
+extern uint8_t switchState(uint8_t enuk);
+
+// Trims
+#define GPIO_TRIMS                PING
+#define TRIMS_GPIO_PIN_LHL        PIN7_bm
+#define TRIMS_GPIO_PIN_LVD        PIN5_bm
+#define TRIMS_GPIO_PIN_RVU        PIN2_bm
+#define TRIMS_GPIO_PIN_RHL        PIN1_bm
+#define TRIMS_GPIO_PIN_LHR        PIN6_bm
+#define TRIMS_GPIO_PIN_LVU        PIN4_bm
+#define TRIMS_GPIO_PIN_RVD        PIN3_bm
+#define TRIMS_GPIO_PIN_RHR        PIN0_bm
+#define TRIMS_PRESSED()           (~GPIO_TRIMS)
 
 #endif /* TEST_H_ */

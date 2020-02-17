@@ -26,6 +26,10 @@
 
 #define EEPROM_VER	1
 
+#define MAX_TIMERS           2
+#define NUM_CYC              3
+#define NUM_CAL_PPM          4
+
 enum ModuleType {
 	MODULE_PPM,
 	#ifdef DSM
@@ -151,14 +155,23 @@ typedef struct {
 	TrainerChannel mix[4];		//12 bytes	(3*4)
 } __attribute__((__packed__)) TrainerInput; //20 bytes total
 
+enum TimerModes {
+	TMRMODE_NONE,
+	TMRMODE_ABS,
+	TMRMODE_THR,
+	TMRMODE_THR_REL,
+	TMRMODE_THR_TRG,
+	TMRMODE_COUNT
+};
+
 typedef struct {
-	int8_t   mode;              // timer trigger source -> off, abs, stk, stk%, sw/!sw, !m_sw/!m_sw
-	uint16_t start;
-	uint8_t  countdownBeep:2;
-	uint8_t  minuteBeep:1;
-	uint8_t  persistent:2;
-	uint8_t  spare:3;
-	uint16_t value;
+	TimerModes  mode;              // timer trigger source -> off, abs, stk, stk%, sw/!sw, !m_sw/!m_sw
+	uint16_t	start;
+	uint8_t		countdownBeep:2;
+	uint8_t		minuteBeep:1;
+	uint8_t		persistent:2;
+	uint8_t		spare:3;
+	uint16_t	value;
 } __attribute__((__packed__)) TimerData;
 
 #define IS_MANUAL_RESET_TIMER(idx) (g_model.timers[idx].persistent == 2)
@@ -204,6 +217,82 @@ typedef struct {
 	int8_t  curveParam;
 	int8_t  offset;
 } __attribute__((__packed__)) MixData;
+
+// Logical Switches data
+typedef struct {			
+	int8_t		v1;				//input
+	int16_t		v2:11;			//offset
+	uint16_t	func:5;
+	int8_t		andsw;			
+} __attribute__((__packed__)) LogicalSwitchData;
+
+typedef struct {
+	int8_t		swtch;
+	uint8_t		func;
+	uint8_t		mode:2;
+	uint8_t		param:4;
+	uint8_t		active:1;
+	uint8_t		spare:1;
+	uint8_t		value;
+} __attribute__((__packed__)) CustomFunctionData;
+
+#define CFN_SWITCH(p)       ((p)->swtch)
+#define CFN_FUNC(p)         ((p)->func)
+#define CFN_ACTIVE(p)       ((p)->active)
+#define CFN_CH_INDEX(p)     ((p)->param)
+#define CFN_TIMER_INDEX(p)  ((p)->param)
+#define CFN_GVAR_INDEX(p)   ((p)->param)
+#define CFN_PLAY_REPEAT(p)  ((p)->param)
+#define CFN_PLAY_REPEAT_MUL 10
+#define CFN_GVAR_MODE(p)    ((p)->mode)
+#define CFN_PARAM(p)        ((p)->value)
+#define CFN_RESET(p)        ((p)->active = 0, CFN_PARAM(p) = 0)
+#define CFN_GVAR_CST_MAX    125
+
+typedef struct {
+	int16_t		trim[4];            //TRIMS_ARRAY;
+	int8_t		swtch;               // swtch of phase[0] is not used
+	char		name[LEN_FLIGHT_MODE_NAME];
+	uint8_t		fadeIn:4;
+	uint8_t		fadeOut:4;
+	int8_t		gvars[MAX_GVARS];    //PHASE_GVARS_DATA;
+} __attribute__((__packed__)) FlightModeData;
+
+enum SwashType {
+	SWASH_TYPE_NONE,
+	SWASH_TYPE_120,
+	SWASH_TYPE_120X,
+	SWASH_TYPE_140,
+	SWASH_TYPE_90,
+	SWASH_TYPE_MAX = SWASH_TYPE_90
+};
+
+typedef struct {
+	uint8_t		invertELE:1;
+	uint8_t		invertAIL:1;
+	uint8_t		invertCOL:1;
+	SwashType	type:5;
+	uint8_t		collectiveSource;
+	uint8_t		value;
+} __attribute__((__packed__)) SwashRingData;
+
+#define TRIM_EXTENDED_MAX 500
+#define TRIM_EXTENDED_MIN (-TRIM_EXTENDED_MAX)
+#define TRIM_MAX 125
+#define TRIM_MIN (-TRIM_MAX)
+
+#define LEN_GVAR_NAME 6
+#define GVAR_MAX      121 // used for phase decrypt
+#define GVAR_LIMIT    120
+#define PHASE_GVARS_DATA int8_t gvars[MAX_GVARS]
+#define GVAR_VALUE(x, p) g_model.flightModeData[p].gvars[x]
+
+typedef struct {
+	char    name[LEN_GVAR_NAME];
+} __attribute__((__packed__)) GlobalVariable;
+
+#define RESERVE_RANGE_FOR_GVARS MAX_GVARS
+// even we do not spend space in EEPROM for GVARS, we reserve the space inside the range of values, like offset, weight, etc.
 
 // Transmitter settings
 typedef struct {
@@ -261,20 +350,21 @@ typedef struct {
 	uint8_t   disableThrottleWarning:1;			//1byte
 	uint8_t   extendedLimits:1;					//1byte
 	uint8_t   extendedTrims:1;					//1byte
-	int16_t	  beepANACenter;					//2bytes
-	MixData   mixData[MAX_MIXERS];			//304bytes (19*16 mixes) 
+	int16_t	  beepOnCenter;						//2bytes
+	MixData   mixData[MAX_MIXERS];				//304bytes (19*16 mixes) 
 	LimitData limitData[NUM_CHNOUT];			//144bytes (9*16channels)?
 	ExpoData  expoData[MAX_EXPOS];				//64bytes (8*8expos)?
-	//CURVDATA  curves[MAX_CURVES];				//8bytes
+	int8_t	  curves[MAX_CURVES];				//8bytes
 	int8_t    points[NUM_POINTS];				//104bytes
-	//LogicalSwitchData logicalSw[NUM_LOGICAL_SWITCH];
-	//CustomFunctionData customFn[NUM_CFN];		//84 bytes (7*12 funcs)
-	//FlightModeData flightModeData[MAX_FLIGHT_MODES];
-	//uint8_t thrTraceSrc:5;					//1byte
-	//uint8_t thrSwitch:3;						//1byte
-	//swarnstate_t  switchWarningState;			//1byte
-	//swarnenable_t switchWarningEnable;		//1byte
-	//SwashRingData swashR;						//6bytes		// Heli data
+	LogicalSwitchData logicalSw[NUM_LOGICAL_SWITCH];
+	CustomFunctionData customFn[NUM_CFN];		//84 bytes (7*12 funcs)
+	FlightModeData flightModeData[MAX_FLIGHT_MODES];
+	GlobalVariable gvars[MAX_GVARS];
+	uint8_t thrTraceSrc:5;						//1byte
+	uint8_t thrSwitch:3;						//1byte
+	uint8_t switchWarningState;					//1byte
+	uint8_t switchWarningEnable;				//1byte
+	SwashRingData swashRing;					//6bytes		// Heli data
 	
 } __attribute__((__packed__)) ModelSettings;   //753bytes so... 
 

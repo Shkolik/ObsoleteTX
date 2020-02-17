@@ -29,6 +29,7 @@
 #include <util/atomic.h>
 #include <util/delay.h>
 #include <avr/sfr_defs.h>
+#include <stdlib.h>
 #include <stddef.h>
 #include <avr/pgmspace.h>
 #include <avr/wdt.h>
@@ -39,9 +40,11 @@
 #define FORCEINLINE inline __attribute__ ((always_inline))
 #define NOINLINE __attribute__ ((noinline))
 
+#define IS_IN_RANGE(value,lowest,highest) (!(value<(lowest)) && (value<((highest)+1)))
 
 
 #define CHMAX 6
+#define MAX_ALERT_TIME   60
 
 //in case we need debug output
 #ifdef USART_DBG
@@ -57,11 +60,17 @@
 
 #define TRACE(ln, arg) debug(ln); debugln(arg)
 
+
 #include "usart_driver.h"
 #include "keys.h"
+#include "mixer.h"
+#include "maths.h"
+#include "trainer.h"
 #include "data/data.h"
 #include "data/eeprom_common.h"
 #include "data/eepromFS.h"
+#include "timers.h"
+#include "switches.h"
 
 
 #ifndef PIN0_bm
@@ -102,6 +111,7 @@
 
 #define PPM_CENTER			1500
 #define FULL_CHANNEL_OUTPUTS(ch) channelOutputs[ch]
+#define NUM_INPUTS			(NUM_STICKS)
 
 //for 16MHz we need multiply some timings by 2
 #define TIMER_MULTIPLIER (F_CPU == 8000000L ? 1 : 2)
@@ -161,10 +171,6 @@ extern uint8_t stickMode;
 
 extern uint8_t s_current_protocol;
 
-
-
-extern int16_t channelOutputs[CHMAX];
-
 extern uint16_t nextMixerEndTime;
 extern uint16_t g_tmr1Latency_max;
 extern uint16_t g_tmr1Latency_min;
@@ -174,6 +180,8 @@ extern uint8_t protoMode;
 extern uint16_t bind_tmr10ms;
 
 extern uint16_t g_tmr10ms;
+
+extern bool s_mixer_first_run_done;
 
 #define TOGGLE(port, pin) (port ^= pin)
 #define SETPIN(port, pin, state) (state ? (port |= pin) : (port &= ~pin))
@@ -196,6 +204,8 @@ FORCEINLINE void sendStopPulses()
 	PROTO_Stop_Callback();
 }
 
+extern void startPulses(enum ModuleType module);
+
 #define HEART_TIMER_10MS              1
 #define HEART_TIMER_PULSES            2
 #define HEART_WDT_CHECK               (HEART_TIMER_10MS + HEART_TIMER_PULSES)
@@ -204,7 +214,25 @@ FORCEINLINE void sendStopPulses()
 #define DIM(array) ((sizeof array) / (sizeof *array))
 #define memclear(p, s) memset(p, 0, s)
 
+extern const pm_uint8_t bchout_ar[];
+extern const pm_uint8_t modn12x3[];
+
+extern uint8_t stickMode;
+
+//convert from mode 1 to mode stickMode
+//NOTICE!  =>  0..3 -> 0..3
+#define RUD_STICK 0
+#define ELE_STICK 1
+#define THR_STICK 2
+#define AIL_STICK 3
+#define CONVERT_MODE(x)  (((x)<=AIL_STICK) ? pgm_read_byte_near(modn12x3 + 4*stickMode + (x)) : (x) )
+
+extern uint8_t channel_order(uint8_t x);
+
 extern void modelDefault(uint8_t id);
 extern void generalDefault();
-
+extern void flightReset();
+extern void setThrSource();
+extern uint8_t getTrimFlightPhase(uint8_t phase, uint8_t idx);
+extern int16_t getTrimValue(uint8_t phase, uint8_t idx);
 #endif /* MAIN_H_ */

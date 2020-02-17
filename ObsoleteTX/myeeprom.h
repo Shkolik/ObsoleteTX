@@ -859,46 +859,6 @@ enum DisplayTrims {
   DISPLAY_TRIMS_ALWAYS
 };
 
-/*
-typedef struct {
-  char      name[LEN_MODEL_NAME]; // must be first for eeLoadModelName
-  //Rf data
-  uint8_t   modelId;//:6;         //64 max
-  uint8_t   rfProtocol;//:6;      //64 max
-  uint8_t   rfSubType;//:4;       //16 max
-  int8_t    rfOptionValue1;
-  int8_t    rfOptionValue2;
-  uint8_t   rfOptionValue3;//:5;  //32 max
-  uint8_t   rfOptionBool1;//:1;
-  uint8_t   rfOptionBool2;//:1;
-  uint8_t   rfOptionBool3;//:1;
-  //end of RF data
-
-  TimerData timers[MAX_TIMERS];
-  uint8_t   thrTrim;//:1;            // Enable Throttle Trim
-  int8_t    trimInc;//:3;            // Trim Increments
-  uint8_t   disableThrottleWarning;//:1;
-  uint8_t   extendedLimits;//:1;
-  uint8_t   extendedTrims;//:1;
-  uint8_t   unused;//:1;             // was throttleReversed
-  uint16_t beepANACenter;
-  MixData   mixData[MAX_MIXERS];
-  LimitData limitData[NUM_CHNOUT];
-  ExpoData  expoData[MAX_EXPOS];
-  int8_t  curves[MAX_CURVES];
-  int8_t    points[NUM_POINTS];
-  LogicalSwitchData logicalSw[NUM_LOGICAL_SWITCH];
-  CustomFunctionData customFn[NUM_CFN];
-  FlightModeData flightModeData[MAX_FLIGHT_MODES];
-  global_gvar_t gvars[MAX_GVARS]; // gvars name
-  uint8_t thrTraceSrc;//:5;
-  uint8_t thrSwitch;//:3;
-  uint8_t  switchWarningState;
-  uint8_t switchWarningEnable;
-  SwashRingData swashR;          // Helli data
-  uint8_t UnusedModel; // Use later .. todo
-  FrSkyData telemetry;
-} ModelData;*/
 
 typedef struct {
 	char      name[LEN_MODEL_NAME]; // must be first for eeLoadModelName

@@ -231,6 +231,18 @@
     <Compile Include="keys.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="maths.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="maths.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mixer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="mixer.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="MultiprotocolWiki.h">
       <SubType>compile</SubType>
     </Compile>
@@ -274,6 +286,24 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="protocol\ppm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="switches.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="switches.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="timers.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="timers.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="trainer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="trainer.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="usart_driver.cpp">

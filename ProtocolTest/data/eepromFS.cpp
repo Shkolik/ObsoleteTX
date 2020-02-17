@@ -738,12 +738,11 @@ bool eeModelExists(uint8_t id)
 void eeLoadModel(uint8_t id)
 {
 	if (id<MAX_MODELS)
-	{
-		//TODO: Find better way
-		//if (pulsesStarted())
-		//{
-			//sendStopPulses();
-		//}
+	{		
+		if (pulsesStarted())
+		{
+			sendStopPulses();
+		}
 
 		theFile.openRlc(FILE_MODEL(id));
 		uint16_t sz = theFile.readRlc((uint8_t*)&g_model, sizeof(g_model));
@@ -760,27 +759,25 @@ void eeLoadModel(uint8_t id)
 			newModel = true;
 		}
 		
-/* TODO: Model initialization needs implementation
+
 		flightReset();
 		logicalSwitchesReset();
 		setThrSource();
 
-		if (pulsesStarted())
-		{
-	#if defined(GUI)
-			if (!newModel)
-			{
-				checkAll();
-			}
-	#endif
-			startPulses(g_general.rfModuleType);
-		}
+		//if (pulsesStarted())
+		//{
+	//#if defined(GUI)
+			//if (!newModel)
+			//{
+				//checkAll();
+			//}
+	//#endif
+			//startPulses(g_general.rfModuleType);
+		//}
 
-		modelFunctionsContext.reset();
+		//modelFunctionsContext.reset();
 		restoreTimers();
-
-		// TODO pulses should be started after mixer calculations ...
-		*/
+		// TODO pulses should be started after mixer calculations ...		
 	}
 }
 

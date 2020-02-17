@@ -21,7 +21,6 @@
 
 
 #include "main.h"
-int16_t channelOutputs[CHMAX];
 
 uint16_t g_tmr10ms;
 volatile uint8_t g_tmr32ms;
@@ -69,6 +68,10 @@ const pm_uint8_t modn12x3[] PROGMEM = {
 	3, 2, 1, 0
 };
 
+FlightModeData *flightModeAddress(uint8_t idx)
+{
+	return &g_model.flightModeData[idx];
+}
 
 ExpoData *expoAddress(uint8_t idx )
 {
@@ -83,6 +86,51 @@ MixData *mixAddress(uint8_t idx)
 LimitData *limitAddress(uint8_t idx)
 {
 	return &g_model.limitData[idx];
+}
+
+int16_t getRawTrimValue(uint8_t phase, uint8_t idx)
+{
+	FlightModeData *p = flightModeAddress(phase);
+	return p->trim[idx];
+}
+
+int16_t getTrimValue(uint8_t phase, uint8_t idx)
+{
+	return getRawTrimValue(getTrimFlightPhase(phase, idx), idx);
+}
+
+void setTrimValue(uint8_t phase, uint8_t idx, int16_t trim)
+{
+	FlightModeData *p = flightModeAddress(phase);
+	p->trim[idx] = trim;
+	eeDirty(EE_MODEL);
+}
+
+uint8_t getTrimFlightPhase(uint8_t phase, uint8_t idx)
+{
+	for (uint8_t i=0; i<MAX_FLIGHT_MODES; i++)
+	{
+		if (phase == 0) return 0;
+		int16_t trim = getRawTrimValue(phase, idx);
+		if (trim <= TRIM_EXTENDED_MAX) return phase;
+		uint8_t result = trim-TRIM_EXTENDED_MAX-1;
+		if (result >= phase) ++result;
+		phase = result;
+	}
+	return 0;
+}
+
+uint8_t thrSource;
+bool enableThr = false;
+
+void setThrSource()
+{
+	uint8_t idx = g_model.thrTraceSrc + MIXSRC_Thr;
+	if (idx > MIXSRC_Thr)
+		++idx;
+	if (idx >= MIXSRC_FIRST_POT+NUM_POTS)
+		idx += MIXSRC_CH1 - MIXSRC_FIRST_POT - NUM_POTS;
+	thrSource = idx;
 }
 
 #if defined(TEMPLATES)
@@ -128,6 +176,25 @@ void generalDefault()
 	g_general.stickMode = DEFAULT_MODE - 1;
 	g_general.inactivityTimer = 10;
 	g_general.checkSum = 0xFFFF;
+}
+
+void flightReset()
+{	
+	if (!IS_MANUAL_RESET_TIMER(0))
+	{
+		timerReset(0);
+	}
+
+	#if TIMERS > 1
+	if (!IS_MANUAL_RESET_TIMER(1))
+	{
+		timerReset(1);
+	}
+	#endif
+	
+	s_mixer_first_run_done = false;
+
+	//RESET_THR_TRACE();
 }
 
 
@@ -328,6 +395,8 @@ void per10ms()
 	}
 }
 
+bool s_mixer_first_run_done = false;
+
 void doMixerCalculations()
 {
 }
@@ -375,7 +444,7 @@ void Init()
 	
 	//Start protocol here!
 	startPulses(g_general.rfModuleType);
-	//startPulses(MODULE_PPM);
+	
 	//Enable watchdog.
 	wdt_enable(WDTO_500MS);
 	debugln("WD Timer enabled!");

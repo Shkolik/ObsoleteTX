@@ -21,6 +21,78 @@
 
 #include "test.h"
 
+static const pm_uchar crossTrim[] PROGMEM = {
+	TRIMS_GPIO_PIN_LHL,
+	TRIMS_GPIO_PIN_LHR,
+	TRIMS_GPIO_PIN_LVD,
+	TRIMS_GPIO_PIN_LVU,
+	TRIMS_GPIO_PIN_RVD,
+	TRIMS_GPIO_PIN_RVU,
+	TRIMS_GPIO_PIN_RHL,
+	TRIMS_GPIO_PIN_RHR
+};
+
+uint8_t trimDown(uint8_t idx)
+{
+	uint8_t in = 0;//~PING;
+	return (in & pgm_read_byte_near(crossTrim+idx));
+}
+
+uint8_t switchState(EnumKeys enuk)
+{
+	uint8_t result = 0 ;
+
+	//if (enuk < NUM_KEYS)
+	//return keys[enuk].state() ? 1 : 0;
+	//
+	//switch(enuk) {
+	//case SW_ELE:
+	//result = !(PINL & INP_L_ElevDR);
+	//break;
+	//
+	//case SW_AIL:
+	//result = !(PIND & INP_D_AileDR);
+	//break;
+	//
+	//case SW_RUD:
+	//result = !(PING & INP_G_RuddDR);
+	//break;
+	//
+	////       INP_C_ID1  INP_C_ID2
+	//// ID0      0          1
+	//// ID1      1          1
+	//// ID2      1          0
+	//case SW_ID0:
+	//result = !(PINC & INP_C_ID1);
+	//break;
+	//
+	//case SW_ID1:
+	//result = (PINC & INP_C_ID1) && (PINC & INP_C_ID2);
+	//break;
+	//
+	//case SW_ID2:
+	//result = !(PINC & INP_C_ID2);
+	//break;
+	//
+	//case SW_GEA:
+	//result = !(PING & INP_G_Gear);
+	//break;
+	//
+	//case SW_THR:
+	//result = !(PING & INP_G_ThrCt);
+	//break;
+	//
+	//case SW_TRN:
+	//result = !(PINL & INP_L_Trainer);
+	//break;
+	//
+	//default:
+	//break;
+	//}
+
+	return result;
+}
+
 void boardInit()
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -67,6 +139,7 @@ void boardInit()
 	//Interrupt will be enabled by protocol callback when started
 	//////////////////////////////////////////////////////////////////////////
 }
+
 //run every 10ms
 //For some reason 1 and 2 channels not correct
 void getADC()
