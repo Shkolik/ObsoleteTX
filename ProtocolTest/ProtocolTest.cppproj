@@ -210,6 +210,18 @@
     <Compile Include="board\test.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="buzzer.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="buzzer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="curves.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="curves.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="data\data.h">
       <SubType>compile</SubType>
     </Compile>
@@ -223,6 +235,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="data\eeprom_common.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="functions.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="functions.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="keys.cpp">

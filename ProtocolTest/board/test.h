@@ -43,6 +43,7 @@
 #define NUM_CHNOUT          16 // number of real output channels CH1-CH16
 #define MAX_EXPOS           16
 #define DEFAULT_MODE		1
+#define NUM_INPUTS			(NUM_STICKS)
 
 #define LEN_FLIGHT_MODE_NAME 6
 #define MAX_CURVES           8
@@ -54,6 +55,13 @@
 #define NUM_CFN              24 // number of functions assigned to switches
 #define MAX_GVARS            6
 #define NUM_TRAINER          8
+
+// Buzzer driver
+#define OUT_Buzzer			6
+#define buzzerOn()			PORTC |=  _BV(OUT_Buzzer)
+#define buzzerOff()         PORTC &= ~_BV(OUT_Buzzer)
+
+
 #include "../main.h"
 
 #define UNEXPECTED_SHUTDOWN()   (mcusr & _BV(WDRF))
@@ -106,5 +114,8 @@ extern uint8_t switchState(uint8_t enuk);
 #define TRIMS_GPIO_PIN_RVD        PIN3_bm
 #define TRIMS_GPIO_PIN_RHR        PIN0_bm
 #define TRIMS_PRESSED()           (~GPIO_TRIMS)
+
+
+
 
 #endif /* TEST_H_ */

@@ -135,6 +135,8 @@ extern uint8_t lswFamily(uint8_t func);
 extern void logicalSwitchesTimerTick();
 extern int16_t lswTimerValue(int8_t val);
 
+extern volatile uint16_t s_last_switch_used;
+
 typedef struct {
 	uint8_t state;
 	uint8_t last;

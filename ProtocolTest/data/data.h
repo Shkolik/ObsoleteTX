@@ -129,6 +129,9 @@ enum MixSources {
 #define MIN_POINTS 3
 #define MAX_POINTS 17
 
+
+
+
 // Used to hold tx id
 typedef union {
 	uint8_t   ID_8[4];
@@ -303,6 +306,12 @@ typedef struct {
 
 #define RESERVE_RANGE_FOR_GVARS MAX_GVARS
 // even we do not spend space in EEPROM for GVARS, we reserve the space inside the range of values, like offset, weight, etc.
+
+#define DELAY_STEP  2
+#define SLOW_STEP   2
+#define DELAY_MAX   15 /* 7.5 seconds */
+#define SLOW_MAX    15 /* 7.5 seconds */
+
 
 // Transmitter settings
 typedef struct {
