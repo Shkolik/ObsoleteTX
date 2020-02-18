@@ -132,5 +132,12 @@ extern uint8_t getSwitch(int8_t swtch);
 extern void logicalSwitchesReset();
 extern LogicalSwitchData * lswAddress(uint8_t idx);
 extern uint8_t lswFamily(uint8_t func);
+extern void logicalSwitchesTimerTick();
+extern int16_t lswTimerValue(int8_t val);
+
+typedef struct {
+	uint8_t state;
+	uint8_t last;
+} __attribute__((__packed__)) ls_sticky_struct;
 
 #endif /* SWITCHES_H_ */

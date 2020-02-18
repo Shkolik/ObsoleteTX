@@ -39,6 +39,8 @@
 
 #define FORCEINLINE inline __attribute__ ((always_inline))
 #define NOINLINE __attribute__ ((noinline))
+// Fiddle to force compiler to use a pointer
+#define FORCE_INDIRECT(ptr) __asm__ __volatile__ ("" : "=e" (ptr) : "0" (ptr))
 
 #define IS_IN_RANGE(value,lowest,highest) (!(value<(lowest)) && (value<((highest)+1)))
 
@@ -98,6 +100,14 @@
 #define PIN7_bm  0x80
 #endif
 
+// RESX range is used for internal calculation; The menu says -100.0 to 100.0; internally it is -1024 to 1024 to allow some optimizations
+#define RESX_SHIFT 10
+#define RESX       1024
+#define RESXu      1024u
+#define RESXul     1024ul
+#define RESXl      1024l
+
+
 #define IS_PIN_HI(reg, pin) ((reg & (1 << pin)) > 0)
 #define IS_PIN_LOW(reg, pin) !IS_PIN_HI(reg, pin)
 
@@ -117,6 +127,20 @@
 #define TIMER_MULTIPLIER (F_CPU == 8000000L ? 1 : 2)
 //for 8MHz we need divide some values by 2 (using bit-shift)
 #define TIMER_DEMULTIPLIER (F_CPU == 8000000L ? 1 : 0)
+
+#ifdef GUI
+#define POPUP(x) displayPopup(x);
+#define MENU_MODEL_SETUP menuHandlers[menuLevel] == menuModelSetup
+#else
+#define MENU_MODEL_SETUP 0
+#define POPUP(...)
+#define DISPLAY_WARNING(...)
+#define POPUP_WARNING(...)
+#define POPUP_CONFIRMATION(...)
+#define POPUP_INPUT(...)
+#define WARNING_INFO_FLAGS           0
+#define SET_WARNING_INFO(...)
+#endif
 
 
 //////////////////////////////////////////////////////////////////////////

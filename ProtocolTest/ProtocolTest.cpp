@@ -399,6 +399,134 @@ bool s_mixer_first_run_done = false;
 
 void doMixerCalculations()
 {
+	static uint16_t lastTMR = 0;
+
+	uint16_t tmr10ms = g_tmr10ms;
+	uint8_t tick10ms = (tmr10ms >= lastTMR ? tmr10ms - lastTMR : 1);
+	// handle tick10ms overrun
+	// correct overflow handling costs a lot of code; happens only each 11 min;
+	// therefore forget the exact calculation and use only 1 instead; good compromise
+
+	lastTMR = tmr10ms;
+
+	getADC();
+
+	evalMixes(tick10ms);
+
+	if (tick10ms)
+	{
+		/* Throttle trace */
+		int16_t val;
+
+		if (g_model.thrTraceSrc > NUM_POTS)
+		{
+			uint8_t ch = g_model.thrTraceSrc-NUM_POTS-1;
+			val = channelOutputs[ch];
+
+			LimitData *lim = limitAddress(ch);
+			int16_t gModelMax = LIMIT_MAX_RESX(lim);
+			int16_t gModelMin = LIMIT_MIN_RESX(lim);
+
+			if (lim->revert)
+				val = -val + gModelMax;
+			else
+			val = val - gModelMin;
+
+			#if defined(PPM_LIMITS_SYMETRICAL)
+				if (lim->symetrical)
+				{
+					val -= calc1000toRESX(lim->offset);
+				}
+			#endif
+
+			gModelMax -= gModelMin; // we compare difference between Max and Mix for recaling needed; Max and Min are shifted to 0 by default
+			// usually max is 1024 min is -1024 --> max-min = 2048 full range
+
+			if (gModelMax != 0 && gModelMax != 2048)
+				val = (int32_t) (val << 11) / (gModelMax); // rescaling only needed if Min, Max differs
+
+			if (val < 0)
+				val = 0;  // prevent val be negative, which would corrupt throttle trace and timers; could occur if safetyswitch is smaller than limits
+		}
+		else
+		{
+			val = RESX + (g_model.thrTraceSrc == 0 ? rawAnalogs[THR_STICK] : calibratedStick[g_model.thrTraceSrc + NUM_STICKS-1]);
+		}
+
+		val >>= (RESX_SHIFT - 6); // calibrate it (resolution increased by factor 4)
+
+		evalTimers(val, tick10ms);
+
+		static uint8_t  s_cnt_100ms;
+		static uint8_t  s_cnt_1s;
+		static uint8_t  s_cnt_samples_thr_1s;
+		static uint16_t s_sum_samples_thr_1s;
+
+		++s_cnt_samples_thr_1s;
+		s_sum_samples_thr_1s+=val;
+
+		if ((s_cnt_100ms += tick10ms) >= 10)
+		{ // 0.1sec
+			s_cnt_100ms -= 10;
+			s_cnt_1s += 1;
+
+			logicalSwitchesTimerTick();
+
+			if (s_cnt_1s >= 10)
+			{ // 1sec
+				s_cnt_1s -= 10;
+				++sessionTimer;
+				checkBattery();
+
+				if ((rangeModeIsOn) && !(MENU_MODEL_SETUP))
+				{
+					rangeModeIsOn = false; // Reset range mode if not in menuModelSetup
+				}
+
+				struct t_inactivity *ptrInactivity = &inactivity;
+				FORCE_INDIRECT(ptrInactivity) ;
+				ptrInactivity->counter++;
+				if ((((uint8_t)ptrInactivity->counter)&0x07)==0x01 && g_eeGeneral.inactivityTimer && ptrInactivity->counter > ((uint16_t)g_eeGeneral.inactivityTimer*60))
+				AUDIO_INACTIVITY();
+
+				#if defined(AUDIO)
+				if (mixWarning & 1) if ((sessionTimer&0x03)==0) AUDIO_MIX_WARNING(1);
+				if (mixWarning & 2) if ((sessionTimer&0x03)==1) AUDIO_MIX_WARNING(2);
+				if (mixWarning & 4) if ((sessionTimer&0x03)==2) AUDIO_MIX_WARNING(3);
+				#endif
+
+				val = s_sum_samples_thr_1s / s_cnt_samples_thr_1s;
+				s_timeCum16ThrP += (val>>3);  // s_timeCum16ThrP would overrun if we would store throttle value with higher accuracy; therefore stay with 16 steps
+				if (val) s_timeCumThr += 1;
+				s_sum_samples_thr_1s>>=2;  // correct better accuracy now, because trace graph can show this information; in case thrtrace is not active, the compile should remove this
+
+				#if defined(THRTRACE)
+				// throttle trace is done every 10 seconds; Tracebuffer is adjusted to screen size.
+				// in case buffer runs out, it wraps around
+				// resolution for y axis is only 32, therefore no higher value makes sense
+				s_cnt_samples_thr_10s += s_cnt_samples_thr_1s;
+				s_sum_samples_thr_10s += s_sum_samples_thr_1s;
+
+				if (++s_cnt_10s >= 10)
+				{ // 10s
+					s_cnt_10s -= 10;
+					val = s_sum_samples_thr_10s / s_cnt_samples_thr_10s;
+					s_sum_samples_thr_10s = 0;
+					s_cnt_samples_thr_10s = 0;
+					s_traceBuf[s_traceWr++] = val;
+					if (s_traceWr >= MAXTRACE)
+					s_traceWr = 0;
+					if (s_traceCnt >= 0)
+					++s_traceCnt;
+				}
+				#endif
+
+				s_cnt_samples_thr_1s = 0;
+				s_sum_samples_thr_1s = 0;
+			}
+		}
+	}
+	s_mixer_first_run_done = true;
 }
 
 void doSplash()
@@ -441,6 +569,8 @@ void Init()
 	////if started with bind pressed
 	//PROTO_SetBindState(500);
 	//}
+	
+	doMixerCalculations();
 	
 	//Start protocol here!
 	startPulses(g_general.rfModuleType);

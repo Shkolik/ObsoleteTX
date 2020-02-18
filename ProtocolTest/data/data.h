@@ -176,6 +176,16 @@ typedef struct {
 
 #define IS_MANUAL_RESET_TIMER(idx) (g_model.timers[idx].persistent == 2)
 
+#define LIMIT_EXT_PERCENT   125
+#define LIMIT_EXT_MAX       LIMIT_EXT_PERCENT
+#define PPM_CENTER_MAX      125
+#define LIMIT_MAX(lim)      (lim->max+100)
+#define LIMIT_MIN(lim)      (lim->min-100)
+#define LIMIT_OFS(lim)      (lim->offset)
+#define LIMIT_MAX_RESX(lim) calc100toRESX(LIMIT_MAX(lim))
+#define LIMIT_MIN_RESX(lim) calc100toRESX(LIMIT_MIN(lim))
+#define LIMIT_OFS_RESX(lim) calc1000toRESX(LIMIT_OFS(lim))
+
 typedef struct {
 	int8_t		min;
 	int8_t		max;

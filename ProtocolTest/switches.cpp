@@ -261,6 +261,65 @@ uint8_t lswFamily(uint8_t func)
 		return LS_FAMILY_TIMER+func-LS_FUNC_TIMER;
 }
 
+void logicalSwitchesTimerTick()
+{
+	for (uint8_t i=0; i < NUM_LOGICAL_SWITCH; i++) 
+	{
+		LogicalSwitchData * ls = lswAddress(i);
+		if (ls->func == LS_FUNC_TIMER) 
+		{
+			int16_t *lastValue = &LS_LAST_VALUE(fm, i);
+			if (*lastValue == 0 || *lastValue == CS_LAST_VALUE_INIT) 
+			{
+				*lastValue = -lswTimerValue(ls->v1);
+			} 
+			else if (*lastValue < 0) 
+			{
+				if (++(*lastValue) == 0)
+					*lastValue = lswTimerValue(ls->v2);
+			} 
+			else 
+			{
+				*lastValue -= 1;
+			}
+		} 
+		else if (ls->func == LS_FUNC_STICKY) 
+		{
+			ls_sticky_struct & lastValue = (ls_sticky_struct &)LS_LAST_VALUE(fm, i);
+			uint8_t before = lastValue.last & 0x01;
+			if (lastValue.state) 
+			{
+				uint8_t now = getSwitch(ls->v2);
+				if (now != before) 
+				{
+					lastValue.last ^= 1;
+					if (!before) 
+					{
+						lastValue.state = 0;
+					}
+				}
+			} 
+			else 
+			{
+				uint8_t now = getSwitch(ls->v1);
+				if (before != now) 
+				{
+					lastValue.last ^= 1;
+					if (!before) 
+					{
+						lastValue.state = 1;
+					}
+				}
+			}
+		}
+	}
+}
+
+int16_t lswTimerValue(int8_t val)
+{
+	return (val < -109 ? 129+val : (val < 7 ? (113+val)*5 : (53+val)*10));
+}
+
 LogicalSwitchData * lswAddress(uint8_t idx)
 {
 	return &g_model.logicalSw[idx];
