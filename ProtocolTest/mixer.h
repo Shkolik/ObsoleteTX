@@ -31,9 +31,9 @@ extern int16_t calibratedStick[NUM_STICKS+NUM_POTS];
 extern int16_t channelOutputs[NUM_CHNOUT];
 extern int16_t rawAnalogs[NUM_INPUTS];
 extern int16_t analogs [NUM_INPUTS];
-extern int32_t chans[NUM_CHNOUT];
+extern int32_t channels[NUM_CHNOUT];
 extern int16_t trims[NUM_STICKS];
-extern int16_t ex_chans[NUM_CHNOUT];
+extern int16_t ex_channels[NUM_CHNOUT];
 
 typedef struct {
 	int32_t		act:24;

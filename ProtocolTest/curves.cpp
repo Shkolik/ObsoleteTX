@@ -74,7 +74,7 @@ int16_t intpol(int16_t x, uint8_t idx) // -100, -75, -50, -25, 0 ,25 ,50, 75, 10
 	return erg / 25; // 100*D5/RESX;
 }
 
-#if   defined(CURVES)
+
 int16_t applyCurve(int16_t x, int8_t idx)
 {
 	/* already tried to have only one return at the end */
@@ -104,7 +104,6 @@ int16_t applyCurve(int16_t x, int8_t idx)
 	}
 	return applyCustomCurve(x, idx - CURVE_BASE);
 }
-#endif
 
 
 // input parameters;

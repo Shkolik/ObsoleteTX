@@ -61,6 +61,11 @@
 #define buzzerOn()			PORTC |=  _BV(OUT_Buzzer)
 #define buzzerOff()         PORTC &= ~_BV(OUT_Buzzer)
 
+extern void getADC();
+extern void boardInit();
+extern uint8_t trimDown(uint8_t idx);
+extern uint8_t switchState(uint8_t enuk);
+
 
 #include "../main.h"
 
@@ -98,10 +103,7 @@
 #define RXD_PORT0 PORTE
 #define RXD_PORT_PIN0 PORTE0
 
-extern void getADC();
-extern void boardInit();
-extern uint8_t trimDown(uint8_t idx);
-extern uint8_t switchState(uint8_t enuk);
+
 
 // Trims
 #define GPIO_TRIMS                PING

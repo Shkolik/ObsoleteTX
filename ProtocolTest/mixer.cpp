@@ -405,7 +405,7 @@ void evalFlightModeMixes(uint8_t mode, uint8_t tick10ms)
 	}
 #endif
 
-	memclear(chans, sizeof(chans));        // All outputs to 0
+	memclear(channels, sizeof(channels));        // All outputs to 0
 
 	//========== MIXER LOOP ===================
 	uint8_t lv_mixWarning = 0;
@@ -476,7 +476,7 @@ void evalFlightModeMixes(uint8_t mode, uint8_t tick10ms)
 				if (dirtyChannels & ((uint16_t)1 << srcRaw) & (passDirtyChannels|~(((uint16_t) 1 << md->destCh)-1)))
 				passDirtyChannels |= (uint16_t) 1 << md->destCh;
 				if (srcRaw < md->destCh || pass > 0)
-				v = chans[srcRaw]>>8;
+				v = channels[srcRaw]>>8;
 			}
 		}
 		if (!mixCondition)
@@ -654,7 +654,7 @@ void evalFlightModeMixes(uint8_t mode, uint8_t tick10ms)
       //    Curve(source + trim) * weight + offset
       //    Diff(source * weight) + Diff(trim * weight) + offset
 
-      int32_t *ptr = &chans[md->destCh]; // Save calculating address several times
+      int32_t *ptr = &channels[md->destCh]; // Save calculating address several times
 
       switch (md->mltpx) {
       case MLTPX_REP:
@@ -778,7 +778,7 @@ void evalMixes(uint8_t tick10ms)
 				mixerCurrentFlightMode = p;
 				evalFlightModeMixes(p==fm ? e_perout_mode_normal : e_perout_mode_inactive_flight_mode, p==fm ? tick10ms : 0);
 				for (uint8_t i=0; i<NUM_CHNOUT; i++)
-					sum_chans512[i] += (chans[i] >> 4) * fp_act[p];
+					sum_chans512[i] += (channels[i] >> 4) * fp_act[p];
 				weight += fp_act[p];
 			}
 			s_last_switch_used = 0;
@@ -808,9 +808,9 @@ void evalMixes(uint8_t tick10ms)
 		// at the end chans[i] = chans[i]/256 =>  -1024..1024 (100%) -1281..1280 (125%)
 		// interpolate value with min/max so we get smooth motion from center to stop
 		// this limits based on v original values and min=-1024, max=1024  RESX=1024
-		int32_t q = (flightModesFade ? (sum_chans512[i] / weight) << 4 : chans[i]);
+		int32_t q = (flightModesFade ? (sum_chans512[i] / weight) << 4 : channels[i]);
 
-		ex_chans[i] = q / 256;
+		ex_channels[i] = q / 256;
 
 		int16_t value = applyLimits(i, q);  // applyLimits will remove the 256 100% basis
 		ATOMIC_BLOCK(ATOMIC_RESTORESTATE)

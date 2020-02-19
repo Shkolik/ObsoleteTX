@@ -11,6 +11,20 @@
 
 #include "main.h"
 
+
+enum BaseCurves {
+	CURVE_NONE,
+	CURVE_X_GT0,
+	CURVE_X_LT0,
+	CURVE_ABS_X,
+	CURVE_F_GT0,
+	CURVE_F_LT0,
+	CURVE_ABS_F,
+	CURVE_BASE
+};
+
+#define applyCustomCurve(x, idx) intpol(x, idx)
+
 typedef struct {
 	int8_t * curve;
 	uint8_t points:7;

@@ -635,15 +635,6 @@ extern int16_t            channelOutputs[NUM_CHNOUT];
 
 #include "curves.h"
 
-#if defined(CURVES)
-int16_t applyCurve(int16_t x, int8_t idx);
-#else
-#define applyCurve(x, idx) (x)
-#endif
-
-
-#define applyCustomCurve(x, idx) intpol(x, idx)
-
 //#define APPLY_EXPOS_EXTRA_PARAMS_INC
 #define APPLY_EXPOS_EXTRA_PARAMS
 

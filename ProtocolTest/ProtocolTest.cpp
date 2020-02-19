@@ -32,6 +32,8 @@ uint16_t g_tmr1Latency_max;
 uint16_t g_tmr1Latency_min = 100;
 uint16_t dt;
 
+uint16_t g_vbat10mV = 0;
+
 uint8_t heartbeat;
 uint8_t stickMode;
 
@@ -136,6 +138,17 @@ void setThrSource()
 	if (idx >= MIXSRC_FIRST_POT+NUM_POTS)
 		idx += MIXSRC_CH1 - MIXSRC_FIRST_POT - NUM_POTS;
 	thrSource = idx;
+}
+
+uint8_t getFlightMode()
+{
+	for (uint8_t i=1; i<MAX_FLIGHT_MODES; i++) {
+		FlightModeData *phase = &g_model.flightModeData[i];
+		if (phase->swtch && getSwitch(phase->swtch)) {
+			return i;
+		}
+	}
+	return 0;
 }
 
 void checkBattery()

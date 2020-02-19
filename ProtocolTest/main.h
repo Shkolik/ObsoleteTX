@@ -370,4 +370,5 @@ enum PerOutMode {
 #define MODE_EXPO          0
 #define MODE_CURVE         1
 
+
 #endif /* MAIN_H_ */
