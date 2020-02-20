@@ -38,7 +38,7 @@ uint8_t trimDown(uint8_t idx)
 	return (in & pgm_read_byte_near(crossTrim+idx));
 }
 
-uint8_t switchState(EnumKeys enuk)
+uint8_t switchState(uint8_t enuk)
 {
 	uint8_t result = 0 ;
 

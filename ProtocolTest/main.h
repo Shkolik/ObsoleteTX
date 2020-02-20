@@ -42,6 +42,10 @@
 // Fiddle to force compiler to use a pointer
 #define FORCE_INDIRECT(ptr) __asm__ __volatile__ ("" : "=e" (ptr) : "0" (ptr))
 
+//  Dimension of Arrays
+#define DIM(array) ((sizeof array) / (sizeof *array))
+#define memclear(p, s) memset(p, 0, s)
+
 #define IS_IN_RANGE(value,lowest,highest) (!(value<(lowest)) && (value<((highest)+1)))
 
 
@@ -68,12 +72,14 @@
 #include "mixer.h"
 #include "maths.h"
 #include "trainer.h"
+#include "buzzer.h"
 #include "data/data.h"
 #include "data/eeprom_common.h"
 #include "data/eepromFS.h"
 #include "timers.h"
 #include "switches.h"
-
+#include "functions.h"
+#include "curves.h"
 
 #ifndef PIN0_bm
 #define PIN0_bm  0x01
@@ -121,7 +127,7 @@
 
 #define PPM_CENTER			1500
 #define FULL_CHANNEL_OUTPUTS(ch) channelOutputs[ch]
-#define NUM_INPUTS			(NUM_STICKS)
+
 
 //for 16MHz we need multiply some timings by 2
 #define TIMER_MULTIPLIER (F_CPU == 8000000L ? 1 : 2)
@@ -143,6 +149,38 @@
 #endif
 
 
+enum Analogs {
+	STICK_RH,
+	STICK_LV,
+	STICK_RV,
+	STICK_LH,
+	POT1,
+	POT2,
+	POT3,
+	POT_LAST = POT3,
+	TX_VOLTAGE,
+	NUMBER_ANALOG
+};
+
+enum Functions {
+	// first the functions which need a checkbox
+	FUNC_OVERRIDE_CHANNEL,
+	FUNC_TRAINER,
+	FUNC_INSTANT_TRIM,
+	FUNC_RESET,
+	FUNC_ADJUST_GVAR,
+	// then the other functions
+	FUNC_FIRST_WITHOUT_ENABLE,
+	FUNC_PLAY_SOUND = FUNC_FIRST_WITHOUT_ENABLE,
+	FUNC_PLAY_TRACK,
+	FUNC_PLAY_BOTH,
+	FUNC_PLAY_VALUE,
+	FUNC_VARIO,
+	FUNC_HAPTIC,
+	FUNC_LOGS,
+	FUNC_BACKLIGHT,
+	FUNC_MAX
+};
 //////////////////////////////////////////////////////////////////////////
 //protocols
 //////////////////////////////////////////////////////////////////////////
@@ -207,6 +245,16 @@ extern uint16_t g_tmr10ms;
 
 extern bool s_mixer_first_run_done;
 
+extern uint8_t beepAgain;
+extern uint16_t lightOffCounter;
+extern uint8_t flashCounter;
+extern uint8_t mixWarning;
+
+extern uint16_t g_vbat10mV;
+#define GET_TXBATT_BARS() (limit<uint8_t>(2, 20 * ((uint8_t)(g_vbat10mV/10) - g_general.vBatMin) / (g_general.vBatMax - g_general.vBatMin), 20))
+#define IS_TXBATT_WARNING() (g_vbat10mV < (g_general.vBatWarning*10))
+
+
 #define TOGGLE(port, pin) (port ^= pin)
 #define SETPIN(port, pin, state) (state ? (port |= pin) : (port &= ~pin))
 
@@ -234,14 +282,14 @@ extern void startPulses(enum ModuleType module);
 #define HEART_TIMER_PULSES            2
 #define HEART_WDT_CHECK               (HEART_TIMER_10MS + HEART_TIMER_PULSES)
 
-//  Dimension of Arrays
-#define DIM(array) ((sizeof array) / (sizeof *array))
-#define memclear(p, s) memset(p, 0, s)
+
 
 extern const pm_uint8_t bchout_ar[];
 extern const pm_uint8_t modn12x3[];
 
 extern uint8_t stickMode;
+extern uint8_t thrSource;
+extern bool enableThr;
 
 //convert from mode 1 to mode stickMode
 //NOTICE!  =>  0..3 -> 0..3
@@ -249,14 +297,78 @@ extern uint8_t stickMode;
 #define ELE_STICK 1
 #define THR_STICK 2
 #define AIL_STICK 3
+
 #define CONVERT_MODE(x)  (((x)<=AIL_STICK) ? pgm_read_byte_near(modn12x3 + 4*stickMode + (x)) : (x) )
 
-extern uint8_t channel_order(uint8_t x);
+#define TRIM_OFF    (1)
+#define TRIM_ON     (0)
+#define TRIM_RUD    (-1)
+#define TRIM_ELE    (-2)
+#define TRIM_THR    (-3)
+#define TRIM_AIL    (-4)
 
+
+#if defined(GVARS)
+uint8_t getGVarFlightPhase(uint8_t phase, uint8_t idx);
+int16_t getGVarValue(int16_t x, int16_t min, int16_t max, int8_t phase);
+void setGVarValue(uint8_t x, int16_t value, int8_t phase);
+#define GET_GVAR(x, min, max, p) getGVarValue(x, min, max, p)
+#define SET_GVAR(idx, val, p) setGVarValue(idx, val, p)
+#else
+#define GET_GVAR(x, ...) (x)
+#endif
+
+// highest bit used for small values in mix 128 --> 8 bit is enough
+#define GV1_SMALL  128
+// highest bit used for large values in mix 256 --> 9 bits is used (8 bits + 1 extra bit from weightMode/offsetMode)
+#define GV1_LARGE  256
+
+#define GV_GET_GV1_VALUE(max)        ( (max<=GV_RANGESMALL) ? GV1_SMALL : GV1_LARGE )
+#define GV_INDEX_CALCULATION(x,max)  ( (max<=GV1_SMALL) ? (uint8_t) x-GV1_SMALL : ((x&(GV1_LARGE*2-1))-GV1_LARGE) )
+#define GV_IS_GV_VALUE(x,min,max)    ( (x>max) || (x<min) )
+
+#define GV_INDEX_CALC_DELTA(x,delta) ((x&(delta*2-1)) - delta)
+
+#define GV_CALC_VALUE_IDX_POS(idx,delta) (-delta+idx)
+#define GV_CALC_VALUE_IDX_NEG(idx,delta) (delta+idx)
+
+#define GV_RANGESMALL      (GV1_SMALL - (RESERVE_RANGE_FOR_GVARS+1))
+#define GV_RANGESMALL_NEG  (-GV1_SMALL + (RESERVE_RANGE_FOR_GVARS+1))
+#define GV_RANGELARGE      (GV1_LARGE - (RESERVE_RANGE_FOR_GVARS+1))
+#define GV_RANGELARGE_NEG  (-GV1_LARGE + (RESERVE_RANGE_FOR_GVARS+1))
+// for stock we just use as much as possible
+#define GV_RANGELARGE_WEIGHT      GV_RANGELARGE
+#define GV_RANGELARGE_WEIGHT_NEG  GV_RANGELARGE_NEG
+#define GV_RANGELARGE_OFFSET      GV_RANGELARGE
+#define GV_RANGELARGE_OFFSET_NEG  GV_RANGELARGE_NEG
+
+extern uint8_t channel_order(uint8_t x);
+extern uint16_t analogIn(uint8_t channel);
 extern void modelDefault(uint8_t id);
 extern void generalDefault();
 extern void flightReset();
 extern void setThrSource();
 extern uint8_t getTrimFlightPhase(uint8_t phase, uint8_t idx);
 extern int16_t getTrimValue(uint8_t phase, uint8_t idx);
+extern uint8_t getFlightMode();
+extern void evalTrims();
+
+extern ExpoData *expoAddress(uint8_t idx );
+extern LimitData *limitAddress(uint8_t idx);
+extern MixData *mixAddress(uint8_t idx);
+
+enum PerOutMode {
+	e_perout_mode_normal = 0,
+	e_perout_mode_inactive_flight_mode = 1,
+	e_perout_mode_notrainer = 2,
+	e_perout_mode_notrims = 4,
+	e_perout_mode_nosticks = 8,
+	e_perout_mode_noinput = e_perout_mode_notrainer+e_perout_mode_notrims+e_perout_mode_nosticks
+};
+
+#define MODE_DIFFERENTIAL  0
+#define MODE_EXPO          0
+#define MODE_CURVE         1
+
+
 #endif /* MAIN_H_ */

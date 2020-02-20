@@ -32,13 +32,20 @@ uint16_t g_tmr1Latency_max;
 uint16_t g_tmr1Latency_min = 100;
 uint16_t dt;
 
+uint16_t g_vbat10mV = 0;
+
 uint8_t heartbeat;
 uint8_t stickMode;
 
 uint16_t bind_tmr10ms = 0;
 uint8_t change_debounce_tmr10ms = 0;
 
-bool unexpectedShutdown = false;
+uint8_t flashCounter;
+uint16_t sessionTimer;
+uint16_t s_timeCumThr;    // THR in 1/16 sec
+uint16_t s_timeCum16ThrP; // THR% in 1/16 sec
+
+uint8_t  trimsCheckTimer = 0;
 
 ModelSettings g_model;
 GeneralSettings g_general;
@@ -132,6 +139,73 @@ void setThrSource()
 		idx += MIXSRC_CH1 - MIXSRC_FIRST_POT - NUM_POTS;
 	thrSource = idx;
 }
+
+uint8_t getFlightMode()
+{
+	for (uint8_t i=1; i<MAX_FLIGHT_MODES; i++) {
+		FlightModeData *phase = &g_model.flightModeData[i];
+		if (phase->swtch && getSwitch(phase->swtch)) {
+			return i;
+		}
+	}
+	return 0;
+}
+
+void checkBattery()
+{
+	uint32_t instant_vbat = analogIn(TX_VOLTAGE);
+
+	// Replace with correct values on DX6I board
+	#define BANDGAP 3300 // 3.3 Volts : We use AVCC.
+	instant_vbat *= 2889L*(BANDGAP/100);
+	instant_vbat /= 2047L*100L;
+	instant_vbat += 38L;
+	instant_vbat += g_general.voltageCalibration;
+	// Schottky Diode drops 0.38V before a potential divider which reduces the input to the ADC by 1/2.8889.
+	
+	if (!g_vbat10mV)
+	{
+		g_vbat10mV = instant_vbat;
+	}
+
+	g_vbat10mV = ((g_vbat10mV << 1) + instant_vbat) / 3; // Simple low pass filter
+
+	if (IS_TXBATT_WARNING() && (g_vbat10mV > (g_general.vBatMin*9)) && ((sessionTimer&0x0F)==0x04))
+	{ 
+		// No Audio Alarm if TX Battery < VCCMIN X .9 & 30 Sec
+		AUDIO_TX_BATTERY_LOW();
+	}
+}
+
+uint16_t s_analogFiltered[NUMBER_ANALOG];
+
+uint16_t analogIn(uint8_t channel)
+{
+	static const pm_char crossAnalog[] PROGMEM = {3,1,2,0,4,5,6,7};
+	uint16_t *p = &s_analogFiltered[pgm_read_byte_near(crossAnalog+channel)];
+	return *p;
+}
+
+void evalTrims()
+{
+	uint8_t phase = mixerCurrentFlightMode;
+	for (uint8_t i=0; i<NUM_STICKS; i++)
+	{
+		// do trim -> throttle trim if applicable
+		int16_t trim = getTrimValue(phase, i);
+		if (i==THR_STICK && g_model.thrTrim)
+		{
+			int16_t trimMin = g_model.extendedTrims ? TRIM_EXTENDED_MIN : TRIM_MIN;
+			trim = enableThr? ((((int32_t)(trim-trimMin)) * (RESX-analogs[i])) >> (RESX_SHIFT+1)) : 0; //GAZ SECURITY
+		}
+		if (trimsCheckTimer)
+		{
+			trim = 0;
+		}
+		trims[i] = trim*2;
+	}
+}
+
 
 #if defined(TEMPLATES)
 inline void applyDefaultTemplate()
@@ -486,7 +560,7 @@ void doMixerCalculations()
 				struct t_inactivity *ptrInactivity = &inactivity;
 				FORCE_INDIRECT(ptrInactivity) ;
 				ptrInactivity->counter++;
-				if ((((uint8_t)ptrInactivity->counter)&0x07)==0x01 && g_eeGeneral.inactivityTimer && ptrInactivity->counter > ((uint16_t)g_eeGeneral.inactivityTimer*60))
+				if ((((uint8_t)ptrInactivity->counter)&0x07)==0x01 && g_general.inactivityTimer && ptrInactivity->counter > ((uint16_t)g_general.inactivityTimer*60))
 				AUDIO_INACTIVITY();
 
 				#if defined(AUDIO)
