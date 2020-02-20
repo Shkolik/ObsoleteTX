@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Atmel Studio Solution File, Format Version 11.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ObsoleteTX", "ObsoleteTX\ObsoleteTX.cppproj", "{DCE6C7E3-EE26-4D79-826B-08594B9AD897}"
-EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "ProtocolTest", "ProtocolTest\ProtocolTest.cppproj", "{FEB761C5-34C5-4516-A2EF-EFC4514214E7}"
 EndProject
 Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Blinky", "Blinky\Blinky.cppproj", "{DCD2C4D1-C2D2-4321-9E22-EBEA50D3657D}"
@@ -22,12 +20,6 @@ Global
 		USART_DBG|AVR = USART_DBG|AVR
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|AVR.ActiveCfg = Debug|AVR
-		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Debug|AVR.Build.0 = Debug|AVR
-		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|AVR.ActiveCfg = Release|AVR
-		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.Release|AVR.Build.0 = Release|AVR
-		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.USART_DBG|AVR.ActiveCfg = USART_DBG|AVR
-		{DCE6C7E3-EE26-4D79-826B-08594B9AD897}.USART_DBG|AVR.Build.0 = USART_DBG|AVR
 		{FEB761C5-34C5-4516-A2EF-EFC4514214E7}.Debug|AVR.ActiveCfg = Debug|AVR
 		{FEB761C5-34C5-4516-A2EF-EFC4514214E7}.Debug|AVR.Build.0 = Debug|AVR
 		{FEB761C5-34C5-4516-A2EF-EFC4514214E7}.Release|AVR.ActiveCfg = Release|AVR
